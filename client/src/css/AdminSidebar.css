@@ -1,0 +1,103 @@
+.admin-sidebar {
+    width: 270px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: linear-gradient(180deg, #2f6d1f 0%, #3f8e17 50%, #6db91b 100%);
+    padding: 24px 18px;
+    color: #fff;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.admin-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.admin-sidebar-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.admin-brand h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+}
+
+/* 🔥 bigger tabs */
+.admin-tab {
+    width: 100%;              /* 🔥 important */
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 14px 16px;
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.admin-tab.active,
+.admin-tab:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateX(4px);
+}
+
+.admin-icon {
+    font-size: 20px;
+}
+
+/* overlay */
+.admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+}
+
+/* close btn */
+.admin-close-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 900px) {
+
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+
+    .admin-sidebar.active {
+        transform: translateX(0);
+    }
+
+    .admin-close-btn {
+        display: block;
+    }
+}

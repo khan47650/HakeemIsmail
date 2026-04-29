@@ -10,12 +10,16 @@ import {
 } from 'react-icons/fi';
 import '../css/Header.css'
 import { FiSearch } from 'react-icons/fi';
+import SignInDialog from './SignInDialog';
+import SignUpDialog from './SignUpDialog';
+
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(true);
     const location = useLocation();
+    const [authDialog, setAuthDialog] = useState(null);
 
     const isHomePage = location.pathname === '/';
     const closeMenu = () => setMenuOpen(false);
@@ -105,6 +109,9 @@ function Header() {
                                         <FiSearch />
                                     </button>
                                 </div>
+                                <button className="nav-signin-btn" onClick={() => setAuthDialog('signin')}>
+                                    Sign In
+                                </button>
 
                                 <button
                                     className="menu-toggle"
@@ -176,6 +183,20 @@ function Header() {
                     </div>
                 </div>
             </div>
+
+            {authDialog === 'signin' && (
+                <SignInDialog
+                    onClose={() => setAuthDialog(null)}
+                    onSwitchToSignUp={() => setAuthDialog('signup')}
+                />
+            )}
+
+            {authDialog === 'signup' && (
+                <SignUpDialog
+                    onClose={() => setAuthDialog(null)}
+                    onSwitchToSignIn={() => setAuthDialog('signin')}
+                />
+            )}
         </header>
     )
 }

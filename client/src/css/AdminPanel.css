@@ -1,0 +1,25 @@
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f6f8f5;
+}
+
+/* 👉 Sidebar space */
+.admin-content {
+    flex: 1;
+    margin-left: 270px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 👉 main content */
+.admin-main {
+    padding: 30px;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 900px) {
+    .admin-content {
+        margin-left: 0;
+    }
+}
