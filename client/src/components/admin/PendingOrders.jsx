@@ -1,7 +1,10 @@
 import { FiArrowLeft } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import '../../css/PendingOrders.css';
 
 function PendingOrders() {
+    const navigate = useNavigate();
+
     const orders = [
         { id: 1, userName: 'Ali Khan', productName: 'Herbal Medicine', date: '03/12/2026' },
         { id: 2, userName: 'Ahmed Raza', productName: 'Health Package', date: '03/13/2026' },
@@ -11,8 +14,10 @@ function PendingOrders() {
 
     return (
         <div className="pending-orders-page">
-            <div className="pending-orders-header">
-                <FiArrowLeft className="pending-back-icon" />
+            <div className="pending-orders-top">
+                <button className="pending-back-btn" onClick={() => navigate(-1)}>
+                    <FiArrowLeft />
+                </button>
                 <h1>Pending Orders</h1>
             </div>
 
@@ -35,8 +40,8 @@ function PendingOrders() {
                                 <td>{order.date}</td>
                                 <td>
                                     <div className="pending-actions">
-                                        <button className="cancel-btn">Cancel</button>
-                                        <button className="details-btn">View Details</button>
+                                        <button className="pending-cancel-btn">Cancel</button>
+                                        <button className="pending-details-btn">View Details</button>
                                     </div>
                                 </td>
                             </tr>

@@ -1,17 +1,17 @@
-.pending-orders-page {
+.completed-orders-page {
     width: 100%;
     min-height: calc(100vh - 85px);
     background: #f6f8f5;
 }
 
-.pending-orders-top {
+.completed-orders-top {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 22px;
 }
 
-.pending-back-btn {
+.completed-back-btn {
     width: 42px;
     height: 42px;
     border: none;
@@ -27,21 +27,19 @@
     transition: all 0.3s ease;
 }
 
-.pending-back-btn:hover {
+.completed-back-btn:hover {
     transform: translateX(-4px);
     background: #eef7eb;
 }
 
-
-.pending-orders-top h1 {
+.completed-orders-top h1 {
     margin: 0;
     color: #1b4f14;
     font-size: 26px;
     font-weight: 800;
-    line-height: 1;
 }
 
-.pending-orders-card {
+.completed-orders-card {
     width: 100%;
     background: #ffffff;
     border-radius: 18px;
@@ -50,41 +48,34 @@
     overflow-x: auto;
 }
 
-.pending-orders-table {
+.completed-orders-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.pending-orders-table th {
+.completed-orders-table th {
     background: linear-gradient(90deg, #2f6d1f 0%, #3f8e17 50%, #6db91b 100%);
     color: #ffffff;
-    text-align: left;
     padding: 16px;
     font-size: 14px;
     font-weight: 800;
-    white-space: nowrap;
+    text-align: left;
 }
 
-.pending-orders-table td {
+.completed-orders-table td {
     padding: 16px;
-    color: #263238;
     font-size: 14px;
     font-weight: 600;
     border-bottom: 1px solid #e7efe4;
-    white-space: nowrap;
 }
 
-.pending-orders-table tr:last-child td {
-    border-bottom: none;
-}
-
-.pending-actions {
+.completed-actions {
     display: flex;
     gap: 8px;
 }
 
-.pending-cancel-btn,
-.pending-details-btn {
+.completed-delete-btn,
+.completed-details-btn {
     border: none;
     padding: 10px 16px;
     border-radius: 999px;
@@ -92,44 +83,39 @@
     font-weight: 800;
     cursor: pointer;
     transition: all 0.3s ease;
-    white-space: nowrap;
 }
 
-
-.pending-cancel-btn {
+/* 🔴 Delete */
+.completed-delete-btn {
     background: #ffffff;
     color: #c62828;
     border: 2px solid #c62828;
 }
 
-.pending-cancel-btn:hover {
+.completed-delete-btn:hover {
     background: #c62828;
     color: #ffffff;
     transform: translateY(-3px);
     box-shadow: 0 10px 18px rgba(198, 40, 40, 0.18);
 }
 
-.pending-details-btn {
+/* 🟢 Details */
+.completed-details-btn {
     background: #ffffff;
     color: #1b4f14;
     border: 2px solid #1b4f14;
 }
-.pending-details-btn:hover {
+
+.completed-details-btn:hover {
     background: linear-gradient(90deg, #2f6d1f 0%, #3f8e17 50%, #6db91b 100%);
     color: #ffffff;
     transform: translateY(-3px);
     box-shadow: 0 10px 18px rgba(27, 79, 20, 0.18);
 }
+
+/* 📱 Mobile */
 @media (max-width: 700px) {
-    .pending-orders-top h1 {
-        font-size: 22px;
-    }
-
-    .pending-orders-card {
-        border-radius: 14px;
-    }
-
-    .pending-orders-table {
+    .completed-orders-table {
         min-width: 620px;
     }
 }
