@@ -568,42 +568,55 @@
 
 @media (max-width: 480px) {
   .floating-navbar {
-    padding: 10px 14px;
+    width: calc(100% - 24px);
+    padding: 8px 10px;
+    gap: 8px;
   }
 
-  .nav-logo {
-    height: 34px;
+  .nav-left {
+    min-width: 0;
+    gap: 6px;
   }
 
   .brand-name {
-    font-size: 14px;
+    font-size: 13px;
+    margin-left: 2px;
+    max-width: 105px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-right {
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .nav-signin-btn {
+    height: 34px;
+    padding: 7px 10px;
+    font-size: 10px;
+    min-width: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .menu-toggle {
-    font-size: 28px;
+    font-size: 26px;
+    width: 28px;
+    min-width: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-name {
+    max-width: 85px;
+    font-size: 12px;
   }
 
-  .home-header .header-hero-bg {
-    min-height: 350px;
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
-  }
-
-  .hero-slide-image {
-    height: 200px;
-  }
-
-  .slider-arrow {
-    width: 34px;
-    height: 34px;
-    font-size: 18px;
-  }
-
-  .left-arrow {
-    left: 6px;
-  }
-
-  .right-arrow {
-    right: 6px;
+  .nav-signin-btn {
+    min-width: 52px;
+    padding: 6px 8px;
+    font-size: 9px;
   }
 }
