@@ -103,7 +103,7 @@ function Header() {
                                     <input
                                         type="text"
                                         className="nav-search-input"
-                                        placeholder="Search products, articles..."
+                                        placeholder="Search"
                                     />
                                     <button className="nav-search-btn" aria-label="Search">
                                         <FiSearch />
