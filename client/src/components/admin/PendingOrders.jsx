@@ -15,9 +15,9 @@ function PendingOrders() {
     return (
         <div className="pending-orders-page">
             <div className="pending-orders-top">
-                <button className="pending-back-btn" onClick={() => navigate(-1)}>
+                {/* <button className="pending-back-btn" onClick={() => navigate(-1)}>
                     <FiArrowLeft />
-                </button>
+                </button> */}
                 <h1>Pending Orders</h1>
             </div>
 
