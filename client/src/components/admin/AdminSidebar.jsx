@@ -17,7 +17,7 @@ function AdminSidebar({ isOpen, setIsOpen }) {
     const location = useLocation();
 
     const tabs = [
-        { name: 'Dashboard', icon: <FiGrid />, path: '/admin' },
+        // { name: 'Dashboard', icon: <FiGrid />, path: '/admin' },
         { name: 'Pending Orders', icon: <FiClock />, path: '/admin/pending-orders' },
         { name: 'Completed Orders', icon: <FiCheckCircle />, path: '/admin/completed-orders' },
         { name: 'Products', icon: <FiPackage />, path: '/admin/products' },

@@ -41,8 +41,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
 
         <Route path="/admin" element={<AdminPanel />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="pending-orders" element={<PendingOrders />} />
+          <Route index element={<PendingOrders />} />
+          {/* <Route path="pending-orders" element={<PendingOrders />} /> */}
           <Route path="completed-orders" element={<CompletedOrders />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="articles" element={<AdminArticles />} />
