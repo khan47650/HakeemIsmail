@@ -14,7 +14,6 @@ import Contact from './pages/Contact';
 import Videos from './pages/Videos';
 
 import AdminPanel from './pages/AdminPanel';
-import AdminDashboard from './components/admin/AdminDashboard';
 import PendingOrders from './components/admin/PendingOrders';
 import CompletedOrders from './components/admin/CompletedOrders';
 import AdminProducts from './components/admin/AdminProducts';
@@ -23,15 +22,20 @@ import AdminVideos from './components/admin/AdminVideos';
 import AdminShorts from './components/admin/AdminShorts';
 import Messages from './components/admin/Messages';
 
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './routes/ProtectedRoute';
+
 function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith('/admin');
 
   return (
-    <>
+    <AuthProvider>
+
       {!isAdminPage && <Header />}
 
       <Routes>
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/articles" element={<Articles />} />
@@ -40,8 +44,15 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
 
-        <Route path="/admin" element={<AdminPanel />}>
-          {/* <Route index element={<AdminDashboard />} /> */}
+        {/* PROTECTED ADMIN ROUTE */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <AdminPanel />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<PendingOrders />} />
           <Route path="pending-orders" element={<PendingOrders />} />
           <Route path="completed-orders" element={<CompletedOrders />} />
@@ -56,7 +67,8 @@ function App() {
       {!isAdminPage && <Footer />}
 
       <ToastContainer position="top-right" autoClose={2000} />
-    </>
+
+    </AuthProvider>
   );
 }
 

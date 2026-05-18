@@ -1,0 +1,101 @@
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  padding: 20px;
+}
+
+.delete-dialog {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 34px 28px;
+  text-align: center;
+  animation: deleteDialogFade 0.25s ease;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.delete-dialog h3 {
+  margin: 0 0 12px;
+  font-size: 24px;
+  color: #1b4f14;
+  font-weight: 800;
+}
+
+.delete-dialog p {
+  margin: 0 0 28px;
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.delete-dialog .dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.delete-dialog .dialog-actions button {
+  min-width: 120px;
+  border: none;
+  border-radius: 999px;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.delete-dialog .dialog-actions button:first-child {
+  background: #eef2ec;
+  color: #1f2937;
+}
+
+.delete-dialog .dialog-actions button:first-child:hover {
+  transform: translateY(-2px);
+}
+
+.delete-dialog .dialog-actions button:last-child {
+  background: linear-gradient(135deg, #d62828 0%, #ef4444 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.22);
+}
+
+.delete-dialog .dialog-actions button:last-child:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+@keyframes deleteDialogFade {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+
+  .delete-dialog {
+    border-radius: 22px;
+    padding: 28px 20px;
+  }
+
+  .delete-dialog .dialog-actions {
+    flex-direction: column;
+  }
+
+  .delete-dialog .dialog-actions button {
+    width: 100%;
+  }
+}

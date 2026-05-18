@@ -1,62 +1,184 @@
 import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import '../../css/AdminProducts.css';
+import { useEffect, useState } from 'react';
+import api from '../../api/api';
+import ProductDialog from './ProductDialog';
+import DeleteDialog from './DeleteDialog';
 
 function AdminProducts() {
+
     const navigate = useNavigate();
 
-    const products = [
-        { id: 1, name: 'Herbal Medicine', price: 'Rs. 1200', image: '/product-1.jpeg', isPopular: true },
-        { id: 2, name: 'Natural Oil', price: 'Rs. 950', image: '/product-2.jpeg' },
-        { id: 3, name: 'Herbal Tea', price: 'Rs. 650', image: '/prduct-3.jpeg', isPopular: true },
-        { id: 4, name: 'Health Package', price: 'Rs. 2200', image: '/product-2.jpeg' },
-        { id: 5, name: 'Skin Care Oil', price: 'Rs. 1500', image: '/product-1.jpeg' },
-        { id: 6, name: 'Digestive Powder', price: 'Rs. 800', image: '/prduct-3.jpeg' },
-    ];
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const [deleteDialog, setDeleteDialog] = useState(false);
+
+    const [deleteId, setDeleteId] = useState(null);
+
+
+    const fetchProducts = async () => {
+        try {
+
+            setLoading(true);
+
+            const res = await api.get('/products');
+
+            setProducts(res.data);
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+
+    const handleDelete = async () => {
+        try {
+
+            await api.delete(`/products/${deleteId}`);
+
+            fetchProducts();
+
+            setDeleteDialog(false);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 
     return (
         <section className="admin-products-page">
+
             <div className="admin-products-top">
+
                 <div className="admin-products-title-wrap">
-                    <button className="admin-products-back-btn" onClick={() => navigate(-1)}>
+
+                    <button
+                        className="admin-products-back-btn"
+                        onClick={() => navigate(-1)}
+                    >
                         <FiArrowLeft />
                     </button>
+
                     <h1>Products</h1>
+
                 </div>
 
-                <button className="admin-add-product-btn">
+                <button
+                    className="admin-add-product-btn"
+                    onClick={() => {
+                        setSelectedProduct(null);
+                        setDialogOpen(true);
+                    }}
+                >
                     <FiPlus />
                     Add New
                 </button>
+
             </div>
 
             <div className="admin-products-grid">
-                {products.map((product) => (
-                    <div className={`admin-product-card fade-up fade-up-delay-${product.id}`}>
-                        <div className="admin-product-image-wrap">
-                            <img src={product.image} alt={product.name} className="admin-product-image" />
 
-                            {product.isPopular && (
-                                <span className="admin-product-badge">Popular</span>
-                            )}
-                        </div>
+                {loading ? (
 
-                        <div className="admin-product-content">
-                            <h3>{product.name}</h3>
-                            <p>{product.price}</p>
+                    [...Array(6)].map((_, index) => (
+                        <div className="admin-product-skeleton" key={index}></div>
+                    ))
 
-                            <div className="admin-product-actions">
-                                <button className="admin-product-edit-btn">
-                                    <FiEdit2 />
-                                </button>
-                                <button className="admin-product-delete-btn">
-                                    <FiTrash2 />
-                                </button>
-                            </div>
-                        </div>
+                ) : products.length === 0 ? (
+
+                    <div className="admin-empty-state">
+                        Products Not Uploaded Yet.
                     </div>
-                ))}
+
+                ) : (
+
+                    products.map((product, index) => (
+
+                        <div
+                            className={`admin-product-card fade-up fade-up-delay-${(index % 6) + 1}`}
+                            key={product._id}
+                        >
+
+                            <div className="admin-product-image-wrap">
+
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="admin-product-image"
+                                />
+
+                                {product.category === "popular" && (
+                                    <span className="admin-product-badge">
+                                        Popular
+                                    </span>
+                                )}
+
+                            </div>
+
+                            <div className="admin-product-content">
+
+                                <h3>{product.name}</h3>
+
+                                <p>Rs. {product.price}</p>
+
+                                <div className="admin-product-actions">
+
+                                    <button
+                                        className="admin-product-edit-btn"
+                                        onClick={() => {
+                                            setSelectedProduct(product);
+                                            setDialogOpen(true);
+                                        }}
+                                    >
+                                        <FiEdit2 />
+                                    </button>
+
+                                    <button
+                                        className="admin-product-delete-btn"
+                                        onClick={() => {
+                                            setDeleteId(product._id);
+                                            setDeleteDialog(true);
+                                        }}
+                                    >
+                                        <FiTrash2 />
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    ))
+                )}
+
             </div>
+
+            <ProductDialog
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+                fetchProducts={fetchProducts}
+                selectedProduct={selectedProduct}
+            />
+
+            <DeleteDialog
+                open={deleteDialog}
+                onClose={() => setDeleteDialog(false)}
+                onConfirm={handleDelete}
+            />
+
         </section>
     );
 }

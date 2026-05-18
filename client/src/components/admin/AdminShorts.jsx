@@ -1,81 +1,201 @@
-import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { FaYoutube, FaFacebook } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import '../../css/AdminShorts.css';
+import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FaYoutube, FaFacebook } from "react-icons/fa";
+import { FiChevronDown, FiExternalLink } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import api from "../../api/api";
+import ShortDialog from "./ShortDialog";
+import ShortDeleteDialog from "./ShortDeleteDialog";
+import "../../css/AdminShorts.css";
 
 function AdminShorts() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const shorts = [
-        { id: 1, title: 'Powerful Herbal Tips for Daily Life', thumbnail: '/short-1.jpeg', duration: '0:42', url: 'https://www.youtube.com/shorts/your-short-id-1' },
-        { id: 2, title: 'Natural Honey Benefits You Should Know', thumbnail: '/short-2.jpeg', duration: '0:35', url: 'https://www.youtube.com/shorts/your-short-id-2' },
-        { id: 3, title: 'Black Seed Routine Guide', thumbnail: '/short-3.jpeg', duration: '0:51', url: 'https://www.facebook.com/reel/your-reel-id-1' },
-        { id: 4, title: 'Quick Organic Lifestyle Tips', thumbnail: '/short-4.jpeg', duration: '0:29', url: 'https://www.youtube.com/shorts/your-short-id-3' },
-        { id: 5, title: 'Natural Skin Care in Simple Steps', thumbnail: '/short-5.jpeg', duration: '0:47', url: 'https://www.facebook.com/reel/your-reel-id-2' },
-        { id: 6, title: 'Simple Home Remedy Short Guide', thumbnail: '/short-6.jpeg', duration: '0:38', url: 'https://www.youtube.com/shorts/your-short-id-4' },
-    ];
+  const [shorts, setShorts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
-    const getPlatform = (url) => url.includes('facebook') ? 'facebook' : 'youtube';
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedShort, setSelectedShort] = useState(null);
 
-    return (
-        <section className="admin-shorts-page page-fade-up">
-            <div className="admin-shorts-top">
-                <div className="admin-shorts-title-wrap">
-                    <button className="admin-shorts-back-btn" onClick={() => navigate(-1)}>
-                        <FiArrowLeft />
-                    </button>
-                    <h1>Shorts</h1>
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteShort, setDeleteShort] = useState(null);
+
+  const fetchShorts = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/shorts");
+      setShorts(res.data || []);
+    } catch (error) {
+      toast.error("Shorts load nahi ho sakay");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchShorts();
+  }, []);
+
+  const handleAdd = () => {
+    setSelectedShort(null);
+    setOpenDialog(true);
+  };
+
+  const handleEdit = (short) => {
+    setSelectedShort(short);
+    setOpenDialog(true);
+  };
+
+  const handleDeleteClick = (short) => {
+    setDeleteShort(short);
+    setDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    await api.delete(`/shorts/${deleteShort._id}`);
+    toast.success("Short deleted successfully");
+    setDeleteOpen(false);
+    setDeleteShort(null);
+    fetchShorts();
+  };
+
+  return (
+    <section className="admin-shorts-page page-fade-up">
+      <div className="admin-shorts-top">
+        <div className="admin-shorts-title-wrap">
+          <button
+            className="admin-shorts-back-btn"
+            onClick={() => navigate(-1)}
+          >
+            <FiArrowLeft />
+          </button>
+
+          <h1>Shorts</h1>
+        </div>
+
+        <button className="admin-add-short-btn" onClick={handleAdd}>
+          <FiPlus />
+          Add New
+        </button>
+      </div>
+
+      <div className="admin-shorts-grid">
+        {loading ? (
+          [1, 2, 3, 4, 5, 6].map((item) => (
+            <div className="admin-short-card short-skeleton" key={item}>
+              <div className="short-skeleton-thumb" />
+              <div className="short-skeleton-content">
+                <span />
+                <button />
+              </div>
+            </div>
+          ))
+        ) : shorts.length === 0 ? (
+          <p className="admin-shorts-empty">No shorts found.</p>
+        ) : (
+          shorts.map((short, index) => (
+            <div
+              className={`fade-up fade-up-delay-${(index % 6) + 1}`}
+              key={short._id}
+            >
+              <div className="admin-short-card">
+                <img
+                  src={short.thumbnail || "/short-1.jpeg"}
+                  alt={short.title}
+                  className="admin-short-thumb"
+                />
+
+                <div className="admin-short-overlay"></div>
+
+                <div className="admin-short-actions">
+                  <button
+                    className="admin-short-edit-btn"
+                    onClick={() => handleEdit(short)}
+                  >
+                    <FiEdit2 />
+                  </button>
+
+                  <button
+                    className="admin-short-delete-btn"
+                    onClick={() => handleDeleteClick(short)}
+                  >
+                    <FiTrash2 />
+                  </button>
                 </div>
 
-                <button className="admin-add-short-btn">
-                    <FiPlus />
-                    Add New
-                </button>
+                <span className="admin-short-duration">
+                  {short.duration}
+                </span>
+
+                <div className="admin-short-content">
+                  <h3 className="admin-short-title">{short.title}</h3>
+
+                  <div className="video-dropdown-wrapper">
+                    <button
+                      className="admin-video-platform-btn"
+                      onClick={() =>
+                        setOpenDropdown(
+                          openDropdown === short._id ? null : short._id
+                        )
+                      }
+                    >
+                      Watch Now
+                      <FiChevronDown />
+                    </button>
+
+                    {openDropdown === short._id && (
+                      <div className="video-dropdown">
+                        {short.youtubeUrl && (
+                          <a
+                            href={short.youtubeUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="video-dropdown-item youtube"
+                          >
+                            <FaYoutube />
+                            <span>YouTube</span>
+                            <FiExternalLink className="right-icon" />
+                          </a>
+                        )}
+
+                        {short.facebookUrl && (
+                          <a
+                            href={short.facebookUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="video-dropdown-item facebook"
+                          >
+                            <FaFacebook />
+                            <span>Facebook</span>
+                            <FiExternalLink className="right-icon" />
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
+          ))
+        )}
+      </div>
 
-            <div className="admin-shorts-grid">
-                {shorts.map((short, index) => {
-                    const platform = getPlatform(short.url);
+      <ShortDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fetchShorts={fetchShorts}
+        selectedShort={selectedShort}
+      />
 
-                    return (
-                        <div className={`fade-up fade-up-delay-${(index % 6) + 1}`} key={short.id}>
-                            <div className="admin-short-card">
-                                <img src={short.thumbnail} alt={short.title} className="admin-short-thumb" />
-
-                                <div className="admin-short-overlay"></div>
-
-                                <div className="admin-short-actions">
-                                    <button className="admin-short-edit-btn">
-                                        <FiEdit2 />
-                                    </button>
-                                    <button className="admin-short-delete-btn">
-                                        <FiTrash2 />
-                                    </button>
-                                </div>
-
-                                <span className="admin-short-duration">{short.duration}</span>
-
-                                <div className="admin-short-content">
-                                    <h3 className="admin-short-title">{short.title}</h3>
-
-                                    <div className="admin-short-btn-wrap">
-                                        <span className={`admin-short-platform-btn ${platform}`}>
-                                            {platform === 'youtube' ? (
-                                                <FaYoutube className="admin-short-platform-icon" />
-                                            ) : (
-                                                <FaFacebook className="admin-short-platform-icon" />
-                                            )}
-                                            <span>{platform === 'youtube' ? 'YouTube' : 'Facebook'}</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </section>
-    );
+      <ShortDeleteDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={confirmDelete}
+      />
+    </section>
+  );
 }
 
 export default AdminShorts;

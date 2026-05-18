@@ -8,11 +8,13 @@ import {
     FiChevronLeft,
     FiChevronRight
 } from 'react-icons/fi';
+import { FiUser, FiSettings, FiLogOut, FiGrid } from 'react-icons/fi';
 import '../css/Header.css'
 import { FiSearch } from 'react-icons/fi';
 import SignInDialog from './SignInDialog';
 import SignUpDialog from './SignUpDialog';
-
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -20,9 +22,19 @@ function Header() {
     const [isTransitioning, setIsTransitioning] = useState(true);
     const location = useLocation();
     const [authDialog, setAuthDialog] = useState(null);
+    const { user, logout, isAdmin } = useAuth();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [resetDialog, setResetDialog] = useState(false);
+    const navigate = useNavigate();
 
     const isHomePage = location.pathname === '/';
     const closeMenu = () => setMenuOpen(false);
+
+    const getShortName = (name) => {
+        if (!name) return "User";
+        if (name.length <= 8) return name;
+        return name.slice(0, 6) + "...";
+    };
 
     const slides = [
         '/slide-1.jpeg',
@@ -56,6 +68,20 @@ function Header() {
             }, 1300)
         }
     }, [currentSlide]);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (!e.target.closest('.user-dropdown-wrapper')) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     const goNext = () => {
         if (currentSlide < slides.length) {
@@ -99,27 +125,106 @@ function Header() {
                             </nav>
 
                             <div className="nav-right">
+
                                 <div className="nav-search">
                                     <input
                                         type="text"
                                         className="nav-search-input"
                                         placeholder="Search"
                                     />
-                                    <button className="nav-search-btn" aria-label="Search">
+                                    <button className="nav-search-btn">
                                         <FiSearch />
                                     </button>
                                 </div>
-                                <button className="nav-signin-btn" onClick={() => setAuthDialog('signin')}>
-                                    Sign In
-                                </button>
+
+                                {/* AUTH SECTION */}
+                                {!user ? (
+                                    <button
+                                        className="nav-signin-btn"
+                                        onClick={() => setAuthDialog('signin')}
+                                    >
+                                        Sign In
+                                    </button>
+                                ) : (
+                                    <div className="user-dropdown-wrapper">
+                                        <button
+                                            className="nav-signin-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                console.log("clicked");
+                                                setDropdownOpen(prev => !prev);
+                                            }}
+                                        >
+                                            {isAdmin ? (
+                                                'Admin'
+                                            ) : (
+                                                <span title={user.name}>
+                                                    {getShortName(user.name)}
+                                                </span>
+                                            )}
+                                        </button>
+
+                                        {dropdownOpen && (
+                                            <div className="dropdown-menu">
+
+                                                <div className="dropdown-header">
+                                                    <FiUser className="dropdown-icon" />
+                                                    <span>
+                                                        {isAdmin ? 'Admin Panel' : user.name}
+                                                    </span>
+                                                </div>
+
+                                                <div className="dropdown-divider"></div>
+
+                                                {!isAdmin && (
+                                                    <button
+                                                        className="dropdown-item"
+                                                        onClick={() => {
+                                                            setResetDialog(true);
+                                                            setDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        <FiSettings />
+                                                        Reset Password
+                                                    </button>
+                                                )}
+
+                                                {isAdmin && (
+                                                    <button
+                                                        className="dropdown-item"
+                                                        onClick={() => {
+                                                            navigate('/admin');
+                                                            setDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        <FiGrid />
+                                                        Dashboard
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    className="dropdown-item logout"
+                                                    onClick={() => {
+                                                        logout();
+                                                        navigate('/');
+                                                        setDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <FiLogOut />
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <button
                                     className="menu-toggle"
                                     onClick={() => setMenuOpen(!menuOpen)}
-                                    aria-label="Toggle Menu"
                                 >
                                     {menuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
                                 </button>
+
                             </div>
                         </div>
 
@@ -197,8 +302,51 @@ function Header() {
                     onSwitchToSignIn={() => setAuthDialog('signin')}
                 />
             )}
+
+            {resetDialog && (
+                <div className="auth-modal-overlay">
+                    <div className="auth-card">
+
+                        <button
+                            className="auth-back-btn"
+                            onClick={() => setResetDialog(false)}
+                        >
+                            ✕
+                        </button>
+
+                        <h3 className="forgot-title">Reset Password</h3>
+
+                        <p className="forgot-subtitle">
+                            Enter new password to update your account
+                        </p>
+
+                        <input
+                            type="password"
+                            className="auth-input"
+                            placeholder="New Password"
+                        />
+
+                        <input
+                            type="password"
+                            className="auth-input"
+                            placeholder="Confirm Password"
+                        />
+
+                        <button
+                            className="auth-submit-btn"
+                            onClick={() => {
+                                toast.success("Password reset UI ready (backend next)");
+                                setResetDialog(false);
+                            }}
+                        >
+                            Update Password
+                        </button>
+
+                    </div>
+                </div>
+            )}
         </header>
     )
 }
 
-export default Header
+export default Header;

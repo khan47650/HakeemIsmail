@@ -4,7 +4,7 @@
 
 .header-hero-bg {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .home-header .header-hero-bg {
@@ -52,6 +52,8 @@
   width: calc(100% - 40px);
   margin: 0 auto;
   box-sizing: border-box;
+  position: relative;
+  overflow: visible;
 }
 
 .nav-left {
@@ -67,6 +69,7 @@
   gap: 8px;
   flex: 1;
   justify-content: flex-end;
+  overflow: visible !important;
   min-width: 0;
 }
 
@@ -323,6 +326,102 @@
   right: -70px;
 }
 
+.user-dropdown-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.header-hero-bg,
+.header-overlay,
+.container,
+.floating-navbar,
+.nav-right,
+.user-dropdown-wrapper {
+  overflow: visible !important;
+}
+
+.hero-slider-wrapper,
+.hero-slider-frame,
+.hero-slider-track {
+  z-index: 1;
+}
+
+.floating-navbar {
+  position: relative;
+  z-index: 9999;
+}
+
+.user-dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 0;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+  z-index: 999999;
+  display: block;
+  animation: dropdownFade 0.25s ease;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #1b4f14;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 6px 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.dropdown-item.logout {
+  color: #dc2626;
+}
+
+.dropdown-icon {
+  font-size: 18px;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 1200px) {
   .desktop-nav {
