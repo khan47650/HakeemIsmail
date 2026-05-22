@@ -1,38 +1,36 @@
-import '../css/Home.css'
+import { useEffect, useState } from "react";
+import api from "../api/api";
+import "../css/Home.css";
+import ProductDetailDialog from "../components/ProductDetailDialog";
 
 function Home() {
-  const products = [
-    {
-      id: 1,
-      name: 'Herbal Product',
-      image: '/product-1.jpeg',
-    },
-    {
-      id: 2,
-      name: 'Herbal Product',
-      image: '/product-2.jpeg',
-    },
-    {
-      id: 3,
-      name: 'Herbal Product',
-      image: '/prduct-3.jpeg',
-    },
-    {
-      id: 4,
-      name: 'Herbal Product',
-      image: '/product-2.jpeg',
-    },
-    {
-      id: 5,
-      name: 'Herbal Product',
-      image: '/prduct-3.jpeg',
-    },
-    {
-      id: 6,
-      name: 'Herbal Product',
-      image: '/product-1.jpeg',
-    },
-  ]
+  const [popularProducts, setPopularProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPopularProducts = async () => {
+    try {
+      setLoading(true);
+
+      const res = await api.get("/products");
+
+      const popular = res.data.filter(
+        (product) => product.category === "popular"
+      );
+
+      setPopularProducts(popular);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPopularProducts();
+  }, []);
 
   return (
     <main className="home-page">
@@ -56,6 +54,7 @@ function Home() {
                     <h2 className="hakeem-name">
                       Hakeem Muhammad Ismail
                     </h2>
+
                     <p className="hakeem-subtitle">
                       Specialist in Unani Single-Organ Therapy
                     </p>
@@ -66,37 +65,50 @@ function Home() {
           </div>
         </div>
 
-        <div className="popular-products-section">
-          <div className="row">
-            <div className="col-12">
-              <h2 className="section-heading">Our Popular Products</h2>
-               <div className="products-title-line"></div>
+        {!loading && popularProducts.length > 0 && (
+          <div id="popular-products" className="popular-products-section">
+            <div className="row">
+              <div className="col-12">
+                <h2 className="section-heading">Our Popular Products</h2>
+                <div className="products-title-line"></div>
+              </div>
             </div>
-          </div>
 
-          <div className="row g-4">
-            {products.map((product) => (
-              <div key={product.id} className="col-lg-4 col-md-6 col-12">
-                <div className="product-card">
-                  <div className="product-image-box">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="product-image"
-                    />
-                  </div>
+            <div className="row g-4">
+              {popularProducts.map((product) => (
+                <div key={product._id} className="col-lg-4 col-md-6 col-12">
+                  <div
+                    className="product-card"
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setDetailOpen(true);
+                    }}
+                  >
+                    <div className="product-image-box">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="product-image"
+                      />
+                    </div>
 
-                  <div className="product-content">
-                    <h3 className="product-name">{product.name}</h3>
+                    <div className="product-content">
+                      <h3 className="product-name">{product.name}</h3>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
+      <ProductDetailDialog
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        product={selectedProduct}
+      />
     </main>
-  )
+  );
 }
 
-export default Home
+export default Home;

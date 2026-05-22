@@ -1,45 +1,48 @@
-import "../css/Products.css"
+import { useEffect, useState } from "react";
+import api from "../api/api";
+import ProductDetailDialog from "../components/ProductDetailDialog";
+import "../css/Products.css";
 
 function Products() {
-  const products = [
-    {
-      id: 1,
-      name: 'Herbal Oil',
-      price: 'Rs. 1,200',
-      image: '/product-1.jpeg',
-    },
-    {
-      id: 2,
-      name: 'Natural Honey',
-      price: 'Rs. 950',
-      image: '/product-2.jpeg',
-    },
-    {
-      id: 3,
-      name: 'Black Seed Powder',
-      price: 'Rs. 1,500',
-      image: '/prduct-3.jpeg',
-    },
-    {
-      id: 4,
-      name: 'Organic Syrup',
-      price: 'Rs. 1,100',
-      image: '/product-2.jpeg',
-    },
-    {
-      id: 5,
-      name: 'Herbal Capsules',
-      price: 'Rs. 1,800',
-      image: '/product-1.jpeg',
-    },
-    {
-      id: 6,
-      name: 'Skin Care Cream',
-      price: 'Rs. 1,350',
-      image: '/prduct-3.jpeg',
-    },
-  ]
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/products");
+      setProducts(res.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleBuy = () => {
+    const message = `
+                          Assalam o Alaikum,
+
+                          Mujhe ye product buy karna hai.
+
+                          Product: ${product.name}
+                          Price: Rs. ${product.price}
+
+                          Image:
+                          ${product.image}
+                          `;
+
+    const url = `https://wa.me/923054800448?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
+  };
   return (
     <section className="all-products-page page-fade-up">
       <div className="container">
@@ -49,30 +52,57 @@ function Products() {
         </div>
 
         <div className="all-products-grid">
-          {products.map((product, index) => (
-            <div
-              className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1}`}
-              key={product.id}
-            >
-              <div className="all-products-image-wrap">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="all-products-image"
-                />
-              </div>
-
-              <div className="all-products-content">
-                <h3 className="all-products-name">{product.name}</h3>
-                <p className="all-products-price">{product.price}</p>
-                <button className="all-products-buy-btn">Buy</button>
-              </div>
+          {loading ? (
+            [...Array(6)].map((_, index) => (
+              <div className="all-products-skeleton" key={index}></div>
+            ))
+          ) : products.length === 0 ? (
+            <div className="admin-empty-state">
+              Products Not Uploaded Yet.
             </div>
-          ))}
+          ) : (
+            products.map((product, index) => (
+              <div
+                className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1
+                  }`}
+                key={product._id}
+                onClick={() => {
+                  setSelectedProduct(product);
+                  setDetailOpen(true);
+                }}
+              >
+                <div className="all-products-image-wrap">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="all-products-image"
+                  />
+                </div>
+
+                <div className="all-products-content">
+                  <h3 className="all-products-name">{product.name}</h3>
+                  <p className="all-products-price">Rs. {product.price}</p>
+
+                  <button
+                    className="all-products-buy-btn"
+                    onClick={(e) => handleBuy(e, product)}
+                  >
+                    Buy
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
+
+      <ProductDetailDialog
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        product={selectedProduct}
+      />
     </section>
-  )
+  );
 }
 
-export default Products
+export default Products;

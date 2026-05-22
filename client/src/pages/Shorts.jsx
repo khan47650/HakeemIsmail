@@ -1,85 +1,68 @@
-import "../css/Shorts.css"
-import { FaYoutube, FaFacebook } from "react-icons/fa"
+import { useEffect, useState } from "react";
+import { FaYoutube, FaFacebook } from "react-icons/fa";
+import { FiChevronDown, FiExternalLink } from "react-icons/fi";
+import api from "../api/api";
+import "../css/Shorts.css";
 
 function Shorts() {
-  const shorts = [
-    {
-      id: 1,
-      title: "Powerful Herbal Tips for Daily Life",
-      thumbnail: "/short-1.jpeg",
-      duration: "0:42",
-      url: "https://www.youtube.com/shorts/your-short-id-1",
-    },
-    {
-      id: 2,
-      title: "Natural Honey Benefits You Should Know",
-      thumbnail: "/short-2.jpeg",
-      duration: "0:35",
-      url: "https://www.youtube.com/shorts/your-short-id-2",
-    },
-    {
-      id: 3,
-      title: "Black Seed Routine Guide",
-      thumbnail: "/short-3.jpeg",
-      duration: "0:51",
-      url: "https://www.facebook.com/reel/your-reel-id-1",
-    },
-    {
-      id: 4,
-      title: "Quick Organic Lifestyle Tips",
-      thumbnail: "/short-4.jpeg",
-      duration: "0:29",
-      url: "https://www.youtube.com/shorts/your-short-id-3",
-    },
-    {
-      id: 5,
-      title: "Natural Skin Care in Simple Steps",
-      thumbnail: "/short-5.jpeg",
-      duration: "0:47",
-      url: "https://www.facebook.com/reel/your-reel-id-2",
-    },
-    {
-      id: 6,
-      title: "Simple Home Remedy Short Guide",
-      thumbnail: "/short-6.jpeg",
-      duration: "0:38",
-      url: "https://www.youtube.com/shorts/your-short-id-4",
-    },
-  ]
+  const [shorts, setShorts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
-  const getPlatform = (url) => {
-    return url.includes("facebook") ? "facebook" : "youtube"
-  }
+  const fetchShorts = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/shorts");
+      setShorts(res.data || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchShorts();
+  }, []);
 
   return (
     <section className="shorts-showcase-page page-fade-up">
       <div className="container">
         <div className="shorts-showcase-header fade-up fade-up-delay-1">
           <h1 className="shorts-showcase-title">Our Shorts</h1>
+
           <p className="shorts-showcase-subtitle">
             Watch quick and engaging short videos filled with wellness tips,
             herbal awareness, and natural lifestyle guidance.
           </p>
+
           <div className="shorts-showcase-line"></div>
         </div>
 
         <div className="shorts-showcase-grid">
-          {shorts.map((short, index) => {
-            const platform = getPlatform(short.url)
-
-            return (
+          {loading ? (
+            [1, 2, 3, 4, 5, 6].map((item) => (
+              <div className="shorts-showcase-card shorts-skeleton" key={item}>
+                <div className="shorts-skeleton-thumb" />
+                <div className="shorts-skeleton-content">
+                  <span />
+                  <button />
+                </div>
+              </div>
+            ))
+          ) : shorts.length === 0 ? (
+            <div className="shorts-empty-state">
+              No shorts found.
+            </div>
+          ) : (
+            shorts.map((short, index) => (
               <div
                 className={`fade-up fade-up-delay-${(index % 6) + 1}`}
-                key={short.id}
+                key={short._id}
               >
-                <a
-                  href={short.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shorts-showcase-card"
-                >
+                <div className="shorts-showcase-card">
                   <img
-                    src={short.thumbnail}
+                    src={short.thumbnail || "/short-1.jpeg"}
                     alt={short.title}
                     className="shorts-showcase-thumb"
                   />
@@ -95,25 +78,58 @@ function Shorts() {
                       {short.title}
                     </h3>
 
-                    <div className="shorts-showcase-btn-wrap">
-                      <span className={`shorts-showcase-btn ${platform}`}>
-                        {platform === "youtube" ? (
-                          <FaYoutube className="short-platform-icon" />
-                        ) : (
-                          <FaFacebook className="short-platform-icon" />
-                        )}
-                        <span>Watch Now</span>
-                      </span>
+                    <div className="video-dropdown-wrapper">
+                      <button
+                        className="admin-video-platform-btn"
+                        onClick={() =>
+                          setOpenDropdown(
+                            openDropdown === short._id ? null : short._id
+                          )
+                        }
+                      >
+                        Watch Now
+                        <FiChevronDown />
+                      </button>
+
+                      {openDropdown === short._id && (
+                        <div className="video-dropdown">
+                          {short.youtubeUrl && (
+                            <a
+                              href={short.youtubeUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="video-dropdown-item youtube"
+                            >
+                              <FaYoutube />
+                              <span>YouTube</span>
+                              <FiExternalLink className="right-icon" />
+                            </a>
+                          )}
+
+                          {short.facebookUrl && (
+                            <a
+                              href={short.facebookUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="video-dropdown-item facebook"
+                            >
+                              <FaFacebook />
+                              <span>Facebook</span>
+                              <FiExternalLink className="right-icon" />
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </a>
+                </div>
               </div>
-            )
-          })}
+            ))
+          )}
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export default Shorts;

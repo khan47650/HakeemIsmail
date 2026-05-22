@@ -5,61 +5,39 @@ function DeleteDialog({
     open,
     onClose,
     onConfirm,
+    title = "Delete Item?",
+    text = "Are you sure you want to delete this item?",
 }) {
-
     const [loading, setLoading] = useState(false);
 
     if (!open) return null;
 
     const handleDelete = async () => {
-
         try {
-
             setLoading(true);
-
             await onConfirm();
-
-        } catch (error) {
-
-            console.log(error);
-
         } finally {
-
             setLoading(false);
         }
     };
 
     return (
         <div className="dialog-overlay">
-
             <div className="delete-dialog">
+                <h3>{title}</h3>
 
-                <h3>Delete Product?</h3>
-
-                <p>
-                    Are you sure you want to delete this product?
-                </p>
+                <p>{text}</p>
 
                 <div className="dialog-actions">
-
-                    <button
-                        onClick={onClose}
-                        disabled={loading}
-                    >
+                    <button onClick={onClose} disabled={loading}>
                         No
                     </button>
 
-                    <button
-                        onClick={handleDelete}
-                        disabled={loading}
-                    >
+                    <button onClick={handleDelete} disabled={loading}>
                         {loading ? "Deleting..." : "Yes"}
                     </button>
-
                 </div>
-
             </div>
-
         </div>
     );
 }

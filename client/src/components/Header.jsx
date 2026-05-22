@@ -15,6 +15,8 @@ import SignInDialog from './SignInDialog';
 import SignUpDialog from './SignUpDialog';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import api from "../api/api";
+import { toast } from "react-toastify";
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -25,6 +27,7 @@ function Header() {
     const { user, logout, isAdmin } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [resetDialog, setResetDialog] = useState(false);
+    const [hasPopularProducts, setHasPopularProducts] = useState(false);
     const navigate = useNavigate();
 
     const isHomePage = location.pathname === '/';
@@ -83,6 +86,42 @@ function Header() {
         };
     }, []);
 
+
+    useEffect(() => {
+        const fetchPopularCheck = async () => {
+            try {
+                const res = await api.get("/products");
+
+                const popularExists = res.data.some(
+                    (product) => product.category === "popular"
+                );
+
+                setHasPopularProducts(popularExists);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchPopularCheck();
+    }, []);
+
+    const scrollToPopular = () => {
+        setMenuOpen(false);
+
+        if (location.pathname !== "/") {
+            navigate("/");
+
+            setTimeout(() => {
+                document
+                    .getElementById("popular-products")
+                    ?.scrollIntoView({ behavior: "smooth" });
+            }, 500);
+        } else {
+            document
+                .getElementById("popular-products")
+                ?.scrollIntoView({ behavior: "smooth" });
+        }
+    };
     const goNext = () => {
         if (currentSlide < slides.length) {
             setCurrentSlide((prev) => prev + 1)
@@ -138,84 +177,91 @@ function Header() {
                                 </div>
 
                                 {/* AUTH SECTION */}
-                                {!user ? (
-                                    <button
-                                        className="nav-signin-btn"
-                                        onClick={() => setAuthDialog('signin')}
-                                    >
-                                        Sign In
-                                    </button>
-                                ) : (
-                                    <div className="user-dropdown-wrapper">
+                                <div className="desktop-auth-area">
+                                    {!user ? (
                                         <button
                                             className="nav-signin-btn"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                console.log("clicked");
-                                                setDropdownOpen(prev => !prev);
-                                            }}
+                                            onClick={() => setAuthDialog('signin')}
                                         >
-                                            {isAdmin ? (
-                                                'Admin'
-                                            ) : (
-                                                <span title={user.name}>
-                                                    {getShortName(user.name)}
-                                                </span>
-                                            )}
+                                            Sign In
                                         </button>
-
-                                        {dropdownOpen && (
-                                            <div className="dropdown-menu">
-
-                                                <div className="dropdown-header">
-                                                    <FiUser className="dropdown-icon" />
-                                                    <span>
-                                                        {isAdmin ? 'Admin Panel' : user.name}
+                                    ) : (
+                                        <div className="user-dropdown-wrapper">
+                                            <button
+                                                className="nav-signin-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    console.log("clicked");
+                                                    setDropdownOpen(prev => !prev);
+                                                }}
+                                            >
+                                                {isAdmin ? (
+                                                    'Admin'
+                                                ) : (
+                                                    <span title={user.name}>
+                                                        {getShortName(user.name)}
                                                     </span>
+                                                )}
+                                            </button>
+
+                                            {dropdownOpen && (
+                                                <div className="dropdown-menu">
+
+                                                    <div className="dropdown-header">
+                                                        <FiUser className="dropdown-icon" />
+                                                        <span>
+                                                            {isAdmin ? 'Admin Panel' : user.name}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="dropdown-divider"></div>
+
+                                                    {!isAdmin && (
+                                                        <button
+                                                            className="dropdown-item"
+                                                            onClick={() => {
+                                                                setResetDialog(true);
+                                                                setDropdownOpen(false);
+                                                            }}
+                                                        >
+                                                            <FiSettings />
+                                                            Reset Password
+                                                        </button>
+                                                    )}
+
+                                                    {isAdmin && (
+                                                        <button
+                                                            className="dropdown-item"
+                                                            onClick={() => {
+                                                                navigate('/admin');
+                                                                setDropdownOpen(false);
+                                                            }}
+                                                        >
+                                                            <FiGrid />
+                                                            Dashboard
+                                                        </button>
+                                                    )}
+
+                                                    <button
+                                                        className="dropdown-item logout"
+                                                        onClick={() => {
+                                                            logout();
+                                                            navigate('/');
+                                                            setDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        <FiLogOut />
+                                                        Logout
+                                                    </button>
                                                 </div>
-
-                                                <div className="dropdown-divider"></div>
-
-                                                {!isAdmin && (
-                                                    <button
-                                                        className="dropdown-item"
-                                                        onClick={() => {
-                                                            setResetDialog(true);
-                                                            setDropdownOpen(false);
-                                                        }}
-                                                    >
-                                                        <FiSettings />
-                                                        Reset Password
-                                                    </button>
-                                                )}
-
-                                                {isAdmin && (
-                                                    <button
-                                                        className="dropdown-item"
-                                                        onClick={() => {
-                                                            navigate('/admin');
-                                                            setDropdownOpen(false);
-                                                        }}
-                                                    >
-                                                        <FiGrid />
-                                                        Dashboard
-                                                    </button>
-                                                )}
-
-                                                <button
-                                                    className="dropdown-item logout"
-                                                    onClick={() => {
-                                                        logout();
-                                                        navigate('/');
-                                                        setDropdownOpen(false);
-                                                    }}
-                                                >
-                                                    <FiLogOut />
-                                                    Logout
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                {hasPopularProducts && (
+                                    <button className="mobile-popular-btn" onClick={scrollToPopular}>
+                                        Popular
+                                    </button>
                                 )}
 
                                 <button
@@ -247,6 +293,48 @@ function Header() {
                             <NavLink to="/shorts" className="mobile-link" onClick={closeMenu}>Shorts</NavLink>
                             <NavLink to="/about" className="mobile-link" onClick={closeMenu}>About Us</NavLink>
                             <NavLink to="/contact" className="mobile-link" onClick={closeMenu}>Contact Us</NavLink>
+                            <div className="mobile-auth-box">
+                                {!user ? (
+                                    <button
+                                        className="mobile-auth-btn"
+                                        onClick={() => {
+                                            setAuthDialog("signin");
+                                            closeMenu();
+                                        }}
+                                    >
+                                        Sign In
+                                    </button>
+                                ) : (
+                                    <>
+                                        <span className="mobile-user-name">
+                                            {isAdmin ? "Admin" : user.name}
+                                        </span>
+
+                                        {isAdmin && (
+                                            <button
+                                                className="mobile-auth-btn"
+                                                onClick={() => {
+                                                    navigate("/admin");
+                                                    closeMenu();
+                                                }}
+                                            >
+                                                Dashboard
+                                            </button>
+                                        )}
+
+                                        <button
+                                            className="mobile-auth-btn logout"
+                                            onClick={() => {
+                                                logout();
+                                                navigate("/");
+                                                closeMenu();
+                                            }}
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                )}
+                            </div>
 
                         </div>
 

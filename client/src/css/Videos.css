@@ -182,66 +182,159 @@
     margin-top: auto;
 }
 
-.lux-video-btn {
+.admin-video-platform-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    border: 2px solid #1b4f14;
-    background: #ffffff;
-    color: #1b4f14;
-    padding: 13px 24px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-}
-
-.lux-video-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
-}
-
-.lux-video-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 10px;
-
     width: 100%;
-    border: 2px solid #1b4f14;
-    background: #ffffff;
-    color: #1b4f14;
-
-    padding: 13px 20px;
+    border: none;
+    background: linear-gradient(90deg,
+            #1b4f14 0%,
+            #3f8e17 50%,
+            #6db91b 100%);
+    color: #ffffff;
+    padding: 13px 16px;
     border-radius: 999px;
     font-size: 15px;
     font-weight: 700;
-
+    cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 10px 22px rgba(47, 109, 31, 0.25);
 }
 
-/* YouTube */
-.lux-video-btn.youtube {
-    border-color: #ff0000;
+.video-dropdown-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.video-dropdown {
+    position: absolute;
+    bottom: 110%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    animation: dropdownFade 0.25s ease;
+    z-index: 10;
+}
+
+.video-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.video-dropdown-item svg:first-child {
+    font-size: 18px;
+}
+
+.video-dropdown-item.youtube {
     color: #ff0000;
 }
 
-.lux-video-btn.youtube:hover {
-    background: #ff0000;
-    color: #ffffff;
+.video-dropdown-item.youtube:hover {
+    background: rgba(255, 0, 0, 0.08);
 }
 
-/* Facebook */
-.lux-video-btn.facebook {
-    border-color: #1877f2;
+.video-dropdown-item.facebook {
     color: #1877f2;
 }
 
-.lux-video-btn.facebook:hover {
-    background: #1877f2;
-    color: #ffffff;
+.video-dropdown-item.facebook:hover {
+    background: rgba(24, 119, 242, 0.08);
+}
+
+.right-icon {
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.lux-videos-empty {
+    grid-column: 1 / -1;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1b4f14;
+    background: #f0f7ed;
+    border: 2px dashed rgba(27, 79, 20, 0.25);
+    border-radius: 20px;
+}
+
+.video-skeleton {
+    overflow: hidden;
+}
+
+.video-skeleton-thumb,
+.video-skeleton-content span,
+.video-skeleton-content p,
+.video-skeleton-content button {
+    background: linear-gradient(90deg, #eef2ec 25%, #f8faf7 50%, #eef2ec 75%);
+    background-size: 200% 100%;
+    animation: videoSkeleton 1.2s infinite linear;
+}
+
+.video-skeleton-thumb {
+    height: 200px;
+}
+
+.video-skeleton-content {
+    padding: 18px;
+}
+
+.video-skeleton-content span {
+    display: block;
+    width: 75%;
+    height: 22px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.video-skeleton-content p {
+    width: 100%;
+    height: 55px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.video-skeleton-content button {
+    width: 100%;
+    height: 45px;
+    border: none;
+    border-radius: 999px;
+}
+
+@keyframes videoSkeleton {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .video-icon {
