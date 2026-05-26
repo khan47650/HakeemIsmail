@@ -24,6 +24,7 @@ client/node_modules
 cient/dist
 
 # Backend
+server/
 server/node_modules
 server/.env
 
