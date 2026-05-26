@@ -4,6 +4,8 @@
     z-index: 10;
     padding-top: 20px;
     padding-bottom: 70px;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .home-info-card {
@@ -15,6 +17,7 @@
     animation: smoothCardUp 1.8s ease 0.45s both;
     transition: all 0.35s ease;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .home-info-card:hover {
@@ -54,12 +57,11 @@
             #6db91b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-
-    /* modern browsers */
     background-clip: text;
     color: transparent;
     margin-bottom: 10px;
     line-height: 1.4;
+    word-break: break-word;
 }
 
 .hakeem-subtitle {
@@ -83,8 +85,6 @@
             #6db91b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-
-    /* modern browsers */
     background-clip: text;
     color: transparent;
     margin-bottom: 20px;
@@ -100,7 +100,6 @@
             #6db91b 100%);
     margin: 14px auto 0;
     border-radius: 999px;
-
 }
 
 .product-card {
@@ -108,17 +107,18 @@
     border-radius: 28px;
     padding: 20px 20px 24px;
     border: 1.5px solid rgba(47, 109, 31, 0.35);
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    transition: transform 0.35s ease, box-shadow 0.35s ease,
+        border-color 0.35s ease;
     cursor: pointer;
     height: 100%;
     margin-top: 40px;
+    overflow: hidden;
 }
 
 .product-card:hover {
     transform: translateY(-10px);
     border-color: rgba(47, 109, 31, 0.35);
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .product-image-box {
@@ -147,6 +147,7 @@
     margin: 0;
     line-height: 1.4;
     transition: all 0.3s ease;
+    word-break: break-word;
 }
 
 .product-name:hover {
@@ -166,6 +167,54 @@
     }
 }
 
+/* ========================= */
+/* GLOBAL OVERFLOW FIX */
+/* ========================= */
+
+html,
+body {
+    overflow-x: hidden !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#root {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.container,
+.container-fluid {
+    max-width: 100% !important;
+    overflow-x: hidden;
+}
+
+.row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+img {
+    max-width: 100%;
+}
+
+.carousel,
+.carousel-inner,
+.carousel-item {
+    overflow: hidden;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 8% !important;
+}
+
+/* ========================= */
+/* LARGE DEVICES */
+/* ========================= */
+
 @media (max-width: 1200px) {
     .hakeem-name {
         font-size: 42px;
@@ -183,6 +232,10 @@
         font-size: 22px;
     }
 }
+
+/* ========================= */
+/* TABLETS */
+/* ========================= */
 
 @media (max-width: 992px) {
     .home-page {
@@ -217,7 +270,7 @@
     }
 
     .product-card {
-        padding: 18px 18px 22px;
+        padding: 18px;
         border-radius: 24px;
     }
 
@@ -230,110 +283,9 @@
     }
 }
 
-@media (max-width: 768px) {
-    .home-page {
-        margin-top: 6px;
-        padding-top: 18px;
-    }
-
-    .home-info-card {
-        padding: 20px;
-        border-radius: 22px;
-    }
-
-    .hakeem-image-box {
-        max-width: 220px;
-    }
-
-    .hakeem-name {
-        font-size: 28px;
-    }
-
-    .hakeem-subtitle {
-        font-size: 18px;
-    }
-
-    .hakeem-image {
-        height: 250px;
-    }
-
-    .popular-products-section {
-        margin-top: 38px;
-    }
-
-    .section-heading {
-        font-size: 26px;
-    }
-
-    .product-card {
-        border-radius: 22px;
-        padding: 16px 16px 20px;
-    }
-
-    .product-image {
-        height: 210px;
-    }
-
-    .product-name {
-        font-size: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .home-page {
-        margin-top: 10px;
-        padding-top: 14px;
-    }
-
-    .home-info-card {
-        padding: 18px 16px;
-        border-radius: 18px;
-    }
-
-    .hakeem-name {
-        font-size: 22px;
-    }
-
-    .hakeem-subtitle {
-        font-size: 16px;
-    }
-
-    .hakeem-image {
-        height: 220px;
-    }
-
-    .section-heading {
-        font-size: 22px;
-    }
-
-    .product-card {
-        border-radius: 18px;
-        padding: 14px 14px 18px;
-    }
-
-    .product-image {
-        height: 190px;
-    }
-
-    .product-name {
-        font-size: 18px;
-    }
-}
-
-html,
-body {
-    overflow-x: hidden;
-}
-
-.home-page {
-    overflow-x: hidden;
-}
-
-.container,
-.row {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-}
+/* ========================= */
+/* MOBILE */
+/* ========================= */
 
 @media (max-width: 768px) {
     .container {
@@ -341,8 +293,18 @@ body {
         padding-right: 12px !important;
     }
 
+    .home-page {
+        margin-top: 0;
+        padding-top: 16px;
+    }
+
     .home-info-card {
         padding: 18px 14px;
+        border-radius: 20px;
+    }
+
+    .hakeem-image-box {
+        max-width: 220px;
     }
 
     .hakeem-content {
@@ -360,14 +322,32 @@ body {
         line-height: 1.5;
     }
 
+    .popular-products-section {
+        margin-top: 35px;
+    }
+
+    .section-heading {
+        font-size: 24px;
+    }
+
     .product-card {
+        border-radius: 18px;
+        padding: 14px;
         margin-top: 10px;
     }
 
     .product-image {
         height: 200px;
     }
+
+    .product-name {
+        font-size: 18px;
+    }
 }
+
+/* ========================= */
+/* SMALL MOBILE */
+/* ========================= */
 
 @media (max-width: 480px) {
     .container {
@@ -376,18 +356,36 @@ body {
     }
 
     .home-info-card {
+        padding: 16px 12px;
         border-radius: 16px;
+    }
+
+    .hakeem-name {
+        font-size: 22px;
+    }
+
+    .hakeem-subtitle {
+        font-size: 14px;
+    }
+
+    .hakeem-image {
+        height: 220px;
+    }
+
+    .section-heading {
+        font-size: 20px;
     }
 
     .product-card {
         border-radius: 16px;
+        padding: 12px;
     }
 
     .product-image {
         height: 180px;
     }
 
-    .section-heading {
-        font-size: 20px;
+    .product-name {
+        font-size: 17px;
     }
 }
