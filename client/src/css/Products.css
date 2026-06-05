@@ -49,6 +49,11 @@
     overflow: hidden;
     border: 1.5px solid rgba(47, 109, 31, 0.35);
     transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    cursor: pointer;
+
+    height: 500px;
+    display: flex;
+    flex-direction: column;
 }
 
 .all-products-card:hover {
@@ -58,26 +63,33 @@
 
 .all-products-image-wrap {
     width: 100%;
-    height: 240px;
+    height: 250px;
     overflow: hidden;
-    background: #fff8f2;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .all-products-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
     transition: transform 0.4s ease;
 }
 
 .all-products-card:hover .all-products-image {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .all-products-content {
     padding: 20px 20px 24px;
     text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .all-products-name {
@@ -85,13 +97,23 @@
     font-weight: 700;
     color: #1f1f1f;
     margin: 0 0 10px;
+    line-height: 1.35;
+
+    min-height: 60px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .all-products-price {
     font-size: 18px;
     font-weight: 600;
     color: #1b4f14;
-    margin: 0 0 18px;
+    margin: 0;
 }
 
 .all-products-buy-btn {
@@ -105,6 +127,8 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
+
+    margin-top: auto;
 }
 
 .all-products-buy-btn:hover {
@@ -223,11 +247,16 @@
         gap: 22px;
     }
 
+    .all-products-card {
+        height: 480px;
+    }
+
     .all-products-image-wrap {
-        height: 230px;
+        height: 235px;
     }
 
     .all-products-name {
+        min-height: 56px;
         font-size: 20px;
     }
 
@@ -239,6 +268,14 @@
 @media (max-width: 480px) {
     .all-products-title {
         font-size: 26px;
+    }
+
+    .all-products-card {
+        height: 460px;
+    }
+
+    .all-products-image-wrap {
+        height: 225px;
     }
 
     .all-products-content {

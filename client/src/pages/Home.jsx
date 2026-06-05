@@ -1,26 +1,55 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaLeaf,
+  FaTruck,
+  FaUserMd,
+  FaShieldAlt,
+  FaYoutube,
+  FaFacebook,
+  FaChartLine,
+  FaGlobeAsia,
+  FaEye,
+  FaUserCheck,
+} from "react-icons/fa";
+import { FiArrowRight, FiExternalLink } from "react-icons/fi";
+
 import api from "../api/api";
 import "../css/Home.css";
 import ProductDetailDialog from "../components/ProductDetailDialog";
 
 function Home() {
-  const [popularProducts, setPopularProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const navigate = useNavigate();
 
+  const [popularProducts, setPopularProducts] = useState([]);
+  const [articles, setArticles] = useState([]);
+  const [videos, setVideos] = useState([]);
+  const [shorts, setShorts] = useState([]);
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchPopularProducts = async () => {
+  const fetchHomeData = async () => {
     try {
       setLoading(true);
 
-      const res = await api.get("/products");
+      const [productsRes, articlesRes, videosRes, shortsRes] =
+        await Promise.all([
+          api.get("/products"),
+          api.get("/articles"),
+          api.get("/videos"),
+          api.get("/shorts"),
+        ]);
 
-      const popular = res.data.filter(
+      const popular = (productsRes.data || []).filter(
         (product) => product.category === "popular"
       );
 
       setPopularProducts(popular);
+      setArticles(articlesRes.data || []);
+      setVideos(videosRes.data || []);
+      setShorts(shortsRes.data || []);
     } catch (error) {
       console.log(error);
     } finally {
@@ -29,79 +58,345 @@ function Home() {
   };
 
   useEffect(() => {
-    fetchPopularProducts();
+    fetchHomeData();
   }, []);
+
+  useEffect(() => {
+    const revealElements = document.querySelectorAll(".reveal-on-scroll");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [loading]);
+
+  const latestArticles = articles.slice(0, 3);
+  const featuredVideos = videos.slice(0, 3);
+  const featuredShorts = shorts.slice(0, 4);
+
+  const openVideoLink = (item) => {
+    const url = item.youtubeUrl || item.facebookUrl;
+    if (url) window.open(url, "_blank", "noreferrer");
+  };
 
   return (
     <main className="home-page">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-12">
-            <div className="home-info-card">
-              <div className="row align-items-center g-4">
-                <div className="col-lg-4 col-md-5 col-12">
-                  <div className="hakeem-image-box">
-                    <img
-                      src="/hakeem.jpeg"
-                      alt="Hakeem Ismail"
-                      className="hakeem-image"
-                    />
-                  </div>
+      <section className="home-hero-section">
+        <div className="container">
+          <div
+            className="home-info-card"
+            onClick={() => navigate("/about")}
+            role="button"
+          >
+            <div className="row align-items-center g-4">
+              <div className="col-lg-4 col-md-5 col-12">
+                <div className="hakeem-image-box">
+                  <img
+                    src="/hakeem.jpeg"
+                    alt="Hakeem Muhammad Ismail - Unani Medicine Specialist"
+                    className="hakeem-image"
+                  />
                 </div>
+              </div>
 
-                <div className="col-lg-8 col-md-7 col-12">
-                  <div className="hakeem-content">
-                    <h2 className="hakeem-name">
-                      Hakeem Muhammad Ismail
-                    </h2>
+              <div className="col-lg-8 col-md-7 col-12">
+                <div className="hakeem-content">
+                  <span className="hero-badge">Natural Unani Healing</span>
 
-                    <p className="hakeem-subtitle">
-                      Specialist in Unani Single-Organ Therapy
-                    </p>
+                  <h1 className="hakeem-name">
+                    Hakeem Muhammad Ismail
+                  </h1>
+
+                  <p className="hakeem-subtitle">
+                    Specialist in Unani Single-Organ Therapy
+                  </p>
+
+                  <p className="hero-description">
+                    Pure herbal medicines, natural treatment guidance, and
+                    trusted Unani healthcare services across Pakistan.
+                  </p>
+
+                  <div className="hero-actions">
+                    <button
+                      className="primary-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        document
+                          .getElementById("popular-products")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                    >
+                      View Products <FiArrowRight />
+                    </button>
+
+                    <button
+                      className="secondary-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/contact");
+                      }}
+                    >
+                      Contact Us
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {!loading && popularProducts.length > 0 && (
-          <div id="popular-products" className="popular-products-section">
-            <div className="row">
-              <div className="col-12">
-                <h2 className="section-heading">Our Popular Products</h2>
+          <div className="why-section reveal-on-scroll">
+            <div className="section-header">
+              <h2>Why Choose Hakeem Ismail?</h2>
+              <p>
+                Trusted natural healthcare with experience, purity and
+                professional guidance.
+              </p>
+              <div className="products-title-line"></div>
+            </div>
+
+            <div className="why-grid">
+              <div className="why-card">
+                <FaUserMd />
+                <h3>15+ Years Experience</h3>
+                <p>Expert Unani diagnosis and herbal treatment guidance.</p>
+              </div>
+
+              <div className="why-card">
+                <FaLeaf />
+                <h3>Pure Herbal Medicines</h3>
+                <p>Natural herbs prepared with care and quality control.</p>
+              </div>
+
+              <div className="why-card">
+                <FaShieldAlt />
+                <h3>Registered Clinic</h3>
+                <p>Professional and trusted healthcare service.</p>
+              </div>
+
+              <div className="why-card">
+                <FaTruck />
+                <h3>Pakistan Delivery</h3>
+                <p>Order herbal products from anywhere in Pakistan.</p>
+              </div>
+            </div>
+          </div>
+          {loading && (
+            <section className="home-skeleton-section">
+              <div className="row g-4">
+                {[...Array(6)].map((_, index) => (
+                  <div key={index} className="col-lg-4 col-md-6 col-12">
+                    <div className="home-skeleton-card">
+                      <div className="home-skeleton-image"></div>
+                      <div className="home-skeleton-title"></div>
+                      <div className="home-skeleton-text"></div>
+                      <div className="home-skeleton-text short"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {!loading && popularProducts.length > 0 && (
+            <section id="popular-products" className="popular-products-section reveal-on-scroll">
+              <div className="section-header">
+                <h2>Our Popular Products</h2>
+                <p>
+                  Explore our trusted herbal products prepared with natural
+                  ingredients.
+                </p>
                 <div className="products-title-line"></div>
               </div>
-            </div>
 
-            <div className="row g-4">
-              {popularProducts.map((product) => (
-                <div key={product._id} className="col-lg-4 col-md-6 col-12">
-                  <div
-                    className="product-card"
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setDetailOpen(true);
-                    }}
-                  >
-                    <div className="product-image-box">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="product-image"
-                      />
-                    </div>
+              <div className="row g-4">
+                {popularProducts.map((product) => (
+                  <div key={product._id} className="col-lg-4 col-md-6 col-12">
+                    <div
+                      className="product-card"
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setDetailOpen(true);
+                      }}
+                    >
+                      <div className="product-image-box">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="product-image"
+                        />
+                      </div>
 
-                    <div className="product-content">
-                      <h3 className="product-name">{product.name}</h3>
+                      <div className="product-content">
+                        <h3 className="product-name">{product.name}</h3>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </section>
+          )}
+
+          {!loading && latestArticles.length > 0 && (
+            <section className="home-preview-section reveal-on-scroll">
+              <div className="section-header">
+                <h2>Latest Health Articles</h2>
+                <p>
+                  Read useful natural health tips and Unani treatment awareness.
+                </p>
+                <div className="products-title-line"></div>
+              </div>
+
+              <div className="home-article-grid">
+                {latestArticles.map((article) => (
+                  <div className="home-article-card" key={article._id}>
+                    <span>Health Article</span>
+                    <h3>{article.title}</h3>
+                    <p>{article.excerpt?.slice(0, 130)}...</p>
+
+                    <button onClick={() => navigate("/articles")}>
+                      Read More <FiArrowRight />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {!loading && featuredVideos.length > 0 && (
+            <section className="home-preview-section">
+              <div className="section-header">
+                <h2>Health & Wellness Videos</h2>
+                <p>
+                  Watch helpful videos about herbal awareness and natural
+                  lifestyle.
+                </p>
+                <div className="products-title-line"></div>
+              </div>
+
+              <div className="home-video-grid">
+                {featuredVideos.map((video) => (
+                  <div className="home-video-card" key={video._id}>
+                    <div className="home-video-img-wrap">
+                      <img
+                        src={video.thumbnail || "/video-1.jpeg"}
+                        alt={video.title}
+                      />
+                      <span>{video.duration}</span>
+                    </div>
+
+                    <div className="home-video-content">
+                      <h3>{video.title}</h3>
+                      <p>{video.description?.slice(0, 90)}...</p>
+
+                      <button onClick={() => openVideoLink(video)}>
+                        Watch Now{" "}
+                        {video.youtubeUrl ? <FaYoutube /> : <FaFacebook />}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {!loading && featuredShorts.length > 0 && (
+            <section className="home-preview-section">
+              <div className="section-header">
+                <h2>Patient Education Shorts</h2>
+                <p>
+                  Quick short videos for herbal tips and natural health
+                  awareness.
+                </p>
+                <div className="products-title-line"></div>
+              </div>
+
+              <div className="home-shorts-grid">
+                {featuredShorts.map((short) => (
+                  <div
+                    className="home-short-card"
+                    key={short._id}
+                    onClick={() => openVideoLink(short)}
+                  >
+                    <img
+                      src={short.thumbnail || "/short-1.jpeg"}
+                      alt={short.title}
+                    />
+
+                    <div className="home-short-overlay"></div>
+
+                    <span>{short.duration}</span>
+
+                    <div>
+                      <h3>{short.title}</h3>
+                      <button>
+                        Watch <FiExternalLink />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="home-about-preview reveal-on-scroll">
+            <div className="home-about-content">
+              <span>About Hakeem Ismail</span>
+              <h2>Natural Healing Through Trusted Unani Medicine</h2>
+              <p>
+                Hakeem Muhammad Ismail has years of experience in Unani
+                medicine, herbal remedies and natural treatment. His mission is
+                to provide pure herbal solutions and trusted healthcare guidance
+                to every home.
+              </p>
+
+              <button onClick={() => navigate("/about")}>
+                Read Full Story <FiArrowRight />
+              </button>
             </div>
-          </div>
-        )}
-      </div>
+          </section>
+
+          <section className="website-counter-section reveal-on-scroll">
+            <div className="counter-top-icon">
+              <FaChartLine />
+            </div>
+
+            <h2>Website Views</h2>
+
+            <div className="counter-title-line">
+              <span></span>
+              <b></b>
+              <span></span>
+            </div>
+
+            <p className="views-description">
+              Trusted by visitors exploring natural healing, herbal remedies,
+              wellness articles, videos and expert Unani guidance.
+            </p>
+
+            <div className="counter-boxes">
+              <div className="counter-box">5</div>
+              <div className="counter-box">2</div>
+              <div className="counter-box">0</div>
+              <div className="counter-box">1</div>
+            </div>
+
+            <div className="counter-bottom-icon">
+              <FaGlobeAsia />
+            </div>
+          </section>
+        </div>
+      </section>
+
       <ProductDetailDialog
         open={detailOpen}
         onClose={() => setDetailOpen(false)}

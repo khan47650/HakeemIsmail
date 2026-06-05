@@ -26,21 +26,22 @@ function Products() {
     fetchProducts();
   }, []);
 
-  const handleBuy = () => {
+  const handleBuy = (e, product) => {
+    e.stopPropagation();
+
     const message = `
-                          Assalam o Alaikum,
+Assalam o Alaikum,
 
-                          Mujhe ye product buy karna hai.
+Mujhe ye product buy karna hai.
 
-                          Product: ${product.name}
-                          Price: Rs. ${product.price}
+Product: ${product.name}
+Price: Rs. ${product.price}
 
-                          Image:
-                          ${product.image}
-                          `;
+Image:
+${product.image}
+`;
 
     const url = `https://wa.me/923054800448?text=${encodeURIComponent(message)}`;
-
     window.open(url, "_blank");
   };
   return (
