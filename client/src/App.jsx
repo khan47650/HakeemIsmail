@@ -21,6 +21,7 @@ import AdminArticles from './components/admin/AdminArticles';
 import AdminVideos from './components/admin/AdminVideos';
 import AdminShorts from './components/admin/AdminShorts';
 import Messages from './components/admin/Messages';
+import ProductDetailPage from './components/ProductDetailPage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -29,10 +30,13 @@ function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith('/admin');
 
+  const isProductDetailPage =
+    /^\/products\/[^/]+$/.test(location.pathname);
+
   return (
     <AuthProvider>
 
-      {!isAdminPage && <Header />}
+      {!isAdminPage && !isProductDetailPage && <Header />}
 
       <Routes>
         {/* PUBLIC ROUTES */}
@@ -43,6 +47,7 @@ function App() {
         <Route path="/videos" element={<Videos />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/products/:id" element={<ProductDetailPage />} />
 
         {/* PROTECTED ADMIN ROUTE */}
         <Route

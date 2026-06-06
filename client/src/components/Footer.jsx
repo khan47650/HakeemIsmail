@@ -27,7 +27,7 @@ function Footer() {
 
             <a href="mailto:islamiccenter0007@gmail.com" className="footer-contact-item">
               <span className="contact-icon"><FaEnvelope /></span>
-              <span>islamiccenter0007@gmail.com</span>
+              <span>Hakeemismail266@Gmail.com</span>
             </a>
 
             <a href="tel:+923100671066" className="footer-contact-item">
@@ -85,7 +85,7 @@ function Footer() {
                 <FaInstagram />
               </a>
 
-           
+
             </div>
 
             <a

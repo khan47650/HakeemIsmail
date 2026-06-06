@@ -741,6 +741,115 @@
   }
 }
 
+.mobile-account-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.mobile-account-card {
+  width: 100%;
+  max-width: 360px;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 28px 22px 22px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+  animation: mobileAccountUp 0.35s ease both;
+}
+
+.mobile-account-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #f0f7ed;
+  color: #1b4f14;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mobile-account-avatar {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1b4f14, #3f8e17, #6db91b);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  box-shadow: 0 14px 30px rgba(47, 109, 31, 0.28);
+}
+
+.mobile-account-card h3 {
+  margin: 0;
+  color: #1b4f14;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.mobile-account-card p {
+  margin: 8px 0 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.mobile-account-action {
+  width: 100%;
+  border: none;
+  margin-top: 10px;
+  padding: 13px 16px;
+  border-radius: 999px;
+  background: #f0f7ed;
+  color: #1b4f14;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mobile-account-action:hover {
+  background: linear-gradient(90deg, #1b4f14, #3f8e17, #6db91b);
+  color: #ffffff;
+}
+
+.mobile-account-action.logout {
+  background: #fff1f1;
+  color: #dc2626;
+}
+
+.mobile-account-action.logout:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+@keyframes mobileAccountUp {
+  from {
+    opacity: 0;
+    transform: translateY(35px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 480px) {
   .floating-navbar {
     width: calc(100% - 24px);

@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
-import ProductDetailDialog from "../components/ProductDetailDialog";
+import ProductDetailDialog from "../components/ProductDetailPage";
 import "../css/Products.css";
+import { useNavigate } from "react-router-dom";
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [detailOpen, setDetailOpen] = useState(false);
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
@@ -67,10 +66,7 @@ ${product.image}
                 className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1
                   }`}
                 key={product._id}
-                onClick={() => {
-                  setSelectedProduct(product);
-                  setDetailOpen(true);
-                }}
+                onClick={() => navigate(`/products/${product._id}`)}
               >
                 <div className="all-products-image-wrap">
                   <img
@@ -96,12 +92,6 @@ ${product.image}
           )}
         </div>
       </div>
-
-      <ProductDetailDialog
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        product={selectedProduct}
-      />
     </section>
   );
 }

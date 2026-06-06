@@ -31,6 +31,8 @@ function Header() {
     const navigate = useNavigate();
 
     const isHomePage = location.pathname === '/';
+    const showSearch = location.pathname === "/" || location.pathname === "/products";
+    const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
     const closeMenu = () => setMenuOpen(false);
 
     const getShortName = (name) => {
@@ -165,16 +167,18 @@ function Header() {
 
                             <div className="nav-right">
 
-                                <div className="nav-search">
-                                    <input
-                                        type="text"
-                                        className="nav-search-input"
-                                        placeholder="Search"
-                                    />
-                                    <button className="nav-search-btn">
-                                        <FiSearch />
-                                    </button>
-                                </div>
+                                {showSearch && (
+                                    <div className="nav-search">
+                                        <input
+                                            type="text"
+                                            className="nav-search-input"
+                                            placeholder="Search"
+                                        />
+                                        <button className="nav-search-btn">
+                                            <FiSearch />
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* AUTH SECTION */}
                                 <div className="desktop-auth-area">
@@ -276,16 +280,18 @@ function Header() {
 
                         <div className={`mobile-menu ${menuOpen ? 'active' : ''}`}>
 
-                            <div className="mobile-search">
-                                <input
-                                    type="text"
-                                    className="mobile-search-input"
-                                    placeholder="Search products, articles..."
-                                />
-                                <button className="mobile-search-btn" aria-label="Search">
-                                    <FiSearch />
-                                </button>
-                            </div>
+                            {showSearch && (
+                                <div className="mobile-search">
+                                    <input
+                                        type="text"
+                                        className="mobile-search-input"
+                                        placeholder="Search products..."
+                                    />
+                                    <button className="mobile-search-btn" aria-label="Search">
+                                        <FiSearch />
+                                    </button>
+                                </div>
+                            )}
                             <NavLink to="/" className="mobile-link" onClick={closeMenu}>Home</NavLink>
                             <NavLink to="/products" className="mobile-link" onClick={closeMenu}>Products</NavLink>
                             <NavLink to="/articles" className="mobile-link" onClick={closeMenu}>Articles</NavLink>
@@ -305,34 +311,15 @@ function Header() {
                                         Sign In
                                     </button>
                                 ) : (
-                                    <>
-                                        <span className="mobile-user-name">
-                                            {isAdmin ? "Admin" : user.name}
-                                        </span>
-
-                                        {isAdmin && (
-                                            <button
-                                                className="mobile-auth-btn"
-                                                onClick={() => {
-                                                    navigate("/admin");
-                                                    closeMenu();
-                                                }}
-                                            >
-                                                Dashboard
-                                            </button>
-                                        )}
-
-                                        <button
-                                            className="mobile-auth-btn logout"
-                                            onClick={() => {
-                                                logout();
-                                                navigate("/");
-                                                closeMenu();
-                                            }}
-                                        >
-                                            Logout
-                                        </button>
-                                    </>
+                                    <button
+                                        className="mobile-auth-btn"
+                                        onClick={() => {
+                                            setMobileAccountOpen(true);
+                                            closeMenu();
+                                        }}
+                                    >
+                                        {isAdmin ? "Admin" : getShortName(user.name)}
+                                    </button>
                                 )}
                             </div>
 
@@ -389,6 +376,62 @@ function Header() {
                     onClose={() => setAuthDialog(null)}
                     onSwitchToSignIn={() => setAuthDialog('signin')}
                 />
+            )}
+
+
+            {mobileAccountOpen && user && (
+                <div className="mobile-account-overlay" onClick={() => setMobileAccountOpen(false)}>
+                    <div className="mobile-account-card" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="mobile-account-close"
+                            onClick={() => setMobileAccountOpen(false)}
+                        >
+                            ✕
+                        </button>
+
+                        <div className="mobile-account-avatar">
+                            <FiUser />
+                        </div>
+
+                        <h3>{isAdmin ? "Admin Panel" : user.name}</h3>
+                        <p>{isAdmin ? "Manage your website dashboard" : "Manage your account"}</p>
+
+                        {isAdmin && (
+                            <button
+                                className="mobile-account-action"
+                                onClick={() => {
+                                    navigate("/admin");
+                                    setMobileAccountOpen(false);
+                                }}
+                            >
+                                <FiGrid /> Dashboard
+                            </button>
+                        )}
+
+                        {!isAdmin && (
+                            <button
+                                className="mobile-account-action"
+                                onClick={() => {
+                                    setResetDialog(true);
+                                    setMobileAccountOpen(false);
+                                }}
+                            >
+                                <FiSettings /> Reset Password
+                            </button>
+                        )}
+
+                        <button
+                            className="mobile-account-action logout"
+                            onClick={() => {
+                                logout();
+                                navigate("/");
+                                setMobileAccountOpen(false);
+                            }}
+                        >
+                            <FiLogOut /> Logout
+                        </button>
+                    </div>
+                </div>
             )}
 
             {resetDialog && (

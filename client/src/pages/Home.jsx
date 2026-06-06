@@ -9,25 +9,21 @@ import {
   FaFacebook,
   FaChartLine,
   FaGlobeAsia,
-  FaEye,
-  FaUserCheck,
 } from "react-icons/fa";
 import { FiArrowRight, FiExternalLink } from "react-icons/fi";
 
 import api from "../api/api";
 import "../css/Home.css";
-import ProductDetailDialog from "../components/ProductDetailDialog";
 
 function Home() {
   const navigate = useNavigate();
+  const [counterStarted, setCounterStarted] = useState(false);
+  const [counterValue, setCounterValue] = useState(0);
 
   const [popularProducts, setPopularProducts] = useState([]);
   const [articles, setArticles] = useState([]);
   const [videos, setVideos] = useState([]);
   const [shorts, setShorts] = useState([]);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [detailOpen, setDetailOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchHomeData = async () => {
@@ -62,17 +58,40 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    if (!counterStarted) return;
+
+    let start = 347;
+    setCounterValue(start);
+
+    const timer = setInterval(() => {
+      const shouldIncrease = Math.random() > 0.3;
+
+      if (shouldIncrease) {
+        start += Math.floor(Math.random() * 2) + 1;
+        setCounterValue(start);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [counterStarted]);
+
+  useEffect(() => {
     const revealElements = document.querySelectorAll(".reveal-on-scroll");
+    const counterSection = document.querySelector(".website-counter-section");
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("show");
+
+            if (entry.target === counterSection) {
+              setCounterStarted(true);
+            }
           }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.25 }
     );
 
     revealElements.forEach((el) => observer.observe(el));
@@ -223,10 +242,7 @@ function Home() {
                   <div key={product._id} className="col-lg-4 col-md-6 col-12">
                     <div
                       className="product-card"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setDetailOpen(true);
-                      }}
+                      onClick={() => navigate(`/products/${product._id}`)}
                     >
                       <div className="product-image-box">
                         <img
@@ -259,12 +275,12 @@ function Home() {
               <div className="home-article-grid">
                 {latestArticles.map((article) => (
                   <div className="home-article-card" key={article._id}>
-                    <span>Health Article</span>
                     <h3>{article.title}</h3>
+
                     <p>{article.excerpt?.slice(0, 130)}...</p>
 
                     <button onClick={() => navigate("/articles")}>
-                      Read More <FiArrowRight />
+                      مزید پڑھیں <FiArrowRight />
                     </button>
                   </div>
                 ))}
@@ -384,10 +400,15 @@ function Home() {
             </p>
 
             <div className="counter-boxes">
-              <div className="counter-box">5</div>
-              <div className="counter-box">2</div>
-              <div className="counter-box">0</div>
-              <div className="counter-box">1</div>
+              {String(counterValue)
+                .padStart(4, "0")
+                .slice(-4)
+                .split("")
+                .map((digit, index) => (
+                  <div className="counter-box" key={index}>
+                    {digit}
+                  </div>
+                ))}
             </div>
 
             <div className="counter-bottom-icon">
@@ -396,12 +417,6 @@ function Home() {
           </section>
         </div>
       </section>
-
-      <ProductDetailDialog
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        product={selectedProduct}
-      />
     </main>
   );
 }
