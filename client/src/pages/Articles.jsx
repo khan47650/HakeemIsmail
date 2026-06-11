@@ -39,8 +39,8 @@ function Articles() {
   return (
     <section className="articles-page-section page-fade-up">
       <SEO
-        title="Health Articles | Hakeem Ismail"
-        description="Read health articles about Unani medicine, herbal remedies, natural treatment and wellness guidance from Hakeem Ismail."
+        title="Our Articles | Hakeem Ismail"
+        description="Explore wellness tips, natural remedies, Unani insights and informative articles by Hakeem Muhammad Ismail."
         canonical="/articles"
       />
       <div className="container">
