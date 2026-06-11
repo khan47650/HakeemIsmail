@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiTrash2, FiArrowRight } from "react-icons/fi";
+import {
+    FiArrowLeft,
+    FiTrash2,
+    FiArrowRight,
+    FiTruck,
+    FiShield,
+    FiCheckCircle,
+    FiMessageCircle,
+    FiShoppingBag,
+    FiSend,
+    FiPackage,
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext";
+import SEO from "../components/SEO";
 import "../css/ProductDetail.css";
 
 function ProductDetailPage() {
@@ -13,12 +25,12 @@ function ProductDetailPage() {
     const { user, isAdmin } = useAuth();
 
     const [product, setProduct] = useState(null);
-    const [allProducts, setAllProducts] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [reviewText, setReviewText] = useState("");
     const [recommendedProducts, setRecommendedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingReviews, setLoadingReviews] = useState(false);
+    const [activeTab, setActiveTab] = useState("about");
 
     const canReview = user && !isAdmin;
 
@@ -38,7 +50,6 @@ function ProductDetailPage() {
 
             const selectedProduct = products.find((item) => item._id === id);
 
-            setAllProducts(products);
             setProduct(selectedProduct || null);
 
             const recommended = products
@@ -73,6 +84,7 @@ function ProductDetailPage() {
         fetchProductData();
         fetchReviews();
         setReviewText("");
+        setActiveTab("about");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [id]);
 
@@ -153,9 +165,7 @@ ${product.image}
                     <FiArrowLeft />
                 </button>
 
-                <div className="product-detail-loading">
-                    Loading product...
-                </div>
+                <div className="product-detail-loading">Loading product...</div>
             </main>
         );
     }
@@ -167,30 +177,122 @@ ${product.image}
                     <FiArrowLeft />
                 </button>
 
-                <div className="product-detail-loading">
-                    Product not found.
-                </div>
+                <div className="product-detail-loading">Product not found.</div>
             </main>
         );
     }
 
     return (
         <main className="product-detail-page">
+            <SEO
+                title={`${product.name} | Hakeem Ismail`}
+                description={`${product.description?.slice(0, 150) || "Explore this herbal product by Hakeem Ismail."}`}
+                canonical={`/products/${product._id}`}
+            />
+
             <button className="product-back-btn" onClick={() => navigate(-1)}>
                 <FiArrowLeft />
             </button>
 
             <section className="product-detail-hero page-reveal">
-                <div className="product-detail-image-area">
-                    <img
-                        src={product.image}
-                        alt={product.name}
-                        className="product-detail-main-image"
-                    />
+                <div className="product-detail-left">
+                    <div className="product-breadcrumb">
+                        Home / Products / Detail
+                    </div>
+
+                    <div className="product-detail-image-area">
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            className="product-detail-main-image"
+                        />
+                    </div>
+
+                    <div className="product-tabs">
+                        <button
+                            className={activeTab === "about" ? "active" : ""}
+                            onClick={() => setActiveTab("about")}
+                        >
+                            About
+                        </button>
+
+                        <button
+                            className={activeTab === "reviews" ? "active" : ""}
+                            onClick={() => setActiveTab("reviews")}
+                        >
+                            Reviews
+                        </button>
+                    </div>
+
+                    {activeTab === "about" && (
+                        <div className="product-about-box page-reveal">
+                            <h3>About This Product</h3>
+                            <p>{product.description}</p>
+                        </div>
+                    )}
+
+                    {activeTab === "reviews" && (
+                        <div className="product-review-panel page-reveal">
+                            {canReview && (
+                                <div className="review-input-area">
+                                    <textarea
+                                        value={reviewText}
+                                        onChange={(e) => setReviewText(e.target.value)}
+                                        placeholder="Write your review..."
+                                    />
+
+                                    <button onClick={handleAddReview}>
+                                        Submit Review <FiSend />
+                                    </button>
+                                </div>
+                            )}
+
+                            {loadingReviews ? (
+                                <div className="reviews-empty-box">Loading reviews...</div>
+                            ) : reviews.length === 0 ? (
+                                <div className="reviews-empty-box">
+                                    <FiMessageCircle />
+                                    <strong>No reviews yet.</strong>
+                                    <span>Be the first to review this product.</span>
+                                </div>
+                            ) : (
+                                <div className="reviews-list">
+                                    {reviews.map((item) => (
+                                        <div className="review-row" key={item._id}>
+                                            <div className="review-row-top">
+                                                <div className="review-user">
+                                                    <div className="review-avatar">
+                                                        {item.userName?.charAt(0).toUpperCase()}
+                                                    </div>
+
+                                                    <div>
+                                                        <strong>{item.userName}</strong>
+                                                        <small>{formatDate(item.createdAt)}</small>
+                                                    </div>
+                                                </div>
+
+                                                {isAdmin && (
+                                                    <button
+                                                        className="review-delete-btn"
+                                                        onClick={() => handleDeleteReview(item._id)}
+                                                    >
+                                                        <FiTrash2 />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <p>{item.review}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="product-detail-info-area">
                     <span className="product-detail-badge">
+                        <FiPackage />
                         {product.category === "popular" ? "Popular Product" : "Herbal Product"}
                     </span>
 
@@ -198,79 +300,79 @@ ${product.image}
 
                     <p className="product-detail-price-text">Rs. {product.price}</p>
 
-                    <div className="product-detail-description">
-                        <h3>Description</h3>
-                        <p>{product.description}</p>
+                    <div className="product-tags-row">
+                        <span>Herbal</span>
+                        <span>Natural</span>
+                        <span>Trusted</span>
+                    </div>
+
+                    <div className="product-detail-divider"></div>
+
+                    <div className="product-benefits">
+                        <div className="product-benefit-item">
+                            <FiTruck />
+                            <div>
+                                <strong>Pakistan Delivery</strong>
+                                <span>Order herbal products from anywhere in Pakistan.</span>
+                            </div>
+                        </div>
+
+                        <div className="product-benefit-item">
+                            <FiShield />
+                            <div>
+                                <strong>Authentic Product</strong>
+                                <span>Prepared with quality ingredients and expert care.</span>
+                            </div>
+                        </div>
+
+                        <div className="product-benefit-item">
+                            <FiCheckCircle />
+                            <div>
+                                <strong>Natural Wellness</strong>
+                                <span>Helpful for herbal care and natural health support.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="confidence-card">
+                        <span>Customer Assurance</span>
+                        <h2>Buy with confidence</h2>
+                        <p>
+                            Every product is prepared with care and listed to help customers
+                            choose trusted herbal wellness solutions.
+                        </p>
+
+                        <div className="confidence-mini-grid">
+                            <div>
+                                <strong>Verified</strong>
+                                <small>Trusted product listing.</small>
+                            </div>
+
+                            <div>
+                                <strong>Secure</strong>
+                                <small>WhatsApp order support.</small>
+                            </div>
+                        </div>
                     </div>
 
                     <button className="product-detail-buy-now" onClick={handleBuy}>
+                        <FiShoppingBag />
                         Buy Now
                     </button>
                 </div>
             </section>
 
-            <section className="product-detail-reviews page-reveal">
-                <div className="product-section-heading">
-                    <h2>Reviews</h2>
-                    <p>Customer opinions and feedback about this product.</p>
-                </div>
-
-                {canReview && (
-                    <div className="review-input-area">
-                        <textarea
-                            value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)}
-                            placeholder="Write your review..."
-                        />
-
-                        <button onClick={handleAddReview}>Add Review</button>
-                    </div>
-                )}
-
-                {loadingReviews ? (
-                    <div className="reviews-empty-box">Loading reviews...</div>
-                ) : reviews.length === 0 ? (
-                    <div className="reviews-empty-box">No reviews yet.</div>
-                ) : (
-                    <div className="reviews-list">
-                        {reviews.map((item) => (
-                            <div className="review-row" key={item._id}>
-
-
-                                <div className="review-row-top">
-                                    <div className="review-user">
-                                        <div className="review-avatar">
-                                            {item.userName?.charAt(0).toUpperCase()}
-                                        </div>
-
-                                        <div>
-                                            <strong>{item.userName}</strong>
-                                            <small>{formatDate(item.createdAt)}</small>
-                                        </div>
-                                    </div>
-
-                                    {isAdmin && (
-                                        <button
-                                            className="review-delete-btn"
-                                            onClick={() => handleDeleteReview(item._id)}
-                                        >
-                                            <FiTrash2 />
-                                        </button>
-                                    )}
-                                </div>
-
-                                <p>{item.review}</p>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </section>
-
             {recommendedProducts.length > 0 && (
                 <section className="recommended-section page-reveal">
-                    <div className="product-section-heading">
-                        <h2>Recommended Products</h2>
-                        <p>Explore more herbal products you may like.</p>
+                    <div className="recommended-header">
+                        <div>
+                            <h2>Recommended Products</h2>
+                            <p>Explore more herbal products you may like.</p>
+                        </div>
+
+                        <button onClick={() => navigate("/products")}>
+                            View All <FiArrowRight />
+                        </button>
                     </div>
 
                     <div className="recommended-grid">
@@ -285,6 +387,10 @@ ${product.image}
                                 </div>
 
                                 <div className="recommended-content">
+                                    <span>
+                                        {item.category === "popular" ? "Popular Product" : "Herbal Product"}
+                                    </span>
+
                                     <h3>{item.name}</h3>
                                     <p>Rs. {item.price}</p>
 
@@ -294,7 +400,7 @@ ${product.image}
                                             navigate(`/products/${item._id}`);
                                         }}
                                     >
-                                        View Product <FiArrowRight />
+                                        <FiArrowRight />
                                     </button>
                                 </div>
                             </div>
