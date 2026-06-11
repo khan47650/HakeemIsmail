@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import SEO from "../components/SEO";
 import "../css/Articles.css";
 
 function Articles() {
@@ -37,6 +38,11 @@ function Articles() {
 
   return (
     <section className="articles-page-section page-fade-up">
+      <SEO
+        title="Health Articles | Hakeem Ismail"
+        description="Read health articles about Unani medicine, herbal remedies, natural treatment and wellness guidance from Hakeem Ismail."
+        canonical="/articles"
+      />
       <div className="container">
         <div className="articles-page-header fade-up fade-up-delay-1">
           <h1 className="articles-page-title">Our Articles</h1>

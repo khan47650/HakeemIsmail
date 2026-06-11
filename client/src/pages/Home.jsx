@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../components/SEO";
 import {
   FaLeaf,
   FaTruck,
@@ -110,6 +111,11 @@ function Home() {
 
   return (
     <main className="home-page">
+      <SEO
+        title="Hakeem Ismail | Herbal Products & Unani Treatment"
+        description="Hakeem Ismail provides natural herbal products, Unani treatment guidance, health articles, videos and wellness remedies in Pakistan."
+        canonical="/"
+      />
       <section className="home-hero-section">
         <div className="container">
           <div

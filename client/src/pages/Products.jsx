@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import api from "../api/api";
-import ProductDetailDialog from "../components/ProductDetailPage";
-import "../css/Products.css";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
+import SEO from "../components/SEO";
+import "../css/Products.css";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -45,9 +45,14 @@ ${product.image}
   };
   return (
     <section className="all-products-page page-fade-up">
+      <SEO
+        title="Herbal Products | Hakeem Ismail"
+        description="Explore pure herbal products, natural remedies and wellness items from Hakeem Ismail with delivery across Pakistan."
+        canonical="/products"
+      />
       <div className="container">
         <div className="all-products-header fade-up fade-up-delay-1">
-          <h1 className="all-products-title">Our Products</h1>
+          <h1 className="all-products-title">Herbal Products</h1>
           <div className="all-products-title-line"></div>
         </div>
 

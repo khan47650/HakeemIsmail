@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaYoutube, FaFacebook } from "react-icons/fa";
 import { FiChevronDown, FiExternalLink } from "react-icons/fi";
 import api from "../api/api";
+import SEO from "../components/SEO";
 import "../css/Videos.css";
 
 function Videos() {
@@ -27,6 +28,11 @@ function Videos() {
 
   return (
     <section className="lux-videos-page page-fade-up">
+      <SEO
+        title="Our Videos | Hakeem Ismail"
+        description="Watch wellness videos, herbal awareness content, natural health tips and Unani guidance from Hakeem Muhammad Ismail."
+        canonical="/videos"
+      />
       <div className="container">
         <div className="lux-videos-header fade-up fade-up-delay-1">
           <h1 className="lux-videos-title">Our Videos</h1>

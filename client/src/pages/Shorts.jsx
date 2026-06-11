@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaYoutube, FaFacebook } from "react-icons/fa";
 import { FiChevronDown, FiExternalLink } from "react-icons/fi";
 import api from "../api/api";
+import SEO from "../components/SEO";
 import "../css/Shorts.css";
 
 function Shorts() {
@@ -27,6 +28,11 @@ function Shorts() {
 
   return (
     <section className="shorts-showcase-page page-fade-up">
+      <SEO
+        title="Our Shorts | Hakeem Ismail"
+        description="Watch quick wellness tips, herbal awareness videos and natural lifestyle guidance shared by Hakeem Muhammad Ismail."
+        canonical="/shorts"
+      />
       <div className="container">
         <div className="shorts-showcase-header fade-up fade-up-delay-1">
           <h1 className="shorts-showcase-title">Our Shorts</h1>

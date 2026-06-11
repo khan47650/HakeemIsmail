@@ -1,8 +1,14 @@
+import SEO from "../components/SEO";
 import "../css/About.css"
 
 function About() {
   return (
     <section className="about-page-section">
+      <SEO
+        title="About Hakeem Muhammad Ismail | Unani Medicine & Herbal Expertise"
+        description="Learn about Hakeem Muhammad Ismail, his 15 years of experience in Unani medicine, natural healing, herbal remedies and commitment to improving lives through authentic treatment."
+        canonical="/about"
+      />
       <div className="container">
         <div className="lux-videos-header fade-up fade-up-delay-1">
           <h1 className="lux-videos-title">About Us</h1>
@@ -23,7 +29,7 @@ function About() {
           </div>
 
           <div className="about-hero-content">
-            <h1 className="about-hero-title">Hakeem Muhammad Ismail</h1>
+            <h2 className="about-hero-title">Hakeem Muhammad Ismail</h2>
             <p className="about-hero-subtitle">
               Specialist in Unani Single-Organ Therapy
             </p>
@@ -31,7 +37,7 @@ function About() {
         </div>
 
         <div className="about-content-card fade-up fade-up-delay-3">
-       
+
 
           <h2 className="about-main-title">تعارف: حکیم محمد اسماعیل</h2>
 

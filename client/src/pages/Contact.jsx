@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/api";
+import SEO from "../components/SEO";
 import "../css/Contact.css";
 import { toast } from "react-toastify";
 
@@ -37,6 +38,11 @@ function Contact() {
 
   return (
     <section className="contact-page-section">
+      <SEO
+        title="Contact Us | Hakeem Ismail"
+        description="Contact Hakeem Ismail for herbal products, Unani treatment guidance, natural health consultation and product related queries."
+        canonical="/contact"
+      />
       <div className="container">
         <div className="lux-videos-header fade-up fade-up-delay-1">
           <h1 className="lux-videos-title">Contact Us</h1>
