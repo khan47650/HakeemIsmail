@@ -307,7 +307,12 @@ footer,
     width: 100%;
 }
 
-.home-article-grid,
+.home-article-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
 .home-video-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -317,15 +322,25 @@ footer,
 .home-article-card {
     background: #ffffff;
     border-radius: 26px;
-    padding: 26px;
+    padding: 24px;
     border: 1.5px solid rgba(47, 109, 31, 0.18);
     box-shadow: 0 16px 34px rgba(0, 0, 0, 0.06);
     transition: 0.35s ease;
     direction: rtl;
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
 }
 
-.home-article-card:hover,
+
+
+.home-article-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 24px 46px rgba(0, 0, 0, 0.12);
+}
+
 .home-video-card:hover {
     transform: translateY(-10px);
 }
@@ -339,11 +354,13 @@ footer,
 }
 
 .home-article-card h3 {
-    font-size: 21px;
+    font-size: 20px;
     color: #1b4f14;
     font-weight: 800;
-    line-height: 1.5;
-    margin-bottom: 12px;
+    line-height: 1.6;
+    margin: 0 0 12px;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    word-break: break-word;
 }
 
 
@@ -374,8 +391,67 @@ footer,
 }
 
 .home-article-card button {
-    align-self: flex-start;
+    border: none;
+    background: transparent;
+    color: #1b4f14;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 0;
+    font-size: 15px;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
     direction: rtl;
+    align-self: flex-end;
+    margin-top: auto;
+    transition: all 0.3s ease;
+}
+
+.home-article-card button:hover {
+    color: #2f6d1f;
+    transform: translateX(-4px);
+}
+
+.home-article-excerpt {
+    color: #555555;
+    font-size: 15px;
+    line-height: 1.8;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    text-align: right;
+    margin: 0 0 12px;
+    flex: 1;
+    word-break: break-word;
+}
+
+.article-ellipsis {
+    display: inline;
+}
+
+.home-article-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 12px;
+    justify-content: flex-end;
+}
+
+.home-article-hashtags span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1b4f14;
+    background: rgba(27, 79, 20, 0.08);
+    border: 1px solid rgba(27, 79, 20, 0.15);
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: all 0.25s ease;
+}
+
+.home-article-hashtags span:hover {
+    background: rgba(27, 79, 20, 0.15);
+    border-color: rgba(27, 79, 20, 0.3);
+    transform: translateY(-2px);
 }
 
 .home-video-card {
@@ -689,7 +765,10 @@ img {
         justify-content: center;
     }
 
-    .home-article-grid,
+    .home-article-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
     .home-video-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -741,8 +820,12 @@ img {
         justify-content: center;
     }
 
+    .home-article-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
     .why-grid,
-    .home-article-grid,
     .home-video-grid,
     .home-shorts-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -822,15 +905,12 @@ img {
 
     .home-article-card {
         border-radius: 18px;
-        padding: 14px 12px;
-        min-height: 220px;
+        padding: 16px 14px;
     }
 
     .home-article-card h3 {
-        font-size: 15px;
-        line-height: 1.7;
-        margin-bottom: 8px;
-
+        font-size: 16px;
+        margin-bottom: 10px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -850,6 +930,31 @@ img {
     .home-article-card button {
         font-size: 12px;
         margin-top: 8px;
+    }
+
+    .home-article-excerpt {
+        font-size: 13px;
+        line-height: 1.7;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .home-article-hashtags {
+        margin: 6px 0 10px;
+        gap: 5px;
+    }
+
+    .home-article-hashtags span {
+        font-size: 11px;
+        padding: 3px 8px;
+    }
+
+    .home-article-card button {
+        font-size: 13px;
+        gap: 6px;
     }
 
     .home-video-card {
@@ -955,8 +1060,11 @@ img {
         font-size: 24px;
     }
 
+    .home-article-grid {
+        gap: 10px;
+    }
+
     .why-grid,
-    .home-article-grid,
     .home-video-grid,
     .home-shorts-grid {
         gap: 10px;
@@ -1001,8 +1109,30 @@ img {
         min-height: 205px;
     }
 
+    .home-article-card {
+        padding: 12px 10px;
+        border-radius: 16px;
+    }
+
     .home-article-card h3 {
         font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .home-article-excerpt {
+        font-size: 12px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+        -webkit-line-clamp: 2;
+    }
+
+    .home-article-hashtags span {
+        font-size: 10px;
+        padding: 2px 7px;
+    }
+
+    .home-article-card button {
+        font-size: 12px;
     }
 
     .home-article-card p {
@@ -1209,6 +1339,10 @@ img {
     animation: skeletonLoading 1.4s infinite linear;
 }
 
+.why-card {
+    cursor: pointer;
+}
+
 .home-skeleton-image {
     width: 100%;
     height: 240px;
@@ -1242,5 +1376,132 @@ img {
 
     100% {
         background-position: -200% 0;
+    }
+}
+
+/* ===================== HOME HASHTAGS ===================== */
+.home-product-hashtags,
+.home-video-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.home-product-hashtags {
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.home-video-hashtags {
+    margin: 0 0 14px;
+}
+
+.home-product-hashtags span,
+.home-video-hashtags span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2f6d1f;
+    background: rgba(27, 79, 20, 0.07);
+    border: 1px solid rgba(27, 79, 20, 0.14);
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+/* shorts hashtags (dark overlay ke liye light chips) */
+.home-short-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.home-short-hashtags span {
+    font-size: 10px;
+    font-weight: 700;
+    color: #e3f6d2;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    padding: 2px 8px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+}
+
+/* product content ko column banao taake name ke neeche hashtags aayein */
+.popular-products-section .product-content {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+/* ===================== VIDEO DESCRIPTION (saved format) ===================== */
+.home-video-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+    margin: 0 0 12px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.home-video-desc p {
+    margin: 0;
+}
+
+.home-video-desc strong {
+    font-weight: 700;
+}
+
+.home-video-desc em {
+    font-style: italic;
+}
+
+.home-video-desc a {
+    color: #2f6d1f;
+    text-decoration: underline;
+}
+
+/* ===================== PREMIUM POLISH ===================== */
+.popular-products-section .product-card,
+.home-video-card,
+.home-article-card {
+    position: relative;
+}
+
+.popular-products-section .product-card::after,
+.home-video-card::after,
+.home-article-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1b4f14, #3f8e17, #6db91b);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 3;
+}
+
+.popular-products-section .product-card:hover::after,
+.home-video-card:hover::after,
+.home-article-card:hover::after {
+    opacity: 1;
+}
+
+/* ===================== MOBILE: hakeem image par green hatao ===================== */
+@media (max-width: 768px) {
+    .home-info-card::before {
+        display: none;
+        /* green circle jo image par aa raha tha */
+    }
+
+    .hakeem-image-box {
+        position: relative;
+        z-index: 2;
+        /* image hamesha decoration ke upar */
     }
 }

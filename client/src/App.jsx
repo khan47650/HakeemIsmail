@@ -14,14 +14,20 @@ import Contact from './pages/Contact';
 import Videos from './pages/Videos';
 
 import AdminPanel from './pages/AdminPanel';
-import PendingOrders from './components/admin/PendingOrders';
-import CompletedOrders from './components/admin/CompletedOrders';
-import AdminProducts from './components/admin/AdminProducts';
-import AdminArticles from './components/admin/AdminArticles';
-import AdminVideos from './components/admin/AdminVideos';
-import AdminShorts from './components/admin/AdminShorts';
-import Messages from './components/admin/Messages';
+import PendingOrders from './pages/admin/PendingOrders';
+import CompletedOrders from './pages/admin/CompletedOrders';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminArticles from './pages/admin/AdminArticles';
+import AdminVideos from './pages/admin/AdminVideos';
+import AdminShorts from './pages/admin/AdminShorts';
+import Messages from './pages/admin/Messages';
 import ProductDetailPage from './components/ProductDetailPage';
+import AdminVideoForm from './pages/admin/AdminVideoForm';
+import AdminShortForm from './components/admin/AdminShortForm';
+import AdminProductForm from "./components/admin/AdminProductForm";
+import AdminArticleForm from './components/admin/AdminArticleForm';
+import RegisteredClinic from "./pages/RegisteredClinic";
+import DeliveryInfo from "./pages/DeliveryInfo";
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -32,11 +38,13 @@ function App() {
 
   const isProductDetailPage =
     /^\/products\/[^/]+$/.test(location.pathname);
+  const isInfoPage =
+    location.pathname === '/clinic' || location.pathname === '/delivery';
 
   return (
     <AuthProvider>
 
-      {!isAdminPage && !isProductDetailPage && <Header />}
+      {!isAdminPage && !isProductDetailPage && !isInfoPage && <Header />}
 
       <Routes>
         {/* PUBLIC ROUTES */}
@@ -48,6 +56,9 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="/clinic" element={<RegisteredClinic />} />
+        <Route path="/delivery" element={<DeliveryInfo />} />
+
 
         {/* PROTECTED ADMIN ROUTE */}
         <Route
@@ -66,6 +77,15 @@ function App() {
           <Route path="videos" element={<AdminVideos />} />
           <Route path="shorts" element={<AdminShorts />} />
           <Route path="messages" element={<Messages />} />
+          <Route path="/admin/videos/new" element={<AdminVideoForm />} />
+          <Route path="/admin/videos/edit/:id" element={<AdminVideoForm />} />
+          <Route path="/admin/shorts/new" element={<AdminShortForm />} />
+          <Route path="/admin/shorts/edit/:id" element={<AdminShortForm />} />
+          <Route path="/admin/products/new" element={<AdminProductForm />} />
+          <Route path="/admin/products/edit/:id" element={<AdminProductForm />} />
+          <Route path="/admin/articles/new" element={<AdminArticleForm />} />
+          <Route path="/admin/articles/edit/:id" element={<AdminArticleForm />} />
+
         </Route>
       </Routes>
 

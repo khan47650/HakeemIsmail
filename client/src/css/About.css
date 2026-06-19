@@ -1,24 +1,53 @@
+/* ===== Urdu font: Jameel Noori Nastaleeq + Noto fallback ===== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+
 @font-face {
-    font-family: "Pyami Nastaleeq";
-    src: url("../assets/fonts/PyamiNastaleeq.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
+    font-family: 'Jameel Noori Nastaleeq';
+    src: url('https://cdn.jsdelivr.net/gh/tariq-abdullah/urdu-web-font-CDN/JameelNooriNastaleeq.woff') format('woff');
+    font-display: swap;
 }
 
-.about-page-section {
-    padding: 34px 0 90px;
-    background: #ffffff;
+.urdu-font,
+.about-urdu-heading,
+.about-card-title,
+.about-card-text,
+.about-card-list li {
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+}
+
+/* ===== Page ===== */
+.about-page {
+    padding: 40px 0 90px;
     overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(109, 185, 27, 0.10), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(109, 185, 27, 0.08), transparent 24%),
+        linear-gradient(180deg, #fffdf8 0%, #f8f5ee 100%);
 }
 
-.lux-videos-header {
+/* ===== Header ===== */
+.about-head {
     text-align: center;
     max-width: 760px;
-    margin: 0 auto 44px;
+    margin: 0 auto 46px;
 }
 
-.lux-videos-title {
-    font-size: 42px;
+.about-head-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #3f8e17;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: rgba(63, 142, 23, 0.08);
+    border: 1px solid rgba(63, 142, 23, 0.18);
+    margin-bottom: 14px;
+}
+
+.about-head-title {
+    font-size: clamp(32px, 4vw, 44px);
     font-weight: 800;
     margin: 0;
     letter-spacing: 0.3px;
@@ -29,15 +58,15 @@
     color: transparent;
 }
 
-.lux-videos-subtitle {
+.about-head-subtitle {
     margin: 16px auto 0;
     font-size: 17px;
     line-height: 1.8;
     color: #5b5b5b;
-    max-width: 660px;
+    max-width: 640px;
 }
 
-.lux-videos-title-line {
+.about-head-line {
     width: 120px;
     height: 4px;
     margin: 18px auto 0;
@@ -45,172 +74,244 @@
     background: linear-gradient(90deg, #1b4f14 0%, #3f8e17 50%, #6db91b 100%);
 }
 
-.about-hero-card {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    align-items: center;
-    gap: 42px;
-    padding: 28px 30px;
-    background: #f7f7f7;
-    border-radius: 34px;
-    border: 1.5px solid rgba(47, 109, 31, 0.35);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-    cursor: pointer;
-
-}
-
-.about-hero-card:hover {
-    transform: translateY(-12px) scale(1.01);
-    box-shadow:
-        0 22px 45px rgba(0, 0, 0, 0.18),
-        0 8px 20px rgba(47, 109, 31, 0.12);
-    border-color: rgba(47, 109, 31, 0.6);
-}
-
-.about-hero-image-wrap {
-    width: 200px;
-    height: 230px;
-    border-radius: 22px;
+/* ===== Hero ===== */
+.about-hero {
+    position: relative;
     overflow: hidden;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 44px;
+    align-items: center;
+    padding: 38px 40px;
+    border-radius: 34px;
+    border: 1.5px solid rgba(47, 109, 31, 0.2);
+    background: linear-gradient(135deg, #ffffff, #f1f8ed);
+    box-shadow: 0 24px 58px rgba(0, 0, 0, 0.08);
+}
+
+.about-hero::before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    right: -110px;
+    top: -110px;
+    border-radius: 50%;
+    background: rgba(109, 185, 27, 0.14);
+}
+
+.about-hero-media {
+    position: relative;
     justify-self: center;
-    background: #ffffff;
-    border: 3px solid rgba(255, 255, 255, 0.92);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
 }
 
 .about-hero-image {
-    width: 100%;
-    height: 100%;
+    width: 260px;
+    height: 320px;
     object-fit: cover;
+    border-radius: 26px;
+    border: 6px solid #ffffff;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
     display: block;
 }
 
-.about-hero-content {
-    text-align: center;
+.about-hero-exp {
+    position: absolute;
+    bottom: -16px;
+    right: -12px;
+    background: linear-gradient(90deg, #1b4f14, #3f8e17, #6db91b);
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(47, 109, 31, 0.3);
 }
 
-.about-hero-title {
-    margin: 0;
-    font-size: 58px;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.8px;
-    color: #377f1f;
+.about-hero-exp b {
+    font-size: 18px;
 }
 
-.about-hero-subtitle {
-    margin: 14px 0 0;
-    font-size: 22px;
-    line-height: 1.5;
-    font-weight: 500;
-    color: #679b5d;
+.about-hero-body {
+    position: relative;
 }
 
-.about-content-card {
-    margin-top: 42px;
-    background: #ffffff;
-    border: 1.5px solid rgba(47, 109, 31, 0.18);
-    border-radius: 30px;
-    padding: 34px 34px 38px;
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.06);
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-}
-
-.about-content-card:hover {
-    transform: translateY(-12px) scale(1.01);
-    box-shadow:
-        0 22px 45px rgba(0, 0, 0, 0.18),
-        0 8px 20px rgba(47, 109, 31, 0.12);
-    border-color: rgba(47, 109, 31, 0.6);
-}
-
-.about-section-tag {
+.about-eyebrow {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 110px;
     padding: 8px 16px;
     border-radius: 999px;
-    background: rgba(47, 109, 31, 0.09);
-    color: #2f6d1f;
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 16px;
+    background: rgba(27, 79, 20, 0.09);
+    color: #1b4f14;
+    font-size: 13px;
+    font-weight: 800;
+    border: 1px solid rgba(27, 79, 20, 0.16);
+    margin-bottom: 14px;
 }
 
-.about-main-title {
-    margin: 0 0 22px;
-    font-size: 40px;
-    line-height: 1.5;
-    color: #2f6d1f;
-    direction: rtl;
-    text-align: right;
-    font-family: "Pyami Nastaleeq", "Noto Naskh Arabic", "Tahoma", sans-serif;
-    font-weight: normal;
+.about-hero-name {
+    margin: 0 0 8px;
+    font-size: clamp(34px, 4vw, 52px);
+    font-weight: 900;
+    line-height: 1.15;
+    background: linear-gradient(90deg, #103b0d 0%, #2f7d18 48%, #74b91d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
 }
 
-.about-block {
-    padding: 20px 0;
-    border-bottom: 1px solid rgba(47, 109, 31, 0.1);
-}
-
-.about-block:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.about-block-title {
+.about-hero-role {
     margin: 0 0 12px;
-    font-size: 30px;
-    line-height: 1.8;
+    font-size: clamp(18px, 2.2vw, 23px);
+    font-weight: 700;
     color: #2f6d1f;
-    direction: rtl;
-    text-align: right;
-    font-family: "Pyami Nastaleeq", "Noto Naskh Arabic", "Tahoma", sans-serif;
-    font-weight: normal;
 }
 
-.about-content-text {
-    margin: 0;
+.about-hero-desc {
+    margin: 0 0 20px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #5a5a5a;
+    max-width: 560px;
+}
+
+.about-hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.about-stat {
+    flex: 1;
+    min-width: 130px;
+    background: #ffffff;
+    border: 1px solid rgba(47, 109, 31, 0.18);
+    border-radius: 18px;
+    padding: 16px 14px;
+    text-align: center;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.05);
+    transition: 0.35s ease;
+}
+
+.about-stat:hover {
+    transform: translateY(-5px);
+    border-color: #3f8e17;
+    box-shadow: 0 18px 36px rgba(27, 79, 20, 0.12);
+}
+
+.about-stat svg {
     font-size: 24px;
-    line-height: 2.1;
-    color: #1f1f1f;
-    direction: rtl;
-    text-align: right;
-    font-family: "Pyami Nastaleeq", "Noto Naskh Arabic", "Tahoma", sans-serif;
+    color: #3f8e17;
+    margin-bottom: 8px;
 }
 
-.about-list {
-    margin: 14px 0 0;
+.about-stat strong {
+    display: block;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1b4f14;
+}
+
+.about-stat span {
+    font-size: 12px;
+    color: #6b6b6b;
+}
+
+/* ===== Urdu content ===== */
+.about-urdu {
+    margin-top: 56px;
+}
+
+.about-urdu-heading {
+    text-align: center;
+    font-size: clamp(30px, 4vw, 44px);
+    color: #1b4f14;
+    line-height: 1.9;
+    margin: 0 0 32px;
+    direction: rtl;
+    font-weight: 400;
+}
+
+.about-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.about-card {
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid rgba(47, 109, 31, 0.16);
+    border-radius: 24px;
+    padding: 30px 34px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.05);
+    direction: rtl;
+    text-align: right;
+    transition: 0.35s ease;
+}
+
+.about-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 6px;
+    background: linear-gradient(180deg, #1b4f14, #6db91b);
+}
+
+.about-card:hover {
+    transform: translateY(-6px);
+    border-color: #3f8e17;
+    box-shadow: 0 26px 50px rgba(27, 79, 20, 0.12);
+}
+
+.about-card-title {
+    margin: 0 0 14px;
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.9;
+    color: #2f6d1f;
+    font-weight: 400;
+}
+
+.about-card-text {
+    margin: 0;
+    font-size: clamp(19px, 2.2vw, 24px);
+    line-height: 2.3;
+    color: #1f1f1f;
+}
+
+.about-card-list {
+    margin: 16px 0 0;
     padding: 0 26px 0 0;
     direction: rtl;
     text-align: right;
     list-style: disc;
 }
 
-.about-list li {
-    margin-bottom: 10px;
-    font-size: 24px;
-    line-height: 2.05;
+.about-card-list li {
+    margin-bottom: 12px;
+    font-size: clamp(19px, 2.2vw, 24px);
+    line-height: 2.2;
     color: #1f1f1f;
-    font-family: "Pyami Nastaleeq", "Noto Naskh Arabic", "Tahoma", sans-serif;
 }
 
-.about-list li:last-child {
+.about-card-list li:last-child {
     margin-bottom: 0;
 }
 
-.about-content-text strong,
-.about-list li strong {
+.about-card-text strong,
+.about-card-list li strong {
     color: #2f6d1f;
     font-weight: 700;
 }
 
+/* ===== animations ===== */
 .fade-up {
     opacity: 0;
     transform: translateY(60px);
-    animation: fadeUpSmooth 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: aboutFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: opacity, transform;
 }
 
@@ -226,7 +327,7 @@
     animation-delay: 0.55s;
 }
 
-@keyframes fadeUpSmooth {
+@keyframes aboutFadeUp {
     0% {
         opacity: 0;
         transform: translateY(60px);
@@ -238,137 +339,57 @@
     }
 }
 
-@media (max-width: 1199px) {
-    .about-hero-title {
-        font-size: 48px;
-    }
-
-    .about-hero-subtitle {
-        font-size: 20px;
-    }
-}
-
+/* ===== responsive ===== */
 @media (max-width: 991px) {
-    .about-hero-card {
+    .about-hero {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 24px;
-        padding: 26px 24px 30px;
+        gap: 30px;
+        padding: 30px 24px;
     }
 
-    .about-hero-title {
-        font-size: 42px;
+    .about-hero-desc {
+        margin-left: auto;
+        margin-right: auto;
     }
 
-    .about-hero-subtitle {
-        font-size: 19px;
+    .about-hero-body {
+        text-align: center;
     }
 
-    .about-content-card {
-        padding: 28px 24px 30px;
-    }
-
-    .about-main-title {
-        font-size: 34px;
-    }
-
-    .about-block-title {
-        font-size: 27px;
-    }
-
-    .about-content-text,
-    .about-list li {
-        font-size: 22px;
+    .about-eyebrow {
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
 @media (max-width: 767px) {
-    .about-page-section {
-        padding: 26px 0 70px;
+    .about-page {
+        padding: 30px 0 70px;
     }
 
-    .about-hero-card {
-        border-radius: 26px;
+    .about-hero-image {
+        width: 220px;
+        height: 270px;
     }
 
-    .about-hero-image-wrap {
-        width: 170px;
-        height: 200px;
-        border-radius: 18px;
+    .about-card {
+        padding: 24px 20px;
+        border-radius: 20px;
     }
 
-    .about-hero-title {
-        font-size: 34px;
-    }
-
-    .about-hero-subtitle {
-        font-size: 17px;
-        line-height: 1.6;
-    }
-
-    .about-content-card {
-        margin-top: 30px;
-        border-radius: 24px;
-        padding: 24px 18px 26px;
-    }
-
-    .about-main-title {
-        font-size: 30px;
-        line-height: 1.6;
-    }
-
-    .about-block {
-        padding: 16px 0;
-    }
-
-    .about-block-title {
-        font-size: 24px;
-        line-height: 1.8;
-    }
-
-    .about-content-text,
-    .about-list li {
-        font-size: 20px;
-        line-height: 2;
+    .about-urdu {
+        margin-top: 42px;
     }
 }
 
 @media (max-width: 480px) {
-    .lux-videos-title {
-        font-size: 30px;
+    .about-hero-image {
+        width: 190px;
+        height: 235px;
     }
 
-    .lux-videos-subtitle {
-        font-size: 15px;
-        line-height: 1.7;
-    }
-
-    .lux-videos-title-line {
-        width: 95px;
-    }
-
-    .about-hero-card {
-        padding: 22px 16px 24px;
-    }
-
-    .about-hero-title {
-        font-size: 28px;
-    }
-
-    .about-hero-subtitle {
-        font-size: 15px;
-    }
-
-    .about-main-title {
-        font-size: 26px;
-    }
-
-    .about-block-title {
-        font-size: 22px;
-    }
-
-    .about-content-text,
-    .about-list li {
-        font-size: 18px;
+    .about-stat {
+        min-width: 100%;
     }
 }

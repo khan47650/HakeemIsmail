@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+
+@font-face {
+    font-family: 'Jameel Noori Nastaleeq';
+    src: url('https://cdn.jsdelivr.net/gh/tariq-abdullah/urdu-web-font-CDN/JameelNooriNastaleeq.woff') format('woff');
+    font-display: swap;
+}
+
 @font-face {
     font-family: "Pyami Nastaleeq";
     src: url("../assets/fonts/PyamiNastaleeq.ttf") format("truetype");
@@ -68,10 +76,10 @@
 .article-story-card {
     width: 100%;
     background: #ffffff;
-    border-radius: 24px;
+    border-radius: 16px;
     overflow: hidden;
-    border: 1.5px solid rgba(47, 109, 31, 0.35);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+    border: 1.5px solid rgba(47, 109, 31, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
     display: flex;
     flex-direction: column;
@@ -79,59 +87,56 @@
 }
 
 .article-story-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.14);
+    transform: translateY(-8px);
+    border-color: rgba(27, 79, 20, 0.4);
+    box-shadow: 0 16px 40px rgba(27, 79, 20, 0.15);
 }
 
 .article-story-card-expanded {
     transform: none !important;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
 }
 
 .article-story-card-top {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #1b4f14 0%, #2f6d1f 100%);
+    color: #fff;
     align-items: center;
-    gap: 12px;
-    padding: 18px 18px 20px;
-    min-height: 92px;
-    background: linear-gradient(90deg, #2f6d1f 0%, #3f8e17 50%, #6db91b 100%);
-    color: #ffffff;
-    min-width: 0;
 }
 
 .article-story-date {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
-    color: #f8f1c9;
-    white-space: nowrap;
-    direction: ltr;
+    color: #d4e8d0;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
 }
 
 .article-story-title {
-    min-width: 0;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    line-height: 2.1;
+    line-height: 1.8;
     margin: 0;
     color: #ffffff;
-    font-family: "Pyami Nastaleeq", "Noto Naskh Arabic", "Tahoma", sans-serif;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
     direction: rtl;
     text-align: right;
-
-    display: block;
-    white-space: nowrap;
+    word-break: break-word;
+    max-height: 72px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-
-    padding-top: 4px;
-    padding-bottom: 4px;
 }
 
 .article-story-title-expanded {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-    line-height: 2.1;
+    -webkit-line-clamp: unset;
+    max-height: none;
     display: block;
 }
 
@@ -139,10 +144,10 @@
     width: 28px;
     height: 28px;
     min-width: 28px;
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.18);
-    color: #ffe1a8;
-    font-size: 13px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #f8f1c9;
+    font-size: 12px;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -150,59 +155,198 @@
 }
 
 .article-story-card-body {
-    padding: 18px 20px 20px;
-    background: #ffffff;
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
     flex: 1;
+    gap: 14px;
 }
 
 .article-story-text {
     margin: 0;
-    font-size: 22px;
-    line-height: 2;
-    color: #080808;
-    white-space: pre-line;
-    font-family: "Pyami Nastaleeq", "Noto Naskh Arabic", "Tahoma", sans-serif;
-    display: -webkit-box;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555555;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    text-align: right;
+    /* ✅ Line clamping hatao */
+    /* display: -webkit-box;
     -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
+    overflow: hidden; */
+
+    /* ✅ Instead use max-height for controlled truncation */
+    max-height: 120px;
     overflow: hidden;
-    direction: rtl;
-    text-align: right;
+    position: relative;
 }
 
-.article-story-card-expanded .article-story-text {
-    font-size: 22px;
-    line-height: 1.8;
-    letter-spacing: 0;
-    display: block;
-    overflow: visible;
-    direction: rtl;
-    text-align: right;
+.article-story-text::after {
+    content: '...';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #ffffff;
+    padding-left: 4px;
 }
 
-.article-story-link {
+.article-text-dots {
+    display: inline;
+}
+
+/* ✅ FULL CONTENT WITH HTML RENDERING */
+.article-full-content {
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    font-size: 16px;
+    line-height: 2;
+    color: #333333;
+    direction: rtl;
+    text-align: right;
+    word-break: break-word;
+}
+
+.article-full-content p {
+    margin: 0 0 12px;
+}
+
+.article-full-content strong {
+    font-weight: 700;
+    color: #1b4f14;
+}
+
+.article-full-content em {
+    font-style: italic;
+}
+
+.article-full-content ul,
+.article-full-content ol {
+    margin: 12px 0;
+    padding-right: 20px;
+}
+
+.article-full-content li {
+    margin: 6px 0;
+}
+
+.article-expanded-body {
+    height: auto;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.article-expanded-content {
+    overflow-y: auto;
+    max-height: 250px;
+    /* ✅ 280px → 250px (button ko space dene ke liye) */
+    padding-right: 8px;
+    margin-right: -8px;
+    flex: 1;
+}
+
+/* ✅ SCROLL BAR STYLING */
+.article-expanded-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.article-expanded-content::-webkit-scrollbar-track {
+    background: rgba(27, 79, 20, 0.08);
+    border-radius: 3px;
+}
+
+.article-expanded-content::-webkit-scrollbar-thumb {
+    background: rgba(27, 79, 20, 0.3);
+    border-radius: 3px;
+}
+
+.article-expanded-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(27, 79, 20, 0.5);
+}
+
+/* ✅ HASHTAGS */
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 6px 0 0 0;
+}
+
+.article-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, rgba(27, 79, 20, 0.08), rgba(63, 142, 23, 0.08));
+    color: #1b4f14;
+    border: 1px solid rgba(27, 79, 20, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.article-tag:hover {
+    background: linear-gradient(135deg, rgba(27, 79, 20, 0.15), rgba(63, 142, 23, 0.15));
+    border-color: rgba(27, 79, 20, 0.35);
+    transform: translateY(-2px);
+}
+
+.article-tags-expanded {
     margin-top: auto;
-    padding: 0;
+    padding-top: 14px;
+    border-top: 1px solid rgba(27, 79, 20, 0.1);
+}
+
+/* ✅ READ MORE / CLOSE BUTTON */
+.article-story-link {
+    margin-top: 14px;
+    padding: 8px 0;
     border: none;
     background: transparent;
-    color: #ff5a1f;
-    font-size: 16px;
+    color: #1b4f14;
+    font-size: 15px;
+    /* ✅ 14px → 15px */
     font-weight: 700;
     cursor: pointer;
     transition: color 0.3s ease, transform 0.3s ease;
     align-self: flex-start;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    text-align: right;
+    white-space: nowrap;
+    z-index: 10;
+    position: relative;
 }
 
 .article-story-link:hover {
-    color: #d9480f;
+    color: #2f6d1f;
+    transform: translateX(-2px);
+}
+
+.article-close-link {
+    align-self: flex-end;
+    text-align: left;
+    transform: none;
+    margin-top: auto;
+    /* ✅ auto margin to push it to bottom */
+    padding-top: 12px;
+    border-top: 1px solid rgba(27, 79, 20, 0.1);
+    color: #1b4f14;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.article-close-link:hover {
+    color: #2f6d1f;
     transform: translateX(2px);
 }
 
 .article-skeleton {
     height: 260px;
-    border-radius: 24px;
+    border-radius: 16px;
     background: linear-gradient(90deg,
             #e8eee6 25%,
             #f5f7f4 50%,
@@ -233,6 +377,10 @@
     content: none !important;
 }
 
+/* ✅ QUILL CONTENT */
+.quill-content {
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+}
 
 @keyframes skeletonLoading {
     0% {
@@ -244,7 +392,6 @@
     }
 }
 
-/* animation */
 .page-fade-up {
     overflow: hidden;
 }
@@ -298,7 +445,7 @@
     }
 
     .article-story-title {
-        font-size: 18px;
+        font-size: 17px;
     }
 }
 
@@ -324,25 +471,12 @@
         grid-template-columns: 1fr;
     }
 
-    .article-story-card-top {
-        grid-template-columns: 1fr auto;
-        align-items: start;
+    .article-story-card-expanded {
+        height: 450px;
     }
 
-    .article-story-date {
-        grid-column: 1 / 2;
-        grid-row: 2;
-        margin-top: 4px;
-    }
-
-    .article-story-title {
-        grid-column: 1 / 2;
-        grid-row: 1;
-    }
-
-    .article-story-badge {
-        grid-column: 2 / 3;
-        grid-row: 1 / 3;
+    .article-expanded-content {
+        max-height: 240px;
     }
 }
 
@@ -352,15 +486,28 @@
     }
 
     .article-story-title {
-        font-size: 17px;
+        font-size: 16px;
     }
 
     .article-story-card-body {
-        padding: 16px;
+        padding: 16px 20px;
     }
 
     .article-story-text,
     .article-story-link {
+        font-size: 14px;
+    }
+
+    .article-full-content {
         font-size: 15px;
+        line-height: 1.9;
+    }
+
+    .article-story-card-expanded {
+        height: 400px;
+    }
+
+    .article-expanded-content {
+        max-height: 220px;
     }
 }

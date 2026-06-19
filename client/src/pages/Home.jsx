@@ -40,13 +40,26 @@ function Home() {
         ]);
 
       const popular = (productsRes.data || []).filter(
-        (product) => product.category === "popular"
+        (product) =>
+          product.category === "popular" && product.status === "published"
       );
-
       setPopularProducts(popular);
-      setArticles(articlesRes.data || []);
-      setVideos(videosRes.data || []);
-      setShorts(shortsRes.data || []);
+
+      // ✅ Filter only published articles
+      const publishedArticles = (articlesRes.data || []).filter(
+        (article) => article.status === "published"
+      );
+      setArticles(publishedArticles);
+
+      const publishedVideos = (videosRes.data || []).filter(
+        (video) => video.status === "published"
+      );
+      setVideos(publishedVideos);
+
+      const publishedShorts = (shortsRes.data || []).filter(
+        (short) => short.status === "published"
+      );
+      setShorts(publishedShorts);
     } catch (error) {
       console.log(error);
     } finally {
@@ -138,9 +151,7 @@ function Home() {
                 <div className="hakeem-content">
                   <span className="hero-badge">Natural Unani Healing</span>
 
-                  <h1 className="hakeem-name">
-                    Hakeem Muhammad Ismail
-                  </h1>
+                  <h1 className="hakeem-name">Hakeem Muhammad Ismail</h1>
 
                   <p className="hakeem-subtitle">
                     Specialist in Unani Single-Organ Therapy
@@ -190,31 +201,32 @@ function Home() {
             </div>
 
             <div className="why-grid">
-              <div className="why-card">
+              <div className="why-card" role="button" onClick={() => navigate("/about")}>
                 <FaUserMd />
                 <h3>15+ Years Experience</h3>
                 <p>Expert Unani diagnosis and herbal treatment guidance.</p>
               </div>
 
-              <div className="why-card">
+              <div className="why-card" role="button" onClick={() => navigate("/products")}>
                 <FaLeaf />
                 <h3>Pure Herbal Medicines</h3>
                 <p>Natural herbs prepared with care and quality control.</p>
               </div>
 
-              <div className="why-card">
+              <div className="why-card" role="button" onClick={() => navigate("/clinic")}>
                 <FaShieldAlt />
                 <h3>Registered Clinic</h3>
                 <p>Professional and trusted healthcare service.</p>
               </div>
 
-              <div className="why-card">
+              <div className="why-card" role="button" onClick={() => navigate("/delivery")}>
                 <FaTruck />
                 <h3>Pakistan Delivery</h3>
                 <p>Order herbal products from anywhere in Pakistan.</p>
               </div>
             </div>
           </div>
+
           {loading && (
             <section className="home-skeleton-section">
               <div className="row g-4">
@@ -260,6 +272,14 @@ function Home() {
 
                       <div className="product-content">
                         <h3 className="product-name">{product.name}</h3>
+
+                        {product.tags?.length > 0 && (
+                          <div className="home-product-hashtags">
+                            {product.tags.slice(0, 3).map((tag) => (
+                              <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -279,17 +299,33 @@ function Home() {
               </div>
 
               <div className="home-article-grid">
-                {latestArticles.map((article) => (
-                  <div className="home-article-card" key={article._id}>
-                    <h3>{article.title}</h3>
+                {latestArticles.map((article) => {
+                  const plainText = article.excerpt || article.content?.replace(/<[^>]+>/g, "") || "";
+                  const truncated = plainText.slice(0, 110);
 
-                    <p>{article.excerpt?.slice(0, 130)}...</p>
+                  return (
+                    <div className="home-article-card" key={article._id}>
+                      <h3>{article.title}</h3>
 
-                    <button onClick={() => navigate("/articles")}>
-                      مزید پڑھیں <FiArrowRight />
-                    </button>
-                  </div>
-                ))}
+                      <p className="home-article-excerpt">
+                        {truncated}
+                        {plainText.length > 110 && <span className="article-ellipsis">...</span>}
+                      </p>
+
+                      {article.tags?.length > 0 && (
+                        <div className="home-article-hashtags">
+                          {article.tags.slice(0, 3).map((tag) => (
+                            <span key={tag}>#{tag}</span>
+                          ))}
+                        </div>
+                      )}
+
+                      <button onClick={() => navigate("/articles")}>
+                        مزید پڑھیں <FiArrowRight />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -318,7 +354,19 @@ function Home() {
 
                     <div className="home-video-content">
                       <h3>{video.title}</h3>
-                      <p>{video.description?.slice(0, 90)}...</p>
+
+                      <div
+                        className="home-video-desc quill-content"
+                        dangerouslySetInnerHTML={{ __html: video.description }}
+                      />
+
+                      {video.tags?.length > 0 && (
+                        <div className="home-video-hashtags">
+                          {video.tags.slice(0, 3).map((tag) => (
+                            <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
+                          ))}
+                        </div>
+                      )}
 
                       <button onClick={() => openVideoLink(video)}>
                         Watch Now{" "}
@@ -359,6 +407,14 @@ function Home() {
                     <span>{short.duration}</span>
 
                     <div>
+                      {short.tags?.length > 0 && (
+                        <div className="home-short-hashtags">
+                          {short.tags.slice(0, 2).map((tag) => (
+                            <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
+                          ))}
+                        </div>
+                      )}
+
                       <h3>{short.title}</h3>
                       <button>
                         Watch <FiExternalLink />

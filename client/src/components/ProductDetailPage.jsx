@@ -46,7 +46,11 @@ function ProductDetailPage() {
             setLoading(true);
 
             const res = await api.get("/products");
-            const products = getArray(res.data);
+
+            // sirf published products (drafts hide)
+            const products = getArray(res.data).filter(
+                (item) => item.status === "published"
+            );
 
             const selectedProduct = products.find((item) => item._id === id);
 
@@ -87,6 +91,41 @@ function ProductDetailPage() {
         setActiveTab("about");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [id]);
+
+    // SEO: single Product JSON-LD (price/offers ke saath)
+    useEffect(() => {
+        if (!product) return;
+
+        const data = {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            image: product.image || undefined,
+            description:
+                product.metaDescription ||
+                (product.description
+                    ? product.description.replace(/<[^>]+>/g, "").slice(0, 160)
+                    : product.name),
+            offers: {
+                "@type": "Offer",
+                priceCurrency: "PKR",
+                price: product.price,
+                availability: "https://schema.org/InStock",
+            },
+        };
+
+        const script = document.createElement("script");
+        script.type = "application/ld+json";
+        script.setAttribute("data-product-jsonld", "true");
+        script.text = JSON.stringify(data);
+        document.head.appendChild(script);
+
+        return () => {
+            document.head
+                .querySelectorAll('script[data-product-jsonld="true"]')
+                .forEach((el) => el.remove());
+        };
+    }, [product]);
 
     const handleBuy = () => {
         if (!product) return;
@@ -185,8 +224,13 @@ ${product.image}
     return (
         <main className="product-detail-page">
             <SEO
-                title={`${product.name} | Hakeem Ismail`}
-                description={`${product.description?.slice(0, 150) || "Explore this herbal product by Hakeem Ismail."}`}
+                title={product.metaTitle || `${product.name} | Hakeem Ismail`}
+                description={
+                    product.metaDescription ||
+                    (product.description
+                        ? product.description.replace(/<[^>]+>/g, "").slice(0, 155)
+                        : "Explore this herbal product by Hakeem Ismail.")
+                }
                 canonical={`/products/${product._id}`}
             />
 
@@ -227,7 +271,10 @@ ${product.image}
                     {activeTab === "about" && (
                         <div className="product-about-box page-reveal">
                             <h3>About This Product</h3>
-                            <p>{product.description}</p>
+                            <div
+                                className="quill-content"
+                                dangerouslySetInnerHTML={{ __html: product.description }}
+                            />
                         </div>
                     )}
 
@@ -301,9 +348,17 @@ ${product.image}
                     <p className="product-detail-price-text">Rs. {product.price}</p>
 
                     <div className="product-tags-row">
-                        <span>Herbal</span>
-                        <span>Natural</span>
-                        <span>Trusted</span>
+                        {product.tags?.length > 0 ? (
+                            product.tags.map((tag) => (
+                                <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
+                            ))
+                        ) : (
+                            <>
+                                <span>Herbal</span>
+                                <span>Natural</span>
+                                <span>Trusted</span>
+                            </>
+                        )}
                     </div>
 
                     <div className="product-detail-divider"></div>

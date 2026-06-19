@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import AdminSidebar from '../components/admin/AdminSidebar';
-import AdminHeader from '../components/admin/AdminHeader';
+import AdminSidebar from '../pages/admin/AdminSidebar'
+import AdminHeader from '../pages/admin/AdminHeader';
 import '../css/AdminPanel.css';
 
 function AdminPanel() {

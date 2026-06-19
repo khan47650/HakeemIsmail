@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../api/api";
-import ShortDialog from "./ShortDialog";
-import ShortDeleteDialog from "./VideoDeleteDialog";
+import ShortDeleteDialog from "../../components/admin/VideoDeleteDialog";
 import "../../css/AdminShorts.css";
 
 function AdminShorts() {
@@ -15,9 +14,6 @@ function AdminShorts() {
   const [shorts, setShorts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedShort, setSelectedShort] = useState(null);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteShort, setDeleteShort] = useState(null);
@@ -28,7 +24,7 @@ function AdminShorts() {
       const res = await api.get("/shorts");
       setShorts(res.data || []);
     } catch (error) {
-      toast.error("Shorts load nahi ho sakay");
+      toast.error("Shorts did not load");
     } finally {
       setLoading(false);
     }
@@ -39,13 +35,11 @@ function AdminShorts() {
   }, []);
 
   const handleAdd = () => {
-    setSelectedShort(null);
-    setOpenDialog(true);
+    navigate("/admin/shorts/new");
   };
 
   const handleEdit = (short) => {
-    setSelectedShort(short);
-    setOpenDialog(true);
+    navigate(`/admin/shorts/edit/${short._id}`);
   };
 
   const handleDeleteClick = (short) => {
@@ -61,23 +55,25 @@ function AdminShorts() {
     fetchShorts();
   };
 
+  const getStatusLabel = (short) =>
+    short.status === "published" ? "Published" : "Draft";
+
+  const getStatusClass = (short) =>
+    short.status === "published" ? "published" : "draft";
+
   return (
     <section className="admin-shorts-page page-fade-up">
       <div className="admin-shorts-top">
         <div className="admin-shorts-title-wrap">
-          <button
-            className="admin-shorts-back-btn"
-            onClick={() => navigate(-1)}
-          >
+          <button className="admin-shorts-back-btn" onClick={() => navigate(-1)}>
             <FiArrowLeft />
           </button>
-
           <h1>Shorts</h1>
         </div>
 
         <button className="admin-add-short-btn" onClick={handleAdd}>
           <FiPlus />
-          Add New
+          Add New Short
         </button>
       </div>
 
@@ -96,10 +92,7 @@ function AdminShorts() {
           <p className="admin-shorts-empty">No shorts found.</p>
         ) : (
           shorts.map((short, index) => (
-            <div
-              className={`fade-up fade-up-delay-${(index % 6) + 1}`}
-              key={short._id}
-            >
+            <div className={`fade-up fade-up-delay-${(index % 6) + 1}`} key={short._id}>
               <div className="admin-short-card">
                 <img
                   src={short.thumbnail || "/short-1.jpeg"}
@@ -110,35 +103,38 @@ function AdminShorts() {
                 <div className="admin-short-overlay"></div>
 
                 <div className="admin-short-actions">
-                  <button
-                    className="admin-short-edit-btn"
-                    onClick={() => handleEdit(short)}
-                  >
+                  <button className="admin-short-edit-btn" onClick={() => handleEdit(short)}>
                     <FiEdit2 />
                   </button>
-
-                  <button
-                    className="admin-short-delete-btn"
-                    onClick={() => handleDeleteClick(short)}
-                  >
+                  <button className="admin-short-delete-btn" onClick={() => handleDeleteClick(short)}>
                     <FiTrash2 />
                   </button>
                 </div>
 
-                <span className="admin-short-duration">
-                  {short.duration}
+                <span className={`admin-short-status ${getStatusClass(short)}`}>
+                  {getStatusLabel(short)}
                 </span>
 
+                <span className="admin-short-duration">{short.duration}</span>
+
                 <div className="admin-short-content">
+                  {short.tags?.length > 0 && (
+                    <div className="admin-short-hashtags">
+                      {short.tags.slice(0, 3).map((tag) => (
+                        <span className="admin-short-hashtag" key={tag}>
+                          #{tag.replace(/\s+/g, "")}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <h3 className="admin-short-title">{short.title}</h3>
 
                   <div className="video-dropdown-wrapper">
                     <button
                       className="admin-video-platform-btn"
                       onClick={() =>
-                        setOpenDropdown(
-                          openDropdown === short._id ? null : short._id
-                        )
+                        setOpenDropdown(openDropdown === short._id ? null : short._id)
                       }
                     >
                       Watch Now
@@ -148,25 +144,14 @@ function AdminShorts() {
                     {openDropdown === short._id && (
                       <div className="video-dropdown">
                         {short.youtubeUrl && (
-                          <a
-                            href={short.youtubeUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="video-dropdown-item youtube"
-                          >
+                          <a href={short.youtubeUrl} target="_blank" rel="noreferrer" className="video-dropdown-item youtube">
                             <FaYoutube />
                             <span>YouTube</span>
                             <FiExternalLink className="right-icon" />
                           </a>
                         )}
-
                         {short.facebookUrl && (
-                          <a
-                            href={short.facebookUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="video-dropdown-item facebook"
-                          >
+                          <a href={short.facebookUrl} target="_blank" rel="noreferrer" className="video-dropdown-item facebook">
                             <FaFacebook />
                             <span>Facebook</span>
                             <FiExternalLink className="right-icon" />
@@ -181,13 +166,6 @@ function AdminShorts() {
           ))
         )}
       </div>
-
-      <ShortDialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        fetchShorts={fetchShorts}
-        selectedShort={selectedShort}
-      />
 
       <ShortDeleteDialog
         open={deleteOpen}

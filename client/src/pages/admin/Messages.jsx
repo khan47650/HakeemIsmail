@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { FiArrowLeft, FiTrash2, FiMessageCircle } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
-import ReplyDialog from "./ReplyDialog";
-import DeleteDialog from "./DeleteDialog";
+import ReplyDialog from "../../components/admin/ReplyDialog";
+import DeleteDialog from "../../components/admin/DeleteDialog";
 import "../../css/Messages.css";
 import { toast } from "react-toastify";
 

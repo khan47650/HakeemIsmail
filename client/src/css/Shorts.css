@@ -1,8 +1,6 @@
 .shorts-showcase-page {
     padding: 60px 0 90px;
-    /* background:
-        radial-gradient(circle at top center, rgba(109, 185, 27, 0.08), transparent 24%),
-        linear-gradient(180deg, #fcfaf7 0%, #f6f4ef 100%); */
+
 }
 
 .shorts-showcase-header {
@@ -373,6 +371,15 @@
     .shorts-showcase-card-title {
         font-size: 18px;
     }
+
+    .shorts-videos-toolbar {
+        justify-content: center;
+    }
+
+    .shorts-video-filter {
+        width: 100%;
+        min-width: unset;
+    }
 }
 
 @media (max-width: 600px) {
@@ -400,4 +407,48 @@
         height: 430px;
         border-radius: 22px;
     }
+}
+
+/* Category dropdown toolbar (Videos page jaisa) */
+.shorts-videos-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.shorts-video-filter {
+    min-width: 260px;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid rgba(47, 109, 31, 0.2);
+    border-radius: 12px;
+    background: #fff;
+    color: #1b4f14;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.shorts-video-filter:focus {
+    border-color: #3f8e17;
+    box-shadow: 0 0 0 4px rgba(63, 142, 23, 0.08);
+}
+
+.shorts-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.shorts-hashtag {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e3f6d2;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    padding: 3px 9px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
 }

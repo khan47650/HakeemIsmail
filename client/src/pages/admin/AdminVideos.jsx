@@ -1,3 +1,4 @@
+import React from "react";
 import { FiArrowLeft, FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { FaYoutube, FaFacebook } from "react-icons/fa";
 import { FiChevronDown, FiExternalLink } from "react-icons/fi";
@@ -5,8 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../api/api";
-import VideoDialog from "./VideoDialog";
-import VideoDeleteDialog from "./VideoDeleteDialog";
+import VideoDeleteDialog from "../../components/admin/VideoDeleteDialog";
 import "../../css/AdminVideos.css";
 
 function AdminVideos() {
@@ -15,9 +15,6 @@ function AdminVideos() {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null);
-
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedVideo, setSelectedVideo] = useState(null);
 
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deleteVideo, setDeleteVideo] = useState(null);
@@ -39,13 +36,11 @@ function AdminVideos() {
     }, []);
 
     const handleAdd = () => {
-        setSelectedVideo(null);
-        setOpenDialog(true);
+        navigate("/admin/videos/new");
     };
 
     const handleEdit = (video) => {
-        setSelectedVideo(video);
-        setOpenDialog(true);
+        navigate(`/admin/videos/edit/${video._id}`);
     };
 
     const handleDeleteClick = (video) => {
@@ -61,6 +56,38 @@ function AdminVideos() {
         fetchVideos();
     };
 
+    const getStatusLabel = (video) =>
+        video.status === "published" ? "Published" : "Draft";
+
+    const getStatusClass = (video) =>
+        video.status === "published" ? "published" : "draft";
+
+    const renderPlatformLink = (url, type) => {
+        if (!url) return null;
+
+        const isYoutube = type === "youtube";
+
+        return React.createElement(
+            "a",
+            {
+                href: url,
+                target: "_blank",
+                rel: "noreferrer",
+                className: `video-dropdown-item ${type}`,
+            },
+            React.createElement(isYoutube ? FaYoutube : FaFacebook, { key: "icon" }),
+            React.createElement(
+                "span",
+                { key: "label" },
+                isYoutube ? "YouTube" : "Facebook"
+            ),
+            React.createElement(FiExternalLink, {
+                key: "ext",
+                className: "right-icon",
+            })
+        );
+    };
+
     return (
         <section className="admin-videos-page page-fade-up">
             <div className="admin-videos-top">
@@ -73,7 +100,7 @@ function AdminVideos() {
 
                 <button className="admin-add-video-btn" onClick={handleAdd}>
                     <FiPlus />
-                    Add New
+                    Add New Video
                 </button>
             </div>
 
@@ -95,10 +122,7 @@ function AdminVideos() {
             ) : (
                 <div className="admin-videos-grid">
                     {videos.map((video, index) => (
-                        <div
-                            className={`fade-up fade-up-delay-${(index % 6) + 1}`}
-                            key={video._id}
-                        >
+                        <div className={`fade-up fade-up-delay-${(index % 6) + 1}`} key={video._id}>
                             <div className="admin-video-card">
                                 <div className="admin-video-thumb-wrap">
                                     <img
@@ -108,37 +132,51 @@ function AdminVideos() {
                                     />
 
                                     <div className="admin-video-actions">
-                                        <button
-                                            className="admin-video-edit-btn"
-                                            onClick={() => handleEdit(video)}
-                                        >
+                                        <button className="admin-video-edit-btn" onClick={() => handleEdit(video)}>
                                             <FiEdit2 />
                                         </button>
 
-                                        <button
-                                            className="admin-video-delete-btn"
-                                            onClick={() => handleDeleteClick(video)}
-                                        >
+                                        <button className="admin-video-delete-btn" onClick={() => handleDeleteClick(video)}>
                                             <FiTrash2 />
                                         </button>
                                     </div>
 
-                                    <span className="admin-video-duration">
-                                        {video.duration}
+                                    <span className={`admin-video-status ${getStatusClass(video)}`}>
+                                        {getStatusLabel(video)}
                                     </span>
+
+                                    <span className="admin-video-duration">{video.duration}</span>
                                 </div>
 
                                 <div className="admin-video-content">
+                                    {video.category && (
+                                        <span className="admin-video-category">{video.category}</span>
+                                    )}
+
                                     <h3 className="admin-video-card-title">{video.title}</h3>
-                                    <p className="admin-video-card-text">{video.description}</p>
+                                    <div
+                                        className="admin-video-card-text quill-content"
+                                        dangerouslySetInnerHTML={{
+                                            __html: video.description,
+                                        }}
+                                    />
+
+                                    {video.tags?.length > 0 && (
+                                        <div className="admin-video-hashtags">
+                                            {video.tags.slice(0, 3).map((tag) => (
+                                                <span className="admin-video-hashtag" key={tag}>
+                                                    #{tag.replace(/\s+/g, "")}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+
 
                                     <div className="video-dropdown-wrapper">
                                         <button
                                             className="admin-video-platform-btn"
                                             onClick={() =>
-                                                setOpenDropdown(
-                                                    openDropdown === video._id ? null : video._id
-                                                )
+                                                setOpenDropdown(openDropdown === video._id ? null : video._id)
                                             }
                                         >
                                             Watch Now
@@ -147,31 +185,8 @@ function AdminVideos() {
 
                                         {openDropdown === video._id && (
                                             <div className="video-dropdown">
-                                                {video.youtubeUrl && (
-                                                    <a
-                                                        href={video.youtubeUrl}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="video-dropdown-item youtube"
-                                                    >
-                                                        <FaYoutube />
-                                                        <span>YouTube</span>
-                                                        <FiExternalLink className="right-icon" />
-                                                    </a>
-                                                )}
-
-                                                {video.facebookUrl && (
-                                                    <a
-                                                        href={video.facebookUrl}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="video-dropdown-item facebook"
-                                                    >
-                                                        <FaFacebook />
-                                                        <span>Facebook</span>
-                                                        <FiExternalLink className="right-icon" />
-                                                    </a>
-                                                )}
+                                                {renderPlatformLink(video.youtubeUrl, "youtube")}
+                                                {renderPlatformLink(video.facebookUrl, "facebook")}
                                             </div>
                                         )}
                                     </div>
@@ -181,13 +196,6 @@ function AdminVideos() {
                     ))}
                 </div>
             )}
-
-            <VideoDialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
-                fetchVideos={fetchVideos}
-                selectedVideo={selectedVideo}
-            />
 
             <VideoDeleteDialog
                 open={deleteOpen}

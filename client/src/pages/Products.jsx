@@ -13,7 +13,10 @@ function Products() {
     try {
       setLoading(true);
       const res = await api.get("/products");
-      setProducts(res.data);
+
+      // sirf published products (drafts hide)
+      const published = (res.data || []).filter((p) => p.status === "published");
+      setProducts(published);
     } catch (error) {
       console.log(error);
     } finally {
@@ -24,6 +27,46 @@ function Products() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // SEO: Product JSON-LD (price/offers ke saath)
+  useEffect(() => {
+    if (!products.length) return;
+
+    const data = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: products.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        item: {
+          "@type": "Product",
+          name: p.name,
+          image: p.image || undefined,
+          description:
+            p.metaDescription ||
+            (p.description ? p.description.replace(/<[^>]+>/g, "").slice(0, 160) : p.name),
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "PKR",
+            price: p.price,
+            availability: "https://schema.org/InStock",
+          },
+        },
+      })),
+    };
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.setAttribute("data-products-jsonld", "true");
+    script.text = JSON.stringify(data);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head
+        .querySelectorAll('script[data-products-jsonld="true"]')
+        .forEach((el) => el.remove());
+    };
+  }, [products]);
 
   const handleBuy = (e, product) => {
     e.stopPropagation();
@@ -43,6 +86,7 @@ ${product.image}
     const url = `https://wa.me/923054800448?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   };
+
   return (
     <section className="all-products-page page-fade-up">
       <SEO
@@ -62,14 +106,11 @@ ${product.image}
               <div className="all-products-skeleton" key={index}></div>
             ))
           ) : products.length === 0 ? (
-            <div className="admin-empty-state">
-              Products Not Uploaded Yet.
-            </div>
+            <div className="admin-empty-state">Products Not Uploaded Yet.</div>
           ) : (
             products.map((product, index) => (
               <div
-                className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1
-                  }`}
+                className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1}`}
                 key={product._id}
                 onClick={() => navigate(`/products/${product._id}`)}
               >
@@ -78,12 +119,23 @@ ${product.image}
                     src={product.image}
                     alt={product.name}
                     className="all-products-image"
+                    loading="lazy"
                   />
                 </div>
 
                 <div className="all-products-content">
                   <h3 className="all-products-name">{product.name}</h3>
                   <p className="all-products-price">Rs. {product.price}</p>
+
+                  {product.tags?.length > 0 && (
+                    <div className="all-products-hashtags">
+                      {product.tags.slice(0, 3).map((tag) => (
+                        <span className="all-products-hashtag" key={tag}>
+                          #{tag.replace(/\s+/g, "")}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   <button
                     className="all-products-buy-btn"

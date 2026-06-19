@@ -10,11 +10,24 @@ function Shorts() {
   const [loading, setLoading] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null);
 
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const fetchShorts = async () => {
     try {
       setLoading(true);
       const res = await api.get("/shorts");
-      setShorts(res.data || []);
+
+      const publishedShorts = (res.data || []).filter(
+        (short) => short.status === "published"
+      );
+
+      setShorts(publishedShorts);
+
+      const uniqueCategories = [
+        ...new Set(publishedShorts.map((s) => s.category).filter(Boolean)),
+      ];
+      setCategories(uniqueCategories);
     } catch (error) {
       console.log(error);
     } finally {
@@ -26,13 +39,57 @@ function Shorts() {
     fetchShorts();
   }, []);
 
+  const filteredShorts = selectedCategory
+    ? shorts.filter((s) => s.category === selectedCategory)
+    : shorts;
+
+  // SEO: JSON-LD structured data
+  useEffect(() => {
+    if (!shorts.length) return;
+
+    const data = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: shorts.map((short, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "VideoObject",
+          name: short.title,
+          description:
+            short.metaDescription ||
+            (short.description
+              ? short.description.replace(/<[^>]+>/g, "").slice(0, 160)
+              : short.title),
+          thumbnailUrl: short.thumbnail || undefined,
+          uploadDate: short.createdAt,
+          contentUrl: short.youtubeUrl || short.facebookUrl || undefined,
+          embedUrl: short.youtubeUrl || undefined,
+        },
+      })),
+    };
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.setAttribute("data-shorts-jsonld", "true");
+    script.text = JSON.stringify(data);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head
+        .querySelectorAll('script[data-shorts-jsonld="true"]')
+        .forEach((el) => el.remove());
+    };
+  }, [shorts]);
+
   return (
     <section className="shorts-showcase-page page-fade-up">
       <SEO
-        title="Our Shorts | Hakeem Ismail"
-        description="Watch quick wellness tips, herbal awareness videos and natural lifestyle guidance shared by Hakeem Muhammad Ismail."
+        title="Wellness Shorts & Quick Health Tips | Hakeem Ismail"
+        description="Watch quick wellness shorts, herbal awareness clips, Tib-e-Yunani tips and natural lifestyle guidance by Hakeem Muhammad Ismail."
         canonical="/shorts"
       />
+
       <div className="container">
         <div className="shorts-showcase-header fade-up fade-up-delay-1">
           <h1 className="shorts-showcase-title">Our Shorts</h1>
@@ -43,6 +100,23 @@ function Shorts() {
           </p>
 
           <div className="shorts-showcase-line"></div>
+        </div>
+
+        {/* Category dropdown (Videos page jaisa) */}
+        <div className="shorts-videos-toolbar">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="shorts-video-filter"
+          >
+            <option value="">All Categories</option>
+
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="shorts-showcase-grid">
@@ -56,13 +130,11 @@ function Shorts() {
                 </div>
               </div>
             ))
-          ) : shorts.length === 0 ? (
-            <div className="shorts-empty-state">
-              No shorts found.
-            </div>
+          ) : filteredShorts.length === 0 ? (
+            <div className="shorts-empty-state">No shorts found.</div>
           ) : (
-            shorts.map((short, index) => (
-              <div
+            filteredShorts.map((short, index) => (
+              <article
                 className={`fade-up fade-up-delay-${(index % 6) + 1}`}
                 key={short._id}
               >
@@ -71,26 +143,35 @@ function Shorts() {
                     src={short.thumbnail || "/short-1.jpeg"}
                     alt={short.title}
                     className="shorts-showcase-thumb"
+                    loading="lazy"
                   />
 
                   <div className="shorts-showcase-overlay"></div>
 
-                  <span className="shorts-showcase-duration">
-                    {short.duration}
-                  </span>
+                  {short.category && (
+                    <span className="shorts-showcase-category">{short.category}</span>
+                  )}
+
+                  <span className="shorts-showcase-duration">{short.duration}</span>
 
                   <div className="shorts-showcase-content">
-                    <h3 className="shorts-showcase-card-title">
-                      {short.title}
-                    </h3>
+                    {short.tags?.length > 0 && (
+                      <div className="shorts-hashtags">
+                        {short.tags.slice(0, 3).map((tag) => (
+                          <span className="shorts-hashtag" key={tag}>
+                            #{tag.replace(/\s+/g, "")}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <h3 className="shorts-showcase-card-title">{short.title}</h3>
 
                     <div className="video-dropdown-wrapper">
                       <button
                         className="admin-video-platform-btn"
                         onClick={() =>
-                          setOpenDropdown(
-                            openDropdown === short._id ? null : short._id
-                          )
+                          setOpenDropdown(openDropdown === short._id ? null : short._id)
                         }
                       >
                         Watch Now
@@ -100,8 +181,8 @@ function Shorts() {
                       {openDropdown === short._id && (
                         <div className="video-dropdown">
                           {short.youtubeUrl && (
-                            <a
-                              href={short.youtubeUrl}
+
+                            <a href={short.youtubeUrl}
                               target="_blank"
                               rel="noreferrer"
                               className="video-dropdown-item youtube"
@@ -113,8 +194,8 @@ function Shorts() {
                           )}
 
                           {short.facebookUrl && (
-                            <a
-                              href={short.facebookUrl}
+
+                            <a href={short.facebookUrl}
                               target="_blank"
                               rel="noreferrer"
                               className="video-dropdown-item facebook"
@@ -129,7 +210,7 @@ function Shorts() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </article>
             ))
           )}
         </div>

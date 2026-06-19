@@ -10,7 +10,10 @@
     align-items: center;
     justify-content: space-between;
     gap: 18px;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
+    margin-top: 8px;
+    padding-top: 8px;
+    animation: fadeDown 0.6s ease;
 }
 
 .admin-products-title-wrap {
@@ -36,8 +39,10 @@
 }
 
 .admin-products-back-btn:hover {
-    transform: translateX(-4px);
-    background: #eef7eb;
+    transform: translateX(-5px);
+    background: linear-gradient(135deg, #1b4f14, #3f8e17);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(27, 79, 20, 0.2);
 }
 
 .admin-products-title-wrap h1 {
@@ -48,27 +53,31 @@
 }
 
 .admin-add-product-btn {
-    border: 2px solid #1b4f14;
-    background: #ffffff;
-    color: #1b4f14;
-    padding: 11px 18px;
-    border-radius: 999px;
+    border: none;
+    background: linear-gradient(90deg, #1b4f14, #3f8e17);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 12px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+    box-shadow: 0 8px 20px rgba(27, 79, 20, 0.15);
     white-space: nowrap;
-    margin-top: 10px;
+    flex-shrink: 0;
 }
 
 .admin-add-product-btn:hover {
-    background: linear-gradient(90deg, #1b4f14 0%, #3f8e17 50%, #6db91b 100%);
-    color: #ffffff;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 18px rgba(27, 79, 20, 0.22);
+    background: linear-gradient(90deg, #2d6b1a, #5ba71d);
+    box-shadow: 0 14px 32px rgba(27, 79, 20, 0.25);
+    transform: translateY(-2px);
+}
+
+.admin-add-product-btn:active {
+    transform: translateY(0px);
 }
 
 .admin-products-grid {
@@ -130,7 +139,7 @@
 
 .admin-product-badge:hover {
     transform: translateY(-2px);
-     animation-duration: 1.2s;
+    animation-duration: 1.2s;
 }
 
 .admin-product-content {
@@ -215,6 +224,49 @@
     animation: fadeUpSmooth 0.6s ease;
 }
 
+/* Status badge */
+.admin-product-status {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+}
+
+.admin-product-status.published {
+    background: rgba(27, 79, 20, 0.9);
+    color: #ffffff;
+}
+
+.admin-product-status.draft {
+    background: rgba(110, 110, 110, 0.85);
+    color: #ffffff;
+}
+
+/* Hashtags */
+.admin-product-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 10px;
+}
+
+.admin-product-hashtag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2f6d1f;
+    background: rgba(27, 79, 20, 0.07);
+    border: 1px solid rgba(27, 79, 20, 0.14);
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
 .fade-up {
     opacity: 0;
     transform: translateY(60px);
@@ -249,12 +301,10 @@
 .admin-product-skeleton {
     height: 320px;
     border-radius: 24px;
-    background: linear-gradient(
-        90deg,
-        #e8eee6 25%,
-        #f5f7f4 50%,
-        #e8eee6 75%
-    );
+    background: linear-gradient(90deg,
+            #e8eee6 25%,
+            #f5f7f4 50%,
+            #e8eee6 75%);
     background-size: 200% 100%;
     animation: skeletonLoading 1.4s infinite linear;
 }
@@ -263,6 +313,7 @@
     0% {
         background-position: 200% 0;
     }
+
     100% {
         background-position: -200% 0;
     }
@@ -324,5 +375,17 @@
     .admin-add-product-btn {
         width: 100%;
         justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-add-product-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .admin-products-top {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
