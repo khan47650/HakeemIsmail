@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import SEO from "../components/SEO";
+import { FiSearch } from "react-icons/fi";
 import "../css/Articles.css";
 
 function Articles() {
   const [expandedId, setExpandedId] = useState(null);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ARTICLES_PER_PAGE = 8;
 
   const fetchArticles = async () => {
     try {
       setLoading(true);
       const res = await api.get("/articles");
-      // ✅ Filter only published articles
       const published = (res.data || []).filter(a => a.status === "published");
       setArticles(published);
+      setCurrentPage(1);
     } catch (error) {
       console.log(error);
     } finally {
@@ -36,9 +41,21 @@ function Articles() {
 
   const stripHtml = (html = "") => html.replace(/<[^>]+>/g, "").trim();
 
+  // Filter by search
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (article.content || "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+  const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+  const endIndex = startIndex + ARTICLES_PER_PAGE;
+  const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
+
   const visibleArticles = expandedId
-    ? articles.filter((article) => article._id === expandedId)
-    : articles;
+    ? paginatedArticles.filter((article) => article._id === expandedId)
+    : paginatedArticles;
 
   return (
     <section className="articles-page-section page-fade-up">
@@ -59,6 +76,23 @@ function Articles() {
           <div className="articles-page-title-line"></div>
         </div>
 
+        {/* Search Bar */}
+        <div className="articles-toolbar">
+          <div className="articles-search-wrap">
+            <FiSearch className="articles-search-icon" />
+            <input
+              type="text"
+              className="articles-search-input"
+              placeholder="Search articles..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
+
         <div
           className={`article-list-grid ${expandedId ? "article-list-grid-expanded" : ""}`}
         >
@@ -66,9 +100,9 @@ function Articles() {
             [...Array(6)].map((_, index) => (
               <div className="article-skeleton" key={index}></div>
             ))
-          ) : articles.length === 0 ? (
+          ) : filteredArticles.length === 0 ? (
             <div className="articles-empty-state">
-              Articles Not Uploaded Yet.
+              {searchTerm ? "No articles found matching your search." : "Articles Not Uploaded Yet."}
             </div>
           ) : (
             visibleArticles.map((article, index) => {
@@ -109,17 +143,6 @@ function Articles() {
                           {plainText.length > 140 && <span className="article-text-dots">...</span>}
                         </p>
 
-                        {/* HASHTAGS */}
-                        {article.tags?.length > 0 && (
-                          <div className="article-tags">
-                            {article.tags.slice(0, 4).map((tag) => (
-                              <span key={tag} className="article-tag">
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
                         <button
                           className="article-story-link"
                           onClick={() => setExpandedId(article._id)}
@@ -134,20 +157,10 @@ function Articles() {
                           {/* ✅ RENDER HTML WITH JAMEEL NOORI */}
                           <div
                             className="article-full-content quill-content"
+                            style={{ direction: 'rtl', textAlign: 'right' }}
                             dangerouslySetInnerHTML={{ __html: article.content }}
                           />
                         </div>
-
-                        {/* HASHTAGS */}
-                        {article.tags?.length > 0 && (
-                          <div className="article-tags article-tags-expanded">
-                            {article.tags.map((tag) => (
-                              <span key={tag} className="article-tag">
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
 
                         <button
                           className="article-story-link article-close-link"
@@ -163,6 +176,22 @@ function Articles() {
             })
           )}
         </div>
+
+        {/* Pagination */}
+        {!loading && filteredArticles.length > ARTICLES_PER_PAGE && !expandedId && (
+          <div className="articles-pagination">
+            <button
+              className="articles-show-more-btn"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+            >
+              Show More
+            </button>
+            <span className="articles-page-info">
+              Page {currentPage} of {totalPages}
+            </span>
+          </div>
+        )}
       </div>
     </section>
   );

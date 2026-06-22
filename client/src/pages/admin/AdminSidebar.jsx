@@ -1,13 +1,14 @@
 import {
-    FiGrid,
     FiClock,
     FiCheckCircle,
     FiPackage,
     FiFileText,
+    FiBook,
     FiVideo,
     FiMessageSquare,
     FiPlayCircle,
-    FiX
+    FiX,
+    FiTag
 } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../css/AdminSidebar.css';
@@ -17,13 +18,14 @@ function AdminSidebar({ isOpen, setIsOpen }) {
     const location = useLocation();
 
     const tabs = [
-        // { name: 'Dashboard', icon: <FiGrid />, path: '/admin' },
         { name: 'Pending Orders', icon: <FiClock />, path: '/admin/pending-orders' },
         { name: 'Completed Orders', icon: <FiCheckCircle />, path: '/admin/completed-orders' },
         { name: 'Products', icon: <FiPackage />, path: '/admin/products' },
         { name: 'Articles', icon: <FiFileText />, path: '/admin/articles' },
+        { name: 'Blogs', icon: <FiBook />, path: '/admin/blogs' },
         { name: 'Videos', icon: <FiVideo />, path: '/admin/videos' },
         { name: 'Shorts', icon: <FiPlayCircle />, path: '/admin/shorts' },
+        { name: 'Categories', icon: <FiTag />, path: '/admin/categories' },
         { name: 'Messages', icon: <FiMessageSquare />, path: '/admin/messages' },
     ];
 

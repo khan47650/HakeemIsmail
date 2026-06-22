@@ -7,16 +7,6 @@ import { toast } from "react-toastify";
 import api from "../../api/api";
 import "../../css/AdminVideoForm.css";
 
-const CATEGORY_OPTIONS = [
-    "Tib-e-Yunani",
-    "General Health",
-    "Diet & Nutrition",
-    "Fitness & Exercise",
-    "Mental Health",
-    "Women's Health",
-    "Kids Health",
-];
-
 const YOUTUBE_REGEX =
     /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[\w-]+/i;
 const FACEBOOK_REGEX = /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.watch)\/.+/i;
@@ -50,6 +40,7 @@ function AdminVideoForm() {
     const [slugTouched, setSlugTouched] = useState(false);
     const [tagInput, setTagInput] = useState("");
     const [errors, setErrors] = useState({});
+    const [categories, setCategories] = useState([]);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -69,6 +60,18 @@ function AdminVideoForm() {
     useEffect(() => {
         if (isEdit) fetchVideo();
     }, [id]);
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const res = await api.get('/categories?type=videos');
+            setCategories(res.data || []);
+        } catch (error) {
+            console.log('Failed to fetch categories:', error);
+        }
+    };
 
     const fetchVideo = async () => {
         try {
@@ -369,9 +372,9 @@ function AdminVideoForm() {
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                         >
                             <option value="">Select Category</option>
-                            {CATEGORY_OPTIONS.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat}
+                            {categories.map((cat) => (
+                                <option key={cat._id} value={cat.name}>
+                                    {cat.name}
                                 </option>
                             ))}
                         </select>

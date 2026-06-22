@@ -1,15 +1,11 @@
 .site-footer {
-   background: linear-gradient(
-      135deg,
+  background: linear-gradient(135deg,
       rgba(0, 0, 0, 0.03) 0%,
       rgba(0, 0, 0, 0.01) 40%,
-      transparent 100%
-    ),
-    linear-gradient(
-      135deg,
+      transparent 100%),
+    linear-gradient(135deg,
       #f4f6f8 0%,
-      #ffffff 100%
-    );
+      #ffffff 100%);
   color: #1f1f1f;
   margin-top: 70px;
   padding-top: 55px;
@@ -43,15 +39,35 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 36px;
-  padding-bottom: 35px;
+  grid-template-columns: 1.2fr 1fr 1fr 1.1fr;
+  gap: 42px;
+  padding-bottom: 42px;
+}
+
+/* ===== BRAND SECTION ===== */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-logo-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .footer-logo {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 14px;
+  margin: 0;
   color: #1b4f14;
 }
 
@@ -59,36 +75,115 @@
   font-size: 15px;
   line-height: 1.9;
   color: #555;
-  max-width: 420px;
   margin: 0;
 }
 
+.footer-social {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ===== LINKS SECTION ===== */
+.footer-links,
+.footer-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .footer-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 18px;
+  margin: 0;
   color: #1f1f1f;
 }
 
+.footer-links-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links-list li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #555;
+  text-decoration: none;
+  font-size: 15px;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-links-list li a svg {
+  font-size: 12px;
+  color: #2f6d1f;
+  opacity: 1;
+  transition: 0.3s ease;
+}
+
+.footer-links-list li a:hover {
+  color: #2f6d1f;
+  transform: translateX(4px);
+}
+
+.footer-links-list li a:hover svg {
+  opacity: 1;
+}
+
+/* ===== CONTACT SECTION ===== */
 .footer-contact {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+}
+
+.footer-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .footer-contact-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: #444;
-  transition: 0.3s ease;
-  word-break: break-word;
+  align-items: flex-start;
+  gap: 14px;
 }
 
-.footer-contact-item:hover {
+.footer-contact-item>div {
+  min-width: 0;
+}
+
+.footer-contact-item small {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.footer-contact-item p {
+  margin: 0;
+  font-size: 15px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.footer-contact-item a {
+  color: #444;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.footer-contact-item a:hover {
   color: #2f6d1f;
-  transform: translateX(4px);
 }
 
 .contact-icon {
@@ -105,18 +200,7 @@
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
-.footer-social-area {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.footer-social {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-
+/* ===== SOCIAL ICONS ===== */
 .social-icon {
   width: 46px;
   height: 46px;
@@ -140,35 +224,27 @@
   box-shadow: 0 16px 28px rgba(0, 0, 0, 0.14);
 }
 
-.footer-whatsapp {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  text-decoration: none;
-  color: #2f6d1f;
-  background: rgba(47, 109, 31, 0.08);
-  padding: 12px 18px;
-  border-radius: 999px;
-  transition: 0.35s ease;
-  border: 1px solid rgba(47, 109, 31, 0.18);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
-}
-
-.footer-whatsapp:hover {
-  transform: translateY(-4px);
-  background: #2f6d1f;
-  color: #ffffff;
-}
-
+/* ===== FOOTER BOTTOM ===== */
 .footer-bottom {
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: 18px 0 22px;
+  padding: 20px 0 24px;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 14px;
   color: #666;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 992px) {
@@ -185,8 +261,13 @@
     font-size: 26px;
   }
 
+  .footer-logo-img {
+    width: 45px;
+    height: 45px;
+  }
+
   .footer-title {
-    font-size: 18px;
+    font-size: 17px;
   }
 }
 
@@ -202,8 +283,17 @@
     padding-bottom: 28px;
   }
 
+  .footer-brand {
+    grid-column: auto;
+  }
+
   .footer-logo {
     font-size: 24px;
+  }
+
+  .footer-logo-img {
+    width: 42px;
+    height: 42px;
   }
 
   .footer-text {
@@ -212,7 +302,12 @@
   }
 
   .footer-title {
-    margin-bottom: 14px;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .footer-social {
+    gap: 12px;
   }
 
   .social-icon {
@@ -221,8 +316,14 @@
     font-size: 17px;
   }
 
-  .footer-whatsapp {
-    padding: 10px 16px;
+  .footer-links-list li a {
+    font-size: 14px;
+  }
+
+  .contact-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     font-size: 14px;
   }
 }
@@ -232,17 +333,30 @@
     font-size: 22px;
   }
 
+  .footer-logo-img {
+    width: 38px;
+    height: 38px;
+  }
+
   .footer-text,
-  .footer-contact-item,
+  .footer-links-list li a,
+  .footer-contact-item p,
   .footer-bottom {
     font-size: 13px;
+  }
+
+  .footer-title {
+    font-size: 15px;
+  }
+
+  .footer-logo-area {
+    gap: 10px;
   }
 
   .contact-icon {
     width: 36px;
     height: 36px;
     min-width: 36px;
-    font-size: 14px;
   }
 
   .social-icon {
@@ -250,4 +364,21 @@
     height: 40px;
     font-size: 16px;
   }
+
+  .footer-social {
+    gap: 10px;
+  }
+}
+
+/* ===== UTILITY ===== */
+html,
+body,
+#root {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
 }

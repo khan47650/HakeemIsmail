@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiSearch, FiArrowRight } from "react-icons/fi";
 import api from "../api/api";
 import SEO from "../components/SEO";
 import "../css/Products.css";
 
+const PRODUCTS_PER_PAGE = 9;
+
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { setShowAll(false); }, [searchQuery]);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const res = await api.get("/products");
 
-      // sirf published products (drafts hide)
       const published = (res.data || []).filter((p) => p.status === "published");
       setProducts(published);
     } catch (error) {
@@ -24,11 +31,7 @@ function Products() {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  // SEO: Product JSON-LD (price/offers ke saath)
+  // SEO: Product JSON-LD
   useEffect(() => {
     if (!products.length) return;
 
@@ -87,6 +90,12 @@ ${product.image}
     window.open(url, "_blank");
   };
 
+  const filtered = products
+    .filter((p) => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const visible = showAll ? filtered : filtered.slice(0, PRODUCTS_PER_PAGE);
+  const hasMore = !showAll && filtered.length > PRODUCTS_PER_PAGE;
+
   return (
     <section className="all-products-page page-fade-up">
       <SEO
@@ -94,26 +103,45 @@ ${product.image}
         description="Explore pure herbal products, natural remedies and wellness items from Hakeem Ismail with delivery across Pakistan."
         canonical="/products"
       />
+
       <div className="container">
         <div className="all-products-header fade-up fade-up-delay-1">
           <h1 className="all-products-title">Our Products</h1>
           <div className="all-products-title-line"></div>
         </div>
 
+        {/* Search bar only */}
+        <div className="all-products-toolbar">
+          <div className="products-search-wrap">
+            <FiSearch className="products-search-icon" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="products-search-input"
+            />
+          </div>
+        </div>
+
         <div className="all-products-grid">
           {loading ? (
-            [...Array(6)].map((_, index) => (
+            [...Array(9)].map((_, index) => (
               <div className="all-products-skeleton" key={index}></div>
             ))
-          ) : products.length === 0 ? (
-            <div className="admin-empty-state">Products Not Uploaded Yet.</div>
+          ) : filtered.length === 0 ? (
+            <div className="admin-empty-state">No products found.</div>
           ) : (
-            products.map((product, index) => (
+            visible.map((product, index) => (
               <div
                 className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1}`}
                 key={product._id}
-                onClick={() => navigate(`/products/${product._id}`)}
               >
+                {/* Popular Badge */}
+                {product.category === "popular" && (
+                  <span className="all-products-popular-badge">Popular</span>
+                )}
+
                 <div className="all-products-image-wrap">
                   <img
                     src={product.image}
@@ -121,21 +149,18 @@ ${product.image}
                     className="all-products-image"
                     loading="lazy"
                   />
+
+                  <button
+                    className="all-products-view-details-btn"
+                    onClick={() => navigate(`/products/${product._id}`)}
+                  >
+                    View Details <FiArrowRight />
+                  </button>
                 </div>
 
                 <div className="all-products-content">
                   <h3 className="all-products-name">{product.name}</h3>
                   <p className="all-products-price">Rs. {product.price}</p>
-
-                  {product.tags?.length > 0 && (
-                    <div className="all-products-hashtags">
-                      {product.tags.slice(0, 3).map((tag) => (
-                        <span className="all-products-hashtag" key={tag}>
-                          #{tag.replace(/\s+/g, "")}
-                        </span>
-                      ))}
-                    </div>
-                  )}
 
                   <button
                     className="all-products-buy-btn"
@@ -148,6 +173,15 @@ ${product.image}
             ))
           )}
         </div>
+
+        {/* Show More */}
+        {hasMore && (
+          <div className="all-products-more-wrap">
+            <button className="all-products-show-more" onClick={() => setShowAll(true)}>
+              Show More
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

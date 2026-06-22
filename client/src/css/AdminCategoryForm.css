@@ -1,0 +1,341 @@
+.admin-form-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.admin-form-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.admin-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1.5px solid rgba(27, 79, 20, 0.1);
+}
+
+.admin-form-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1b4f14;
+}
+
+.admin-form-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(27, 79, 20, 0.1);
+    color: #1b4f14;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.admin-form-close:hover:not(:disabled) {
+    background: #1b4f14;
+    color: #ffffff;
+}
+
+.admin-form {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-form-group label {
+    font-weight: 700;
+    color: #1b4f14;
+    font-size: 14px;
+}
+
+.admin-input,
+.admin-textarea {
+    border: 1.5px solid rgba(27, 79, 20, 0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: 0.2s ease;
+}
+
+.admin-input:focus,
+.admin-textarea:focus {
+    outline: none;
+    border-color: #1b4f14;
+    box-shadow: 0 0 0 3px rgba(27, 79, 20, 0.1);
+}
+
+.admin-input.error,
+.admin-textarea.error {
+    border-color: #dc2626;
+}
+
+.admin-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.admin-form-group small {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.admin-error {
+    font-size: 12px;
+    color: #dc2626;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.admin-form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.admin-form-actions button {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-size: 14px;
+}
+
+.admin-form-actions .admin-btn-secondary {
+    flex: 1;
+    border-width: 1.5px;
+    background: #ffffff;
+    color: #1b4f14;
+    border-color: #1b4f14;
+}
+
+.admin-form-actions .admin-btn-secondary:hover:not(:disabled) {
+    background: #f0f8ed;
+}
+
+.admin-form-actions .admin-btn-primary {
+    background: linear-gradient(90deg, #1b4f14 0%, #3f8e17 55%, #6db91b 100%);
+    color: #ffffff;
+}
+
+.admin-form-actions .admin-btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(27, 79, 20, 0.2);
+}
+
+.admin-input:disabled,
+.admin-textarea:disabled {
+    background: rgba(0, 0, 0, 0.05);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.admin-form-close:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.admin-form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===== TABLET (768px and below) ===== */
+@media (max-width: 768px) {
+    .admin-form-overlay {
+        padding: 16px;
+    }
+
+    .admin-form-modal {
+        max-width: 100%;
+        max-height: 95vh;
+        border-radius: 16px;
+    }
+
+    .admin-form-header {
+        padding: 16px 20px;
+    }
+
+    .admin-form-header h2 {
+        font-size: 18px;
+    }
+
+    .admin-form-close {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+
+    .admin-form {
+        padding: 20px;
+        gap: 14px;
+    }
+
+    .admin-form-group label {
+        font-size: 13px;
+    }
+
+    .admin-input,
+    .admin-textarea {
+        font-size: 16px;
+        padding: 12px 14px;
+    }
+
+    .admin-textarea {
+        min-height: 120px;
+    }
+
+    .admin-form-actions {
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .admin-form-actions button {
+        padding: 14px 16px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+}
+
+/* ===== MOBILE (480px and below) ===== */
+@media (max-width: 480px) {
+    .admin-form-overlay {
+        padding: 12px;
+        align-items: flex-end;
+    }
+
+    .admin-form-modal {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .admin-form-header {
+        padding: 14px 16px;
+        gap: 12px;
+    }
+
+    .admin-form-header h2 {
+        font-size: 16px;
+    }
+
+    .admin-form-close {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+
+    .admin-form {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .admin-form-group {
+        gap: 4px;
+    }
+
+    .admin-form-group label {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .admin-input,
+    .admin-textarea {
+        font-size: 16px;
+        padding: 11px 12px;
+    }
+
+    .admin-textarea {
+        min-height: 100px;
+    }
+
+    .admin-form-group small {
+        font-size: 11px;
+    }
+
+    .admin-error {
+        font-size: 11px;
+    }
+
+    .admin-form-actions {
+        gap: 8px;
+        margin-top: 14px;
+        flex-direction: column;
+    }
+
+    .admin-form-actions button {
+        padding: 12px 14px;
+        font-size: 13px;
+        width: 100%;
+    }
+}
+
+/* ===== SMALL MOBILE (360px and below) ===== */
+@media (max-width: 360px) {
+    .admin-form-overlay {
+        padding: 10px;
+    }
+
+    .admin-form-modal {
+        border-radius: 16px 16px 0 0;
+    }
+
+    .admin-form-header {
+        padding: 12px 14px;
+    }
+
+    .admin-form-header h2 {
+        font-size: 15px;
+    }
+
+    .admin-form {
+        padding: 14px;
+        gap: 10px;
+    }
+
+    .admin-input,
+    .admin-textarea {
+        font-size: 15px;
+        padding: 10px 11px;
+    }
+
+    .admin-textarea {
+        min-height: 90px;
+    }
+
+    .admin-form-actions button {
+        padding: 11px 12px;
+        font-size: 12px;
+    }
+}

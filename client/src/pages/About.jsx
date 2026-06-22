@@ -1,3 +1,4 @@
+// About.jsx — sirf Urdu content section update karo
 import SEO from "../components/SEO";
 import { FaUserMd, FaShieldAlt, FaLeaf } from "react-icons/fa";
 import "../css/About.css";
@@ -13,7 +14,6 @@ function About() {
 
       <div className="container">
         <div className="about-head fade-up fade-up-delay-1">
-          <span className="about-head-eyebrow">Who We Are</span>
           <h1 className="about-head-title">About Us</h1>
           <p className="about-head-subtitle">
             Learn about our mission, expertise, and commitment to natural
@@ -26,7 +26,7 @@ function About() {
         <div className="about-hero fade-up fade-up-delay-2">
           <div className="about-hero-media">
             <img
-              src="/hakeem.jpeg"
+              src="/hakeem_Ismail_new.jpeg"
               alt="Hakeem Muhammad Ismail"
               className="about-hero-image"
             />
@@ -68,14 +68,15 @@ function About() {
           </div>
         </div>
 
-        {/* URDU CONTENT */}
-        <div className="about-urdu urdu-font fade-up fade-up-delay-3">
-          <h2 className="about-urdu-heading">تعارف: حکیم محمد اسماعیل</h2>
+        {/* URDU CONTENT — Single Premium Article */}
+        <article className="about-urdu-article urdu-font fade-up fade-up-delay-3">
+          <h2 className="about-urdu-main-title">تعارف: حکیم محمد اسماعیل</h2>
 
-          <div className="about-blocks">
-            <article className="about-card">
-              <h3 className="about-card-title">خاندانی روایت اور ذاتی جذبہ</h3>
-              <p className="about-card-text">
+          <div className="about-urdu-body">
+
+            <section className="about-urdu-section">
+              <h3 className="about-urdu-section-title">خاندانی روایت اور ذاتی جذبہ</h3>
+              <p className="about-urdu-section-text">
                 حکمت اور طبِ یونانی سے وابستگی جہاں <strong>حکیم محمد اسماعیل</strong>{" "}
                 کو وراثت میں ملی، وہیں اس شعبے میں ان کا ذاتی شوق اور انسانیت کی
                 خدمت کا جذبہ ان کی اصل پہچان بنا۔ انہوں نے روایتی حکمت کو جدید
@@ -83,11 +84,11 @@ function About() {
                 <strong>فیصل آباد طبیہ کالج</strong> سے حاصل کی، تاکہ وہ علم اور
                 تجربے کے حسین امتزاج سے لوگوں کا بہتر علاج کر سکیں۔
               </p>
-            </article>
+            </section>
 
-            <article className="about-card">
-              <h3 className="about-card-title">15 سالہ تجربہ اور فنِ تشخیص</h3>
-              <p className="about-card-text">
+            <section className="about-urdu-section">
+              <h3 className="about-urdu-section-title">15 سالہ تجربہ اور علمی مہارت</h3>
+              <p className="about-urdu-section-text">
                 گزشتہ <strong>15 سالوں</strong> سے آپ طب کے شعبے میں اپنی خدمات
                 سرانجام دے رہے ہیں۔ حکیم صاحب کا ماننا ہے کہ درست علاج کی بنیاد
                 <strong> "درست تشخیص" </strong>
@@ -96,7 +97,7 @@ function About() {
                 مہارت حاصل ہے:
               </p>
 
-              <ul className="about-card-list">
+              <ul className="about-urdu-list">
                 <li>
                   <strong>معدے کے پیچیدہ مسائل:</strong> گیس، تبخیرِ معدہ اور دائمی
                   قبض۔
@@ -113,53 +114,55 @@ function About() {
                   پیچیدہ مسائل کا مکمل علاج۔
                 </li>
               </ul>
-            </article>
+            </section>
 
-            <article className="about-card">
-              <h3 className="about-card-title">
+            <section className="about-urdu-section">
+              <h3 className="about-urdu-section-title">
                 خالص جڑی بوٹیاں اور مستند طریقہ علاج
               </h3>
-              <p className="about-card-text">
+              <p className="about-urdu-section-text">
                 حکیم محمد اسماعیل کے طریقہ علاج کی سب سے بڑی خصوصیت{" "}
                 <strong>خالص جڑی بوٹیوں</strong> کا استعمال ہے۔ وہ کسی بھی قسم کے
                 کیمیکل سے پاک، قدرتی جڑی بوٹیوں کے انتخاب سے لے کر دوا کی تیاری تک
                 تمام مراحل خود اپنی نگرانی میں مکمل کرتے ہیں۔ ان کے تیار کردہ نسخہ
                 جات ان کے برسوں کے تجربے اور تحقیق کا نچوڑ ہیں۔
               </p>
-            </article>
+            </section>
 
-            <article className="about-card">
-              <h3 className="about-card-title">قانونی حیثیت اور رجسٹریشن</h3>
-              <p className="about-card-text">
+            <section className="about-urdu-section">
+              <h3 className="about-urdu-section-title">قانونی حیثیت اور رجسٹریشن</h3>
+              <p className="about-urdu-section-text">
                 آپ کا اعتماد ہماری ترجیح ہے۔ الحمدللہ، ہمارا دواخانہ باقاعدہ{" "}
                 <strong>رجسٹرڈ</strong> ہے۔
               </p>
-            </article>
+            </section>
 
-            <article className="about-card">
-              <h3 className="about-card-title">
+            <section className="about-urdu-section">
+              <h3 className="about-urdu-section-title">
                 عوامی اعتماد: سوشل میڈیا پر ایک معتبر نام
               </h3>
-              <p className="about-card-text">
+              <p className="about-urdu-section-text">
                 حکیم صاحب کی دیانت اور ان کے مؤثر مشوروں کی بدولت سوشل میڈیا پر
                 لاکھوں لوگ ان سے جڑے ہوئے ہیں۔ ان کی ویڈیوز کو کروڑوں کی تعداد میں
                 دیکھا جانا اس بات کی دلیل ہے کہ عوام کا ان پر بھروسہ غیر متزلزل ہے۔
                 یہی اعتماد اب اس ویب سائٹ کی صورت میں آپ کے سامنے ہے تاکہ آپ
                 براہِ راست مستند مشورہ حاصل کر سکیں۔
               </p>
-            </article>
+            </section>
 
-            <article className="about-card">
-              <h3 className="about-card-title">خدمتِ انسانیت کا مشن</h3>
-              <p className="about-card-text">
+            <section className="about-urdu-section about-urdu-section-last">
+              <h3 className="about-urdu-section-title">خدمتِ انسانیت کا مشن</h3>
+              <p className="about-urdu-section-text">
                 ہمارا مقصد حکمت کو ہر گھر تک پہنچانا اور لوگوں کو قدرتی طریقہ علاج
                 کی طرف راغب کرنا ہے۔ اب اس ویب سائٹ کے ذریعے آپ گھر بیٹھے حکیم صاحب
                 سے رابطہ کر سکتے ہیں اور ہماری تیار کردہ خالص ادویات{" "}
                 <strong>پورے پاکستان</strong> میں کہیں بھی منگوا سکتے ہیں۔
               </p>
-            </article>
+            </section>
+
           </div>
-        </div>
+        </article>
+
       </div>
     </section>
   );

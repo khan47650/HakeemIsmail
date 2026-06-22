@@ -1,0 +1,351 @@
+@font-face {
+    font-family: 'Jameel Noori Nastaleeq';
+    src: url('https://cdn.jsdelivr.net/gh/tariq-abdullah/urdu-web-font-CDN/JameelNooriNastaleeq.woff') format('woff'),
+        url('https://fonts.gstatic.com/s/notoNastaliqUrdu/v14/klk-a5BDG-BcIv8tP-ZlQNUwvxF4Jlhli7m5AKRQjWbgX0V_p1j-wBt-jjvQpKwYEZpJvw.0.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+/* ── PAGE ── */
+.blogs-page {
+    width: 100%;
+    background: #ffffff;
+    padding-bottom: 80px;
+}
+
+/* ── HERO ── */
+.blogs-hero {
+    padding: 64px 0 48px;
+    text-align: center;
+    background: #ffffff;
+}
+
+.blogs-hero-title {
+    font-size: 42px;
+    font-weight: 900;
+    margin: 0 0 14px;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #1b4f14, #3f8e17, #6db91b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.blogs-filter-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.blogs-category-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.blogs-category-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 11px 44px 11px 18px;
+    border: 1.5px solid rgba(47, 109, 31, 0.3);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #1b4f14;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    min-width: 180px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.blogs-category-select:focus {
+    border-color: #3f8e17;
+    box-shadow: 0 0 0 3px rgba(63, 142, 23, 0.12);
+}
+
+.blogs-category-arrow {
+    position: absolute;
+    right: 14px;
+    color: #1b4f14;
+    font-size: 18px;
+    pointer-events: none;
+    line-height: 1;
+    font-weight: 700;
+}
+
+
+.blogs-hero-sub {
+    font-size: 16px;
+    color: #555;
+    margin: 0 auto 24px;
+    max-width: 560px;
+    line-height: 1.7;
+}
+
+.blogs-hero-line {
+    width: 64px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1b4f14, #6db91b);
+    margin: 0 auto;
+}
+
+/* ── SECTION ── */
+.blogs-section {
+    padding: 0 0 40px;
+}
+/* ── GRID — 4 columns, RTL so first card is on the right ── */
+.blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 24px;
+    direction: rtl;
+    /* first blog = rightmost column */
+}
+
+/* ── BLOG CARD ── */
+.blog-card {
+    background: #ffffff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1.5px solid rgba(47, 109, 31, 0.18);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09);
+    border-color: rgba(47, 109, 31, 0.35);
+}
+
+/* Image */
+.blog-card-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #f3f3f3;
+    margin-bottom: 0;
+}
+
+.blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+
+.blog-card:hover .blog-card-image img {
+    transform: scale(1.04);
+}
+
+/* Body — text LTR inside RTL grid */
+.blog-card-body {
+    direction: rtl;
+    text-align: right;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 14px 16px;
+}
+
+.blog-card-title {
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px;
+    line-height: 1.8;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.blog-card-excerpt {
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.9;
+    margin: 0 0 14px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.blog-card-readmore {
+    display: inline-block;
+    font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1b4f14;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    margin-top: auto;
+}
+
+.blog-card:hover .blog-card-readmore {
+    color: #3f8e17;
+}
+
+/* ── SHOW MORE ── */
+.blogs-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 48px;
+}
+
+.blogs-show-more {
+    padding: 13px 40px;
+    border: 2px solid #1b4f14;
+    background: transparent;
+    color: #1b4f14;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+}
+
+.blogs-show-more:hover {
+    background: #1b4f14;
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(27, 79, 20, 0.22);
+    transform: translateY(-2px);
+}
+
+/* ── EMPTY ── */
+.blogs-empty {
+    text-align: center;
+    padding: 80px 20px;
+    background: rgba(27, 79, 20, 0.02);
+    border-radius: 16px;
+    border: 2px dashed rgba(47, 109, 31, 0.18);
+    direction: ltr;
+}
+
+.blogs-empty p {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* ── SKELETON ── */
+.blog-skeleton-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sk-image,
+.sk-title,
+.sk-text {
+    background: linear-gradient(90deg, #efefef 25%, #e4e4e4 50%, #efefef 75%);
+    background-size: 200% 100%;
+    animation: skeletonLoading 1.4s infinite linear;
+    border-radius: 6px;
+}
+
+.sk-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 4px;
+}
+
+.sk-title {
+    height: 20px;
+    width: 80%;
+}
+
+.sk-text {
+    height: 14px;
+    width: 100%;
+}
+
+.sk-text--short {
+    width: 60%;
+}
+
+@keyframes skeletonLoading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1200px) {
+    .blogs-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .blogs-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px 18px;
+    }
+
+    .blogs-hero-title {
+        font-size: 34px;
+    }
+}
+
+@media (max-width: 600px) {
+    .blogs-hero {
+        padding: 44px 0 32px;
+    }
+
+    .blogs-hero-title {
+        font-size: 26px;
+    }
+
+    .blogs-hero-sub {
+        font-size: 14px;
+    }
+
+    .blogs-filter {
+        gap: 8px;
+        margin-bottom: 28px;
+    }
+
+    .filter-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .blogs-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 12px;
+    }
+
+    .blog-card-title {
+        font-size: 15px;
+    }
+
+    .blog-card-excerpt {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 420px) {
+    .blogs-grid {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        /* single column — RTL not needed */
+    }
+}

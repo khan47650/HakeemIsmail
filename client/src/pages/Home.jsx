@@ -12,6 +12,7 @@ import {
   FaGlobeAsia,
 } from "react-icons/fa";
 import { FiArrowRight, FiExternalLink } from "react-icons/fi";
+import { FaPlay } from "react-icons/fa";
 
 import api from "../api/api";
 import "../css/Home.css";
@@ -45,7 +46,6 @@ function Home() {
       );
       setPopularProducts(popular);
 
-      // ✅ Filter only published articles
       const publishedArticles = (articlesRes.data || []).filter(
         (article) => article.status === "published"
       );
@@ -113,13 +113,36 @@ function Home() {
     return () => observer.disconnect();
   }, [loading]);
 
-  const latestArticles = articles.slice(0, 3);
-  const featuredVideos = videos.slice(0, 3);
+  const latestArticles = articles.slice(0, 2); // Changed from 3 to 2
+  const featuredVideos = videos.slice(0, 4); // Changed from 3 to 4
   const featuredShorts = shorts.slice(0, 4);
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const stripHtml = (html = "") => html.replace(/<[^>]+>/g, "").trim();
 
   const openVideoLink = (item) => {
     const url = item.youtubeUrl || item.facebookUrl;
     if (url) window.open(url, "_blank", "noreferrer");
+  };
+
+  const handleVideoClick = (video) => {
+    const hasYT = Boolean(video.youtubeUrl);
+    const hasFB = Boolean(video.facebookUrl);
+
+    if (hasYT && hasFB) {
+      window.open(video.youtubeUrl, "_blank", "noreferrer");
+    } else if (hasYT) {
+      window.open(video.youtubeUrl, "_blank", "noreferrer");
+    } else if (hasFB) {
+      window.open(video.facebookUrl, "_blank", "noreferrer");
+    }
   };
 
   return (
@@ -140,7 +163,7 @@ function Home() {
               <div className="col-lg-4 col-md-5 col-12">
                 <div className="hakeem-image-box">
                   <img
-                    src="/hakeem.jpeg"
+                    src="/hakeem_Ismail_new.jpeg"
                     alt="Hakeem Muhammad Ismail - Unani Medicine Specialist"
                     className="hakeem-image"
                   />
@@ -244,49 +267,67 @@ function Home() {
             </section>
           )}
 
-          {!loading && popularProducts.length > 0 && (
-            <section id="popular-products" className="popular-products-section reveal-on-scroll">
+          <section className="popular-products-section">
+            <div className="container">
               <div className="section-header">
-                <h2>Our Popular Products</h2>
-                <p>
-                  Explore our trusted herbal products prepared with natural
-                  ingredients.
-                </p>
+                <h2>Popular Products</h2>
+                <p>Explore our bestselling herbal products and wellness remedies</p>
                 <div className="products-title-line"></div>
               </div>
 
-              <div className="row g-4">
-                {popularProducts.map((product) => (
-                  <div key={product._id} className="col-lg-4 col-md-6 col-12">
-                    <div
-                      className="product-card"
-                      onClick={() => navigate(`/products/${product._id}`)}
-                    >
-                      <div className="product-image-box">
+              <div className="home-products-grid">
+                {popularProducts.slice(0, 6).map((product) => (
+                  <div
+                    key={product._id}
+                    className="home-product-card-wrapper"
+                    onClick={() => navigate(`/products/${product._id}`)}
+                  >
+                    <div className="home-product-card">
+                      {product.category === "popular" && (
+                        <span className="all-products-popular-badge">Popular</span>
+                      )}
+
+                      <div className="home-product-image-box">
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="product-image"
+                          className="home-product-image"
+                          loading="lazy"
                         />
                       </div>
 
-                      <div className="product-content">
-                        <h3 className="product-name">{product.name}</h3>
+                      <div className="home-product-content">
+                        <h3 className="home-product-name">{product.name}</h3>
+                        <p className="home-product-price">Rs. {product.price}</p>
 
-                        {product.tags?.length > 0 && (
-                          <div className="home-product-hashtags">
-                            {product.tags.slice(0, 3).map((tag) => (
-                              <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
-                            ))}
-                          </div>
-                        )}
+                        <button
+                          className="home-product-buy-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const message = `
+                                                Assalam o Alaikum,
+
+                                                Mujhe ye product buy karna hai.
+
+                                                Product: ${product.name}
+                                                Price: Rs. ${product.price}
+
+                                                Image:
+                                                ${product.image}
+                                                `;
+                            const url = `https://wa.me/923054800448?text=${encodeURIComponent(message)}`;
+                            window.open(url, "_blank");
+                          }}
+                        >
+                          Buy
+                        </button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </section>
-          )}
+            </div>
+          </section>
 
           {!loading && latestArticles.length > 0 && (
             <section className="home-preview-section reveal-on-scroll">
@@ -298,31 +339,36 @@ function Home() {
                 <div className="products-title-line"></div>
               </div>
 
-              <div className="home-article-grid">
+              <div className="home-articles-grid">
                 {latestArticles.map((article) => {
-                  const plainText = article.excerpt || article.content?.replace(/<[^>]+>/g, "") || "";
-                  const truncated = plainText.slice(0, 110);
+                  const plainText = stripHtml(article.excerpt || article.content);
+                  const truncatedText = plainText.slice(0, 140);
 
                   return (
-                    <div className="home-article-card" key={article._id}>
-                      <h3>{article.title}</h3>
+                    <div key={article._id} className="home-article-card-item">
+                      <div className="home-article-card-top">
+                        <span className="home-article-date">
+                          {formatDate(article.date || article.createdAt)}
+                        </span>
 
-                      <p className="home-article-excerpt">
-                        {truncated}
-                        {plainText.length > 110 && <span className="article-ellipsis">...</span>}
-                      </p>
+                        <h3 className="home-article-card-title" title={article.title}>
+                          {article.title}
+                        </h3>
+                      </div>
 
-                      {article.tags?.length > 0 && (
-                        <div className="home-article-hashtags">
-                          {article.tags.slice(0, 3).map((tag) => (
-                            <span key={tag}>#{tag}</span>
-                          ))}
-                        </div>
-                      )}
+                      <div className="home-article-card-body">
+                        <p className="home-article-card-text">
+                          {truncatedText}
+                          {plainText.length > 140 && <span>...</span>}
+                        </p>
 
-                      <button onClick={() => navigate("/articles")}>
-                        مزید پڑھیں <FiArrowRight />
-                      </button>
+                        <button
+                          className="home-article-card-link"
+                          onClick={() => navigate("/articles")}
+                        >
+                          مزید پڑھیں
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -341,37 +387,29 @@ function Home() {
                 <div className="products-title-line"></div>
               </div>
 
-              <div className="home-video-grid">
+              <div className="home-videos-grid">
                 {featuredVideos.map((video) => (
-                  <div className="home-video-card" key={video._id}>
-                    <div className="home-video-img-wrap">
+                  <div
+                    key={video._id}
+                    className="home-video-card"
+                    onClick={() => handleVideoClick(video)}
+                  >
+                    <div className="home-video-thumb-wrap">
                       <img
                         src={video.thumbnail || "/video-1.jpeg"}
                         alt={video.title}
+                        className="home-video-thumb"
                       />
-                      <span>{video.duration}</span>
+
+                      <div className="home-video-hover-overlay">
+                        <div className="home-video-play-btn">
+                          <FaPlay />
+                        </div>
+                      </div>
                     </div>
 
                     <div className="home-video-content">
-                      <h3>{video.title}</h3>
-
-                      <div
-                        className="home-video-desc quill-content"
-                        dangerouslySetInnerHTML={{ __html: video.description }}
-                      />
-
-                      {video.tags?.length > 0 && (
-                        <div className="home-video-hashtags">
-                          {video.tags.slice(0, 3).map((tag) => (
-                            <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
-                          ))}
-                        </div>
-                      )}
-
-                      <button onClick={() => openVideoLink(video)}>
-                        Watch Now{" "}
-                        {video.youtubeUrl ? <FaYoutube /> : <FaFacebook />}
-                      </button>
+                      <h3 className="home-video-card-title">{video.title}</h3>
                     </div>
                   </div>
                 ))}
@@ -393,32 +431,26 @@ function Home() {
               <div className="home-shorts-grid">
                 {featuredShorts.map((short) => (
                   <div
-                    className="home-short-card"
                     key={short._id}
-                    onClick={() => openVideoLink(short)}
+                    className="home-short-card"
+                    onClick={() => handleVideoClick(short)}
                   >
-                    <img
-                      src={short.thumbnail || "/short-1.jpeg"}
-                      alt={short.title}
-                    />
+                    <div className="home-short-thumb-wrap">
+                      <img
+                        src={short.thumbnail || "/short-1.jpeg"}
+                        alt={short.title}
+                        className="home-short-thumb"
+                      />
 
-                    <div className="home-short-overlay"></div>
-
-                    <span>{short.duration}</span>
-
-                    <div>
-                      {short.tags?.length > 0 && (
-                        <div className="home-short-hashtags">
-                          {short.tags.slice(0, 2).map((tag) => (
-                            <span key={tag}>#{tag.replace(/\s+/g, "")}</span>
-                          ))}
+                      <div className="home-short-hover-overlay">
+                        <div className="home-short-play-btn">
+                          <FaPlay />
                         </div>
-                      )}
+                      </div>
+                    </div>
 
-                      <h3>{short.title}</h3>
-                      <button>
-                        Watch <FiExternalLink />
-                      </button>
+                    <div className="home-short-content">
+                      <h3 className="home-short-card-title">{short.title}</h3>
                     </div>
                   </div>
                 ))}

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
@@ -10,7 +11,6 @@ import {
 } from 'react-icons/fi';
 import { FiUser, FiSettings, FiLogOut, FiGrid } from 'react-icons/fi';
 import '../css/Header.css'
-import { FiSearch } from 'react-icons/fi';
 import SignInDialog from './SignInDialog';
 import SignUpDialog from './SignUpDialog';
 import { useAuth } from '../context/AuthContext';
@@ -31,7 +31,6 @@ function Header() {
     const navigate = useNavigate();
 
     const isHomePage = location.pathname === '/';
-    const showSearch = location.pathname === "/" || location.pathname === "/products";
     const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
     const closeMenu = () => setMenuOpen(false);
 
@@ -59,8 +58,6 @@ function Header() {
         return () => clearInterval(interval)
     }, []);
 
-
-
     useEffect(() => {
         if (currentSlide === slides.length) {
             setTimeout(() => {
@@ -87,7 +84,6 @@ function Header() {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
-
 
     useEffect(() => {
         const fetchPopularCheck = async () => {
@@ -124,6 +120,7 @@ function Header() {
                 ?.scrollIntoView({ behavior: "smooth" });
         }
     };
+
     const goNext = () => {
         if (currentSlide < slides.length) {
             setCurrentSlide((prev) => prev + 1)
@@ -159,6 +156,7 @@ function Header() {
                                 <NavLink to="/" className="nav-link">Home</NavLink>
                                 <NavLink to="/products" className="nav-link">Products</NavLink>
                                 <NavLink to="/articles" className="nav-link">Articles</NavLink>
+                                <NavLink to="/blogs" className="nav-link">Blogs</NavLink>
                                 <NavLink to="/videos" className="nav-link">Videos</NavLink>
                                 <NavLink to="/shorts" className="nav-link">Shorts</NavLink>
                                 <NavLink to="/about" className="nav-link">About Us</NavLink>
@@ -166,19 +164,6 @@ function Header() {
                             </nav>
 
                             <div className="nav-right">
-
-                                {showSearch && (
-                                    <div className="nav-search">
-                                        <input
-                                            type="text"
-                                            className="nav-search-input"
-                                            placeholder="Search"
-                                        />
-                                        <button className="nav-search-btn">
-                                            <FiSearch />
-                                        </button>
-                                    </div>
-                                )}
 
                                 {/* AUTH SECTION */}
                                 <div className="desktop-auth-area">
@@ -195,7 +180,6 @@ function Header() {
                                                 className="nav-signin-btn"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    console.log("clicked");
                                                     setDropdownOpen(prev => !prev);
                                                 }}
                                             >
@@ -262,6 +246,7 @@ function Header() {
                                         </div>
                                     )}
                                 </div>
+
                                 {hasPopularProducts && (
                                     <button className="mobile-popular-btn" onClick={scrollToPopular}>
                                         Popular
@@ -278,31 +263,30 @@ function Header() {
                             </div>
                         </div>
 
-                        <div className={`mobile-menu ${menuOpen ? 'active' : ''}`}>
+                        {/* Mobile Menu Dropdown - SMALL DIALOG */}
+                        {menuOpen && (
+                            <div
+                                className="mobile-menu-overlay"
+                                onClick={() => setMenuOpen(false)}
+                            />
+                        )}
 
-                            {showSearch && (
-                                <div className="mobile-search">
-                                    <input
-                                        type="text"
-                                        className="mobile-search-input"
-                                        placeholder="Search products..."
-                                    />
-                                    <button className="mobile-search-btn" aria-label="Search">
-                                        <FiSearch />
-                                    </button>
-                                </div>
-                            )}
-                            <NavLink to="/" className="mobile-link" onClick={closeMenu}>Home</NavLink>
-                            <NavLink to="/products" className="mobile-link" onClick={closeMenu}>Products</NavLink>
-                            <NavLink to="/articles" className="mobile-link" onClick={closeMenu}>Articles</NavLink>
-                            <NavLink to="/videos" className="mobile-link" onClick={closeMenu}>Videos</NavLink>
-                            <NavLink to="/shorts" className="mobile-link" onClick={closeMenu}>Shorts</NavLink>
-                            <NavLink to="/about" className="mobile-link" onClick={closeMenu}>About Us</NavLink>
-                            <NavLink to="/contact" className="mobile-link" onClick={closeMenu}>Contact Us</NavLink>
-                            <div className="mobile-auth-box">
+                        <div className={`mobile-menu-dropdown ${menuOpen ? 'active' : ''}`}>
+                            <NavLink to="/" className="mobile-menu-item" onClick={closeMenu}>Home</NavLink>
+                            <NavLink to="/products" className="mobile-menu-item" onClick={closeMenu}>Products</NavLink>
+                            <NavLink to="/articles" className="mobile-menu-item" onClick={closeMenu}>Articles</NavLink>
+                            <NavLink to="/blogs" className="mobile-menu-item" onClick={closeMenu}>Blogs</NavLink>
+                            <NavLink to="/videos" className="mobile-menu-item" onClick={closeMenu}>Videos</NavLink>
+                            <NavLink to="/shorts" className="mobile-menu-item" onClick={closeMenu}>Shorts</NavLink>
+                            <NavLink to="/about" className="mobile-menu-item" onClick={closeMenu}>About Us</NavLink>
+                            <NavLink to="/contact" className="mobile-menu-item" onClick={closeMenu}>Contact Us</NavLink>
+
+                            <div className="mobile-menu-divider"></div>
+
+                            <div className="mobile-menu-auth">
                                 {!user ? (
                                     <button
-                                        className="mobile-auth-btn"
+                                        className="mobile-menu-signin"
                                         onClick={() => {
                                             setAuthDialog("signin");
                                             closeMenu();
@@ -312,7 +296,7 @@ function Header() {
                                     </button>
                                 ) : (
                                     <button
-                                        className="mobile-auth-btn"
+                                        className="mobile-menu-user"
                                         onClick={() => {
                                             setMobileAccountOpen(true);
                                             closeMenu();
@@ -322,7 +306,6 @@ function Header() {
                                     </button>
                                 )}
                             </div>
-
                         </div>
 
                         {isHomePage && (
@@ -377,7 +360,6 @@ function Header() {
                     onSwitchToSignIn={() => setAuthDialog('signin')}
                 />
             )}
-
 
             {mobileAccountOpen && user && (
                 <div className="mobile-account-overlay" onClick={() => setMobileAccountOpen(false)}>

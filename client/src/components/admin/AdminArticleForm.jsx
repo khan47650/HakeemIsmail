@@ -34,6 +34,7 @@ function AdminArticleForm() {
     const [slugTouched, setSlugTouched] = useState(false);
     const [tagInput, setTagInput] = useState("");
     const [errors, setErrors] = useState({});
+    const [categories, setCategories] = useState([]);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -50,6 +51,19 @@ function AdminArticleForm() {
     useEffect(() => {
         if (isEdit) fetchArticle();
     }, [id]);
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const res = await api.get('/categories?type=articles');
+            setCategories(res.data || []);
+        } catch (error) {
+            console.log('Failed to fetch categories:', error);
+        }
+    };
 
     const fetchArticle = async () => {
         try {
@@ -180,14 +194,17 @@ function AdminArticleForm() {
                         <h3 className="video-form-card-title">Organize</h3>
 
                         <label className="video-form-label">Category</label>
-                        <input
-                            type="text"
-                            placeholder="مثلاً: مردانہ صحت، عمومی صحت"
+                        <select
                             value={formData.category}
-                            dir="rtl"
-                            className="article-urdu-input"
                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        />
+                        >
+                            <option value="">Select Category</option>
+                            {categories.map((cat) => (
+                                <option key={cat._id} value={cat.name}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
 
                         <label className="video-form-label">Tags / Keywords</label>
                         <div className="video-tags-input">

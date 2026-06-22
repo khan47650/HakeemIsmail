@@ -12,6 +12,7 @@ import Shorts from './pages/Shorts';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Videos from './pages/Videos';
+import Blogs from './pages/Blogs';
 
 import AdminPanel from './pages/AdminPanel';
 import PendingOrders from './pages/admin/PendingOrders';
@@ -20,12 +21,16 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminArticles from './pages/admin/AdminArticles';
 import AdminVideos from './pages/admin/AdminVideos';
 import AdminShorts from './pages/admin/AdminShorts';
+import AdminBlogs from './pages/admin/AdminBlogs';
+import AdminCategories from './pages/admin/AdminCategories';
 import Messages from './pages/admin/Messages';
 import ProductDetailPage from './components/ProductDetailPage';
+import BlogDetailPage from './components/BlogDetailPage';
 import AdminVideoForm from './pages/admin/AdminVideoForm';
 import AdminShortForm from './components/admin/AdminShortForm';
 import AdminProductForm from "./components/admin/AdminProductForm";
 import AdminArticleForm from './components/admin/AdminArticleForm';
+import AdminBlogForm from './components/admin/AdminBlogForm';
 import RegisteredClinic from "./pages/RegisteredClinic";
 import DeliveryInfo from "./pages/DeliveryInfo";
 
@@ -36,15 +41,17 @@ function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith('/admin');
 
-  const isProductDetailPage =
-    /^\/products\/[^/]+$/.test(location.pathname);
+  const isDetailPage =
+    /^\/products\/[^/]+$/.test(location.pathname) ||
+    /^\/blogs\/[^/]+$/.test(location.pathname);
+
   const isInfoPage =
     location.pathname === '/clinic' || location.pathname === '/delivery';
 
   return (
     <AuthProvider>
 
-      {!isAdminPage && !isProductDetailPage && !isInfoPage && <Header />}
+      {!isAdminPage && !isDetailPage && !isInfoPage && <Header />}
 
       <Routes>
         {/* PUBLIC ROUTES */}
@@ -58,6 +65,8 @@ function App() {
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/clinic" element={<RegisteredClinic />} />
         <Route path="/delivery" element={<DeliveryInfo />} />
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blogs/:id" element={<BlogDetailPage />} />
 
 
         {/* PROTECTED ADMIN ROUTE */}
@@ -85,6 +94,10 @@ function App() {
           <Route path="/admin/products/edit/:id" element={<AdminProductForm />} />
           <Route path="/admin/articles/new" element={<AdminArticleForm />} />
           <Route path="/admin/articles/edit/:id" element={<AdminArticleForm />} />
+          <Route path="/admin/blogs" element={<AdminBlogs />} />
+          <Route path="/admin/blogs/new" element={<AdminBlogForm />} />
+          <Route path="/admin/blogs/edit/:id" element={<AdminBlogForm />} />
+          <Route path="/admin/categories" element={<AdminCategories />} />
 
         </Route>
       </Routes>
