@@ -154,13 +154,6 @@ function AdminVideos() {
                                     )}
 
                                     <h3 className="admin-video-card-title">{video.title}</h3>
-                                    <div
-                                        className="admin-video-card-text quill-content"
-                                        dangerouslySetInnerHTML={{
-                                            __html: video.description,
-                                        }}
-                                    />
-
                                     {video.tags?.length > 0 && (
                                         <div className="admin-video-hashtags">
                                             {video.tags.slice(0, 3).map((tag) => (

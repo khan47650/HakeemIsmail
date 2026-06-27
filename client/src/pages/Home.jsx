@@ -26,18 +26,21 @@ function Home() {
   const [articles, setArticles] = useState([]);
   const [videos, setVideos] = useState([]);
   const [shorts, setShorts] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+
 
   const fetchHomeData = async () => {
     try {
       setLoading(true);
 
-      const [productsRes, articlesRes, videosRes, shortsRes] =
+      const [productsRes, articlesRes, videosRes, shortsRes, blogsRes] =
         await Promise.all([
           api.get("/products"),
           api.get("/articles"),
           api.get("/videos"),
           api.get("/shorts"),
+          api.get("/blogs"),
         ]);
 
       const popular = (productsRes.data || []).filter(
@@ -60,6 +63,10 @@ function Home() {
         (short) => short.status === "published"
       );
       setShorts(publishedShorts);
+      const publishedBlogs = (blogsRes.data || []).filter(
+        (blog) => blog.status === "published"
+      );
+      setBlogs(publishedBlogs);
     } catch (error) {
       console.log(error);
     } finally {
@@ -340,38 +347,76 @@ function Home() {
               </div>
 
               <div className="home-articles-grid">
-                {latestArticles.map((article) => {
+                {latestArticles.map((article, index) => {
                   const plainText = stripHtml(article.excerpt || article.content);
-                  const truncatedText = plainText.slice(0, 140);
 
                   return (
-                    <div key={article._id} className="home-article-card-item">
-                      <div className="home-article-card-top">
-                        <span className="home-article-date">
-                          {formatDate(article.date || article.createdAt)}
-                        </span>
+                    <div key={article._id} className="article-grid-item">
+                      <div className="article-story-card">
 
-                        <h3 className="home-article-card-title" title={article.title}>
-                          {article.title}
-                        </h3>
-                      </div>
+                        <div className="article-story-card-top">
+                          <span className="article-story-date">
+                            {new Date(article.date || article.createdAt)
+                              .toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                              .toUpperCase()}
+                          </span>
+                        </div>
 
-                      <div className="home-article-card-body">
-                        <p className="home-article-card-text">
-                          {truncatedText}
-                          {plainText.length > 140 && <span>...</span>}
-                        </p>
+                        <div className="article-story-card-body">
+                          <h3 className="article-story-title">{article.title}</h3>
+                          <p className="article-story-text">{plainText}</p>
+                          <button
+                            className="article-story-link"
+                            onClick={() => navigate("/articles")}
+                          >
+                            مزید پڑھیں
+                          </button>
+                        </div>
 
-                        <button
-                          className="home-article-card-link"
-                          onClick={() => navigate("/articles")}
-                        >
-                          مزید پڑھیں
-                        </button>
                       </div>
                     </div>
                   );
                 })}
+              </div>
+            </section>
+          )}
+
+          {!loading && blogs.slice(0, 4).length > 0 && (
+            <section className="home-preview-section">
+              <div className="section-header">
+                <h2>Latest Blogs</h2>
+                <p>
+                  Read our latest health, wellness and Unani medicine blogs.
+                </p>
+                <div className="products-title-line"></div>
+              </div>
+
+              <div className="home-blogs-grid">
+                {blogs.slice(0, 4).map((blog) => (
+                  <div
+                    key={blog._id}
+                    className="blog-card"
+                    onClick={() => navigate(`/blogs/${blog._id}`)}
+                  >
+                    <div className="blog-card-image">
+                      <img src={blog.image} alt={blog.title} loading="lazy" />
+                    </div>
+                    <div className="blog-card-body">
+                      <h3 className="blog-card-title">{blog.title}</h3>
+                      <p className="blog-card-excerpt">
+                        {blog.excerpt
+                          ? blog.excerpt.slice(0, 110)
+                          : plainText(blog.content).slice(0, 110)}
+                        ...
+                      </p>
+                      <span className="blog-card-readmore">مزید پڑھیں</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           )}

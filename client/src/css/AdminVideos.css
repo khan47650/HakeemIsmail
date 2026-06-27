@@ -224,17 +224,16 @@
 }
 
 .admin-video-card-text {
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.5;
     color: #606060;
     margin: 0 0 22px;
-
-    height: calc(1.6em * 2);
-    /* fixed 2 lines height */
-    min-height: calc(1.6em * 2);
-    max-height: calc(1.6em * 2);
-
     overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    direction: ltr;
+    text-align: left;
 }
 
 /* Quill Content Support */

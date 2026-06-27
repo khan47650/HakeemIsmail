@@ -1,3 +1,5 @@
+@import url('../css/Blogs.css');
+
 .home-page {
     position: relative;
     z-index: 10;
@@ -376,12 +378,12 @@ footer,
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 22px;
-    direction: ltr;
+    direction: rtl;
 }
 
-.home-articles-grid> :first-child {
+/* .home-articles-grid> :first-child {
     grid-column: 2;
-}
+} */
 
 .home-article-card-item {
     background: #ffffff;
@@ -618,7 +620,7 @@ footer,
 .home-short-thumb-wrap {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 3 / 5;
     overflow: hidden;
     background: #111;
     border-radius: 6px;
@@ -941,10 +943,7 @@ footer,
 
     .home-articles-grid {
         grid-template-columns: 1fr;
-    }
-
-    .home-articles-grid> :first-child {
-        grid-column: auto;
+        direction: rtl;
     }
 }
 
@@ -1077,15 +1076,16 @@ footer,
     }
 
     .home-videos-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
+
 
     .home-video-card-title {
         font-size: 15px;
     }
 
     .home-shorts-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .home-short-card-title {
@@ -1225,7 +1225,7 @@ footer,
     }
 
     .home-videos-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
@@ -1233,8 +1233,9 @@ footer,
         font-size: 13px;
     }
 
+
     .home-shorts-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
@@ -1250,6 +1251,33 @@ footer,
         width: 55px !important;
         height: 70px !important;
         font-size: 34px !important;
+    }
+}
+
+.home-blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 24px;
+    direction: rtl;
+}
+
+@media (max-width: 1200px) {
+    .home-blogs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .home-blogs-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .home-blogs-grid {
+        grid-template-columns: 1fr;
+        direction: ltr;
     }
 }
 

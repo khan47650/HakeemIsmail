@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../components/SEO";
 import api from "../api/api";
 import "../css/BlogDetailPage.css";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiCalendar, FiTag } from "react-icons/fi";
 
 function BlogDetailPage() {
     const { id } = useParams();
@@ -28,7 +28,6 @@ function BlogDetailPage() {
             const published = allRes.data.filter(
                 (b) => b.status === "published" && b._id !== id
             );
-            // Same category first, then others
             const sameCategory = published.filter((b) => b.category === res.data.category);
             const others = published.filter((b) => b.category !== res.data.category);
             setRelatedBlogs([...sameCategory, ...others].slice(0, 3));
@@ -72,44 +71,55 @@ function BlogDetailPage() {
             />
 
             {/* Fixed back button */}
-            <button className="info-back-btn" onClick={() => navigate(-1)}>
+            <button className="bdp-back-btn" onClick={() => navigate(-1)}>
                 <FiArrowLeft />
             </button>
 
-            {/* ── HERO IMAGE ── */}
-            <div className="bdp-hero">
-                <img src={blog.image} alt={blog.title} className="bdp-hero-img" />
-                <div className="bdp-hero-overlay" />
+            {/* ── HEADER: Category + Title + Date ── */}
+            <div className="bdp-header-section">
+                <div className="bdp-header-inner">
+                    {blog.category && (
+                        <span className="bdp-category-pill">
+                            <FiTag size={11} />
+                            {blog.category.charAt(0).toUpperCase() + blog.category.slice(1)}
+                        </span>
+                    )}
 
-                {/* Category pill on image */}
-                {blog.category && (
-                    <span className="bdp-category-pill">
-                        {blog.category.charAt(0).toUpperCase() + blog.category.slice(1)}
-                    </span>
-                )}
-            </div>
-
-            {/* ── ARTICLE ── */}
-            <div className="bdp-wrapper">
-                <article className="bdp-article">
-
-                    {/* Meta row */}
-                    <div className="bdp-meta">
-                        <span className="bdp-date">{formatDate(blog.date || blog.createdAt)}</span>
-
-                    </div>
-
-                    {/* Title — Urdu font */}
                     <h1 className="bdp-title">{blog.title}</h1>
 
-                    {/* Divider */}
-                    <div className="bdp-divider" />
+                    <div className="bdp-meta-row">
+                        <FiCalendar size={14} />
+                        <span className="bdp-date">{formatDate(blog.date || blog.createdAt)}</span>
+                    </div>
+                </div>
+            </div>
 
-                    {/* Body content */}
+            {/* ── FEATURED IMAGE ── */}
+            <div className="bdp-image-wrap">
+                <img src={blog.image} alt={blog.title} className="bdp-featured-img" />
+            </div>
+
+            {/* ── ARTICLE BODY ── */}
+            <div className="bdp-wrapper">
+                <article className="bdp-article">
                     <div
                         className="bdp-body quill-content"
                         dangerouslySetInnerHTML={{ __html: blog.content }}
                     />
+
+                    <div className="bdp-bottom-divider" />
+
+                    <div className="bdp-footer-row">
+                        <button className="bdp-back-link" onClick={() => navigate("/blogs")}>
+                            <FiArrowLeft size={15} />
+                            All Blogs
+                        </button>
+                        {blog.category && (
+                            <span className="bdp-footer-tag">
+                                {blog.category.charAt(0).toUpperCase() + blog.category.slice(1)}
+                            </span>
+                        )}
+                    </div>
                 </article>
             </div>
 
@@ -118,8 +128,8 @@ function BlogDetailPage() {
                 <section className="bdp-related">
                     <div className="bdp-related-inner">
                         <div className="bdp-related-header">
-                            <h2 className="bdp-related-title">Related Blogs</h2>
-                            <p className="bdp-related-sub">More articles you might enjoy</p>
+                            <p className="bdp-related-eyebrow">Read More</p>
+                            <h2 className="bdp-related-title">Related Articles</h2>
                         </div>
 
                         <div className="bdp-related-grid">
@@ -131,25 +141,22 @@ function BlogDetailPage() {
                                 >
                                     <div className="bdp-related-img-wrap">
                                         <img src={rb.image} alt={rb.title} loading="lazy" />
+                                        {rb.category && (
+                                            <span className="bdp-related-badge">
+                                                {rb.category.charAt(0).toUpperCase() + rb.category.slice(1)}
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="bdp-related-body">
-                                        <p className="bdp-related-cat">
-                                            {rb.category
-                                                ? rb.category.charAt(0).toUpperCase() + rb.category.slice(1)
-                                                : "Blog"}
-                                        </p>
                                         <h3 className="bdp-related-card-title">{rb.title}</h3>
-                                        <span className="bdp-related-readmore">مزید پڑھیں →</span>
+                                        <span className="bdp-related-readmore">مزید پڑھیں </span>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         <div className="bdp-all-wrap">
-                            <button
-                                className="bdp-all-btn"
-                                onClick={() => navigate("/blogs")}
-                            >
+                            <button className="bdp-all-btn" onClick={() => navigate("/blogs")}>
                                 View All Blogs
                             </button>
                         </div>
