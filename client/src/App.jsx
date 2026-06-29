@@ -33,6 +33,7 @@ import AdminArticleForm from './components/admin/AdminArticleForm';
 import AdminBlogForm from './components/admin/AdminBlogForm';
 import RegisteredClinic from "./pages/RegisteredClinic";
 import DeliveryInfo from "./pages/DeliveryInfo";
+import ArticleDetailPage from './components/ArticleDetailPage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -43,7 +44,8 @@ function App() {
 
   const isDetailPage =
     /^\/products\/[^/]+$/.test(location.pathname) ||
-    /^\/blogs\/[^/]+$/.test(location.pathname);
+    /^\/blogs\/[^/]+$/.test(location.pathname) ||
+    /^\/articles\/[^/]+$/.test(location.pathname);
 
   const isInfoPage =
     location.pathname === '/clinic' || location.pathname === '/delivery';
@@ -63,6 +65,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="/articles/:id" element={<ArticleDetailPage />} />
         <Route path="/clinic" element={<RegisteredClinic />} />
         <Route path="/delivery" element={<DeliveryInfo />} />
         <Route path="/blogs" element={<Blogs />} />

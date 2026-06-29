@@ -15,57 +15,7 @@ function About() {
       <div className="container">
         <div className="about-head fade-up fade-up-delay-1">
           <h1 className="about-head-title">About Us</h1>
-          <p className="about-head-subtitle">
-            Learn about our mission, expertise, and commitment to natural
-            healing through Unani medicine and herbal remedies.
-          </p>
           <div className="about-head-line"></div>
-        </div>
-
-        {/* HERO */}
-        <div className="about-hero fade-up fade-up-delay-2">
-          <div className="about-hero-media">
-            <img
-              src="/hakeem_Ismail_new.jpeg"
-              alt="Hakeem Muhammad Ismail"
-              className="about-hero-image"
-            />
-            <span className="about-hero-exp">
-              <b>15+</b> Years
-            </span>
-          </div>
-
-          <div className="about-hero-body">
-            <span className="about-eyebrow">Natural Unani Healing</span>
-            <h2 className="about-hero-name">Hakeem Muhammad Ismail</h2>
-            <p className="about-hero-role">
-              Specialist in Unani Single-Organ Therapy
-            </p>
-            <p className="about-hero-desc">
-              Pure herbal medicines, accurate diagnosis, and trusted Unani
-              healthcare guidance for every home across Pakistan.
-            </p>
-
-            <div className="about-hero-stats">
-              <div className="about-stat">
-                <FaUserMd />
-                <strong>15+ Years</strong>
-                <span>Experience</span>
-              </div>
-
-              <div className="about-stat">
-                <FaShieldAlt />
-                <strong>Registered</strong>
-                <span>Verified Clinic</span>
-              </div>
-
-              <div className="about-stat">
-                <FaLeaf />
-                <strong>100% Herbal</strong>
-                <span>Natural Remedies</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* URDU CONTENT — Single Premium Article */}

@@ -11,8 +11,7 @@ import {
   FaChartLine,
   FaGlobeAsia,
 } from "react-icons/fa";
-import { FiArrowRight, FiExternalLink } from "react-icons/fi";
-import { FaPlay } from "react-icons/fa";
+import { FiArrowRight } from "react-icons/fi";
 
 import api from "../api/api";
 import "../css/Home.css";
@@ -371,7 +370,7 @@ function Home() {
                           <p className="article-story-text">{plainText}</p>
                           <button
                             className="article-story-link"
-                            onClick={() => navigate("/articles")}
+                            onClick={() => navigate(`/articles/${article._id}`)}
                           >
                             مزید پڑھیں
                           </button>
@@ -434,27 +433,22 @@ function Home() {
 
               <div className="home-videos-grid">
                 {featuredVideos.map((video) => (
-                  <div
-                    key={video._id}
-                    className="home-video-card"
-                    onClick={() => handleVideoClick(video)}
-                  >
+                  <div key={video._id} className="home-video-card">
                     <div className="home-video-thumb-wrap">
                       <img
                         src={video.thumbnail || "/video-1.jpeg"}
                         alt={video.title}
                         className="home-video-thumb"
                       />
-
-                      <div className="home-video-hover-overlay">
-                        <div className="home-video-play-btn">
-                          <FaPlay />
-                        </div>
-                      </div>
                     </div>
-
                     <div className="home-video-content">
                       <h3 className="home-video-card-title">{video.title}</h3>
+                      <button
+                        className="home-watch-now-btn"
+                        onClick={() => handleVideoClick(video)}
+                      >
+                        Watch Now
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -475,27 +469,22 @@ function Home() {
 
               <div className="home-shorts-grid">
                 {featuredShorts.map((short) => (
-                  <div
-                    key={short._id}
-                    className="home-short-card"
-                    onClick={() => handleVideoClick(short)}
-                  >
+                  <div key={short._id} className="home-short-card">
                     <div className="home-short-thumb-wrap">
                       <img
                         src={short.thumbnail || "/short-1.jpeg"}
                         alt={short.title}
                         className="home-short-thumb"
                       />
-
-                      <div className="home-short-hover-overlay">
-                        <div className="home-short-play-btn">
-                          <FaPlay />
-                        </div>
-                      </div>
                     </div>
-
                     <div className="home-short-content">
                       <h3 className="home-short-card-title">{short.title}</h3>
+                      <button
+                        className="home-watch-now-btn"
+                        onClick={() => handleVideoClick(short)}
+                      >
+                        Watch Now
+                      </button>
                     </div>
                   </div>
                 ))}

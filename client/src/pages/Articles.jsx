@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import SEO from "../components/SEO";
 import { FiSearch } from "react-icons/fi";
 import "../css/Articles.css";
 
 function Articles() {
+  const navigate = useNavigate();
   const [expandedId, setExpandedId] = useState(null);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,9 +53,7 @@ function Articles() {
   const endIndex = startIndex + ARTICLES_PER_PAGE;
   const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
 
-  const visibleArticles = expandedId
-    ? paginatedArticles.filter((article) => article._id === expandedId)
-    : paginatedArticles;
+  const visibleArticles = paginatedArticles;
 
   return (
     <section className="articles-page-section page-fade-up">
@@ -89,7 +89,7 @@ function Articles() {
           </div>
         </div>
 
-        <div className={`article-list-grid ${expandedId ? "article-list-grid-expanded" : ""}`}>
+        <div className="article-list-grid">
           {loading ? (
             [...Array(6)].map((_, index) => (
               <div className="article-skeleton" key={index}></div>
@@ -108,52 +108,22 @@ function Articles() {
                   key={article._id}
                   className={`article-grid-item fade-up fade-up-delay-${(index % 6) + 1}`}
                 >
-                  <div className={`article-story-card ${isExpanded ? "article-story-card-expanded" : ""}`}>
-
-                    {/* GREEN HEADER — date right, empty left */}
+                  <div className="article-story-card">
                     <div className="article-story-card-top">
                       <span className="article-story-date">
                         {formatDate(article.date || article.createdAt)}
                       </span>
                     </div>
 
-                    {/* WHITE BODY */}
-                    <div className={`article-story-card-body ${isExpanded ? "article-expanded-body" : ""}`}>
-
-                      {/* Title always visible */}
-                      <h3 className="article-story-title">
-                        {article.title}
-                      </h3>
-
-                      {!isExpanded ? (
-                        <>
-                          <p className="article-story-text">
-                            {plainText}
-                          </p>
-                          <button
-                            className="article-story-link"
-                            onClick={() => setExpandedId(article._id)}
-                          >
-                            مزید پڑھیں
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <div className="article-expanded-content">
-                            <div
-                              className="article-full-content quill-content"
-                              style={{ direction: 'rtl', textAlign: 'right' }}
-                              dangerouslySetInnerHTML={{ __html: article.content }}
-                            />
-                          </div>
-                          <button
-                            className="article-story-link article-close-link"
-                            onClick={() => setExpandedId(null)}
-                          >
-                            کم کریں
-                          </button>
-                        </>
-                      )}
+                    <div className="article-story-card-body">
+                      <h3 className="article-story-title">{article.title}</h3>
+                      <p className="article-story-text">{plainText}</p>
+                      <button
+                        className="article-story-link"
+                        onClick={() => navigate(`/articles/${article._id}`)}
+                      >
+                        مزید پڑھیں
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -163,7 +133,7 @@ function Articles() {
         </div>
 
         {/* Pagination */}
-        {!loading && filteredArticles.length > ARTICLES_PER_PAGE && !expandedId && (
+        {!loading && filteredArticles.length > ARTICLES_PER_PAGE && (
           <div className="articles-pagination">
             <button
               className="articles-show-more-btn"
