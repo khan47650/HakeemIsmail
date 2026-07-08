@@ -31,6 +31,8 @@ function AdminBlogForm() {
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(isEdit);
     const [preview, setPreview] = useState("");
+    const [midPreviews, setMidPreviews] = useState(["", ""]);
+    const [endPreviews, setEndPreviews] = useState(["", ""]);
     const [slugTouched, setSlugTouched] = useState(false);
     const [tagInput, setTagInput] = useState("");
     const [errors, setErrors] = useState({});
@@ -47,6 +49,8 @@ function AdminBlogForm() {
         metaTitle: "",
         metaDescription: "",
         status: "draft",
+        midImages: ["", ""],
+        endImages: ["", ""],
     });
 
     useEffect(() => {
@@ -74,7 +78,7 @@ function AdminBlogForm() {
             setFormData({
                 title: b.title || "",
                 slug: b.slug || "",
-                image: "",          // don't prefill base64; preview handles display
+                image: "",
                 excerpt: b.excerpt || "",
                 content: b.content || "",
                 tags: b.tags || [],
@@ -82,8 +86,15 @@ function AdminBlogForm() {
                 metaTitle: b.metaTitle || "",
                 metaDescription: b.metaDescription || "",
                 status: b.status || "draft",
+                midImages: ["", ""],
+                endImages: ["", ""],
             });
             setPreview(b.image || "");
+            // Populate mid/end previews from existing URLs
+            const mid = b.midImages || [];
+            const end = b.endImages || [];
+            setMidPreviews([mid[0] || "", mid[1] || ""]);
+            setEndPreviews([end[0] || "", end[1] || ""]);
             setSlugTouched(true);
         } catch (error) {
             toast.error("Failed to load blog");
@@ -103,6 +114,65 @@ function AdminBlogForm() {
             setFormData((prev) => ({ ...prev, image: reader.result }));
             setPreview(reader.result);
         };
+    };
+
+    const handleMultiImage = (e, type, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            const base64 = reader.result;
+            if (type === "mid") {
+                setFormData((p) => {
+                    const updated = [...p.midImages];
+                    updated[index] = base64;
+                    return { ...p, midImages: updated };
+                });
+                setMidPreviews((p) => {
+                    const updated = [...p];
+                    updated[index] = base64;
+                    return updated;
+                });
+            } else {
+                setFormData((p) => {
+                    const updated = [...p.endImages];
+                    updated[index] = base64;
+                    return { ...p, endImages: updated };
+                });
+                setEndPreviews((p) => {
+                    const updated = [...p];
+                    updated[index] = base64;
+                    return updated;
+                });
+            }
+        };
+    };
+
+    const removeMultiImage = (type, index) => {
+        if (type === "mid") {
+            setFormData((p) => {
+                const updated = [...p.midImages];
+                updated[index] = "";
+                return { ...p, midImages: updated };
+            });
+            setMidPreviews((p) => {
+                const updated = [...p];
+                updated[index] = "";
+                return updated;
+            });
+        } else {
+            setFormData((p) => {
+                const updated = [...p.endImages];
+                updated[index] = "";
+                return { ...p, endImages: updated };
+            });
+            setEndPreviews((p) => {
+                const updated = [...p];
+                updated[index] = "";
+                return updated;
+            });
+        }
     };
 
     const handleTitleChange = (value) => {
@@ -158,10 +228,19 @@ function AdminBlogForm() {
         try {
             setLoading(true);
 
-            // Send base64 image directly — backend handles Cloudinary upload
+            // Build mid/end image arrays: use base64 if new, else fall back to existing preview URL
+            const midImages = [0, 1].map((i) =>
+                formData.midImages[i] || midPreviews[i] || ""
+            ).filter(Boolean);
+            const endImages = [0, 1].map((i) =>
+                formData.endImages[i] || endPreviews[i] || ""
+            ).filter(Boolean);
+
             const payload = {
                 ...formData,
                 tags: formData.tags.join(","),
+                midImages,
+                endImages,
             };
 
             // On edit: if no new image selected, remove image key so backend keeps existing
@@ -243,7 +322,73 @@ function AdminBlogForm() {
                         </div>
                         {errors.image && <span className="bf-field-error">{errors.image}</span>}
                     </div>
+                    {/* Mid & End Images */}
+                    <div className="bf-card">
+                        <h3 className="bf-card-title">Content Images</h3>
+                        <p className="bf-hint" style={{ marginBottom: "12px" }}>
+                            Mid images appear in the middle of the article. End images appear at the bottom.
+                        </p>
 
+                        <label className="bf-label">Mid Images (max 2)</label>
+                        <div className="bf-multi-img-row">
+                            {[0, 1].map((i) => (
+                                <div key={`mid-${i}`} className="bf-mini-thumb">
+                                    {midPreviews[i] ? (
+                                        <>
+                                            <img src={midPreviews[i]} alt="" className="bf-thumb-img" />
+                                            <button
+                                                type="button"
+                                                className="bf-mini-remove"
+                                                onClick={() => removeMultiImage("mid", i)}
+                                            >
+                                                <FiX />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="bf-thumb-placeholder">
+                                            <FiCamera />
+                                            <span>Mid {i + 1}</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleMultiImage(e, "mid", i)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <label className="bf-label" style={{ marginTop: "16px" }}>End Images (max 2)</label>
+                        <div className="bf-multi-img-row">
+                            {[0, 1].map((i) => (
+                                <div key={`end-${i}`} className="bf-mini-thumb">
+                                    {endPreviews[i] ? (
+                                        <>
+                                            <img src={endPreviews[i]} alt="" className="bf-thumb-img" />
+                                            <button
+                                                type="button"
+                                                className="bf-mini-remove"
+                                                onClick={() => removeMultiImage("end", i)}
+                                            >
+                                                <FiX />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="bf-thumb-placeholder">
+                                            <FiCamera />
+                                            <span>End {i + 1}</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleMultiImage(e, "end", i)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                     {/* Organize */}
                     <div className="bf-card">
                         <h3 className="bf-card-title">Organize</h3>

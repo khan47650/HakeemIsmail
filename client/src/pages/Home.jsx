@@ -10,8 +10,9 @@ import {
   FaFacebook,
   FaChartLine,
   FaGlobeAsia,
+  FaWhatsapp,
 } from "react-icons/fa";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiArrowUp } from "react-icons/fi";
 
 import api from "../api/api";
 import "../css/Home.css";
@@ -27,6 +28,7 @@ function Home() {
   const [shorts, setShorts] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [scrollVisible, setScrollVisible] = useState(false);
 
 
   const fetchHomeData = async () => {
@@ -75,6 +77,12 @@ function Home() {
 
   useEffect(() => {
     fetchHomeData();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollVisible(window.scrollY > 300);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -153,6 +161,25 @@ function Home() {
 
   return (
     <main className="home-page">
+      <div className="floating-buttons">
+
+        <a href="https://wa.me/923054800448"
+          target="_blank"
+          rel="noreferrer"
+          className="floating-whatsapp"
+          aria-label="WhatsApp"
+        >
+          <img src="/whatsapp-icon.png" alt="WhatsApp" className="floating-whatsapp-img" />
+        </a>
+        <button
+          className="floating-scroll-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Scroll to top"
+          style={{ opacity: scrollVisible ? 1 : 0, pointerEvents: scrollVisible ? "auto" : "none" }}
+        >
+          <FiArrowUp />
+        </button>
+      </div>
       <SEO
         title="Hakeem Ismail | Herbal Products & Unani Treatment"
         description="Hakeem Ismail provides natural herbal products, Unani treatment guidance, health articles, videos and wellness remedies in Pakistan."
@@ -545,7 +572,7 @@ function Home() {
           </section>
         </div>
       </section>
-    </main>
+    </main >
   );
 }
 

@@ -483,6 +483,44 @@
     box-shadow: 0 10px 24px rgba(27, 79, 20, 0.25);
 }
 
+/* Image group wrapper */
+.bdp-img-group {
+    display: flex;
+    gap: 10px;
+    margin: 28px 0;
+    justify-content: center;
+}
+
+.bdp-content-img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.bdp-content-img:hover {
+    transform: scale(1.04) translateY(-4px);
+    box-shadow: 0 16px 36px rgba(27, 79, 20, 0.22);
+}
+
+/* Single image — card size, not full width */
+.bdp-img-group.single .bdp-content-img {
+    width: 220px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    flex-shrink: 0;
+}
+
+/* Two images — side by side, equal size */
+.bdp-img-group.double .bdp-content-img {
+    width: calc(50% - 5px);
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    flex-shrink: 0;
+}
+
 /* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
@@ -594,5 +632,14 @@
     .bdp-all-btn {
         width: 100%;
         max-width: 240px;
+    }
+
+    .bdp-img-group.single .bdp-content-img {
+        width: 180px;
+        height: 130px;
+    }
+
+    .bdp-img-group.double .bdp-content-img {
+        height: 120px;
     }
 }

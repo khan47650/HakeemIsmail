@@ -1,4 +1,4 @@
-// BlogDetailPage.jsx
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../components/SEO";
@@ -6,6 +6,38 @@ import api from "../api/api";
 import "../css/BlogDetailPage.css";
 import { FiArrowLeft, FiCalendar, FiTag } from "react-icons/fi";
 
+const buildImageGroup = (images = []) => {
+    if (!images.length) return "";
+    const cls = images.length === 1 ? "bdp-img-group single" : "bdp-img-group double";
+    const imgs = images
+        .map((src) => `<img src="${src}" alt="" class="bdp-content-img" />`)
+        .join("");
+    return `<div class="${cls}">${imgs}</div>`;
+};
+
+const injectImages = (html = "", midImages = [], endImages = []) => {
+    if (!midImages.length && !endImages.length) return html;
+
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const children = Array.from(div.children);
+    const total = children.length;
+
+    let result = "";
+
+    children.forEach((el, idx) => {
+        result += el.outerHTML;
+        if (midImages.length && idx === Math.floor(total / 2) - 1) {
+            result += buildImageGroup(midImages);
+        }
+    });
+
+    if (endImages.length) {
+        result += buildImageGroup(endImages);
+    }
+
+    return result;
+};
 function BlogDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -104,7 +136,13 @@ function BlogDetailPage() {
                 <article className="bdp-article">
                     <div
                         className="bdp-body quill-content"
-                        dangerouslySetInnerHTML={{ __html: blog.content }}
+                        dangerouslySetInnerHTML={{
+                            __html: injectImages(
+                                blog.content,
+                                blog.midImages || [],
+                                blog.endImages || []
+                            ),
+                        }}
                     />
 
                     <div className="bdp-bottom-divider" />

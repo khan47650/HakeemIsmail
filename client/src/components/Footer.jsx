@@ -149,7 +149,7 @@ function Footer() {
               <div className="footer-contact-item">
                 <span className="contact-icon"><FaPhoneAlt /></span>
                 <div>
-                  <small>Helpline</small>
+                  <small>Call Us</small>
                   <p>
                     <a href="tel:+923054800448">+92 305 4800448</a>
                   </p>
@@ -159,8 +159,8 @@ function Footer() {
               <div className="footer-contact-item">
                 <span className="contact-icon"><FaWhatsapp /></span>
                 <div>
-                  <small>Working Hours</small>
-                  <p>Mon - Sat: 9AM - 6PM</p>
+                  <small>WhatsApp</small>
+                  <p>+92 305 4800448</p>
                 </div>
               </div>
             </div>
