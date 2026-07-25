@@ -1,37 +1,55 @@
-
 import { useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
     HiOutlineMenuAlt3,
     HiOutlineX,
 } from 'react-icons/hi';
+
+/*
+TEMPORARILY DISABLED:
+Slider arrows abhi use nahi ho rahe.
+
 import {
     FiChevronLeft,
     FiChevronRight
 } from 'react-icons/fi';
-import { FiUser, FiSettings, FiLogOut, FiGrid } from 'react-icons/fi';
+*/
+
+import {
+    FiUser,
+    FiSettings,
+    FiLogOut,
+    FiGrid
+} from 'react-icons/fi';
 import '../css/Header.css'
 import SignInDialog from './SignInDialog';
 import SignUpDialog from './SignUpDialog';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import api from "../api/api";
 import { toast } from "react-toastify";
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+
+    /*
+    TEMPORARILY DISABLED:
+    Slider ki state abhi use nahi hogi.
+
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(true);
+    */
+
     const location = useLocation();
+    const navigate = useNavigate();
     const [authDialog, setAuthDialog] = useState(null);
     const { user, logout, isAdmin } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [resetDialog, setResetDialog] = useState(false);
     const [hasPopularProducts, setHasPopularProducts] = useState(false);
-    const navigate = useNavigate();
+    const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
 
     const isHomePage = location.pathname === '/';
-    const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
+
     const closeMenu = () => setMenuOpen(false);
 
     const getShortName = (name) => {
@@ -40,36 +58,56 @@ function Header() {
         return name.slice(0, 6) + "...";
     };
 
+    /*
+    TEMPORARILY DISABLED:
+    Purani slider images safe rakhi hain.
+
     const slides = [
         '/slide-1.jpeg',
         '/slide-2.jpeg',
         '/slide-3.jpeg'
-    ]
+    ];
 
-    const extendedSlides = [...slides, slides[0]]
+    const extendedSlides = [...slides, slides[0]];
+    */
+
+    /*
+    TEMPORARILY DISABLED:
+    Automatic slider interval.
 
     useEffect(() => {
-        if (!isHomePage) return
+        if (!isHomePage) return;
 
         const interval = setInterval(() => {
-            setCurrentSlide(prev => prev + 1)
-        }, 8000)
+            setCurrentSlide(prev => prev + 1);
+        }, 8000);
 
-        return () => clearInterval(interval)
-    }, []);
+        return () => clearInterval(interval);
+    }, [isHomePage]);
+    */
+
+    /*
+    TEMPORARILY DISABLED:
+    Infinite slider transition handling.
 
     useEffect(() => {
         if (currentSlide === slides.length) {
-            setTimeout(() => {
-                setIsTransitioning(false)
-                setCurrentSlide(0)
-            }, 1200)
+            const resetTimeout = setTimeout(() => {
+                setIsTransitioning(false);
+                setCurrentSlide(0);
+            }, 1200);
 
-            setTimeout(() => {
-                setIsTransitioning(true)
-            }, 1300)
+            const transitionTimeout = setTimeout(() => {
+                setIsTransitioning(true);
+            }, 1300);
+
+            return () => {
+                clearTimeout(resetTimeout);
+                clearTimeout(transitionTimeout);
+            };
         }
     }, [currentSlide]);
+    */
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -121,24 +159,34 @@ function Header() {
         }
     };
 
+    /*
+    TEMPORARILY DISABLED:
+    Slider next button function.
+
     const goNext = () => {
         if (currentSlide < slides.length) {
-            setCurrentSlide((prev) => prev + 1)
+            setCurrentSlide(prev => prev + 1);
         }
-    }
+    };
+    */
+
+    /*
+    TEMPORARILY DISABLED:
+    Slider previous button function.
 
     const goPrev = () => {
         if (currentSlide === 0) {
-            setIsTransitioning(false)
-            setCurrentSlide(slides.length - 1)
+            setIsTransitioning(false);
+            setCurrentSlide(slides.length - 1);
 
             setTimeout(() => {
-                setIsTransitioning(true)
-            }, 50)
+                setIsTransitioning(true);
+            }, 50);
         } else {
-            setCurrentSlide((prev) => prev - 1)
+            setCurrentSlide(prev => prev - 1);
         }
-    }
+    };
+    */
 
     return (
         <header className={`main-header ${isHomePage ? 'home-header' : 'inner-header'}`}>
@@ -148,24 +196,52 @@ function Header() {
 
                         <div className="floating-navbar">
                             <div className="nav-left">
-                                <img src="/logo-store-2.png" alt="Hakeem Ismail Logo" className="nav-logo" />
-                                <span className="brand-name">Hakeem Ismail</span>
+                                <img
+                                    src="/logo-store-2.png"
+                                    alt="Hakeem Ismail Logo"
+                                    className="nav-logo"
+                                />
+
+                                <span className="brand-name">
+                                    Hakeem Ismail
+                                </span>
                             </div>
 
                             <nav className="desktop-nav">
-                                <NavLink to="/" className="nav-link">Home</NavLink>
-                                <NavLink to="/products" className="nav-link">Products</NavLink>
-                                <NavLink to="/articles" className="nav-link">Articles</NavLink>
-                                <NavLink to="/blogs" className="nav-link">Blogs</NavLink>
-                                <NavLink to="/videos" className="nav-link">Videos</NavLink>
-                                <NavLink to="/shorts" className="nav-link">Shorts</NavLink>
-                                <NavLink to="/about" className="nav-link">About Us</NavLink>
-                                <NavLink to="/contact" className="nav-link">Contact Us</NavLink>
+                                <NavLink to="/" className="nav-link">
+                                    Home
+                                </NavLink>
+
+                                <NavLink to="/products" className="nav-link">
+                                    Products
+                                </NavLink>
+
+                                <NavLink to="/articles" className="nav-link">
+                                    Articles
+                                </NavLink>
+
+                                <NavLink to="/blogs" className="nav-link">
+                                    Blogs
+                                </NavLink>
+
+                                <NavLink to="/videos" className="nav-link">
+                                    Videos
+                                </NavLink>
+
+                                <NavLink to="/shorts" className="nav-link">
+                                    Shorts
+                                </NavLink>
+
+                                <NavLink to="/about" className="nav-link">
+                                    About Us
+                                </NavLink>
+
+                                <NavLink to="/contact" className="nav-link">
+                                    Contact Us
+                                </NavLink>
                             </nav>
 
                             <div className="nav-right">
-
-                                {/* AUTH SECTION */}
                                 <div className="desktop-auth-area">
                                     {!user ? (
                                         <button
@@ -194,11 +270,13 @@ function Header() {
 
                                             {dropdownOpen && (
                                                 <div className="dropdown-menu">
-
                                                     <div className="dropdown-header">
                                                         <FiUser className="dropdown-icon" />
+
                                                         <span>
-                                                            {isAdmin ? 'Admin Panel' : user.name}
+                                                            {isAdmin
+                                                                ? 'Admin Panel'
+                                                                : user.name}
                                                         </span>
                                                     </div>
 
@@ -248,7 +326,10 @@ function Header() {
                                 </div>
 
                                 {hasPopularProducts && (
-                                    <button className="mobile-popular-btn" onClick={scrollToPopular}>
+                                    <button
+                                        className="mobile-popular-btn"
+                                        onClick={scrollToPopular}
+                                    >
                                         Popular
                                     </button>
                                 )}
@@ -257,13 +338,13 @@ function Header() {
                                     className="menu-toggle"
                                     onClick={() => setMenuOpen(!menuOpen)}
                                 >
-                                    {menuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
+                                    {menuOpen
+                                        ? <HiOutlineX />
+                                        : <HiOutlineMenuAlt3 />}
                                 </button>
-
                             </div>
                         </div>
 
-                        {/* Mobile Menu Dropdown - SMALL DIALOG */}
                         {menuOpen && (
                             <div
                                 className="mobile-menu-overlay"
@@ -272,14 +353,69 @@ function Header() {
                         )}
 
                         <div className={`mobile-menu-dropdown ${menuOpen ? 'active' : ''}`}>
-                            <NavLink to="/" className="mobile-menu-item" onClick={closeMenu}>Home</NavLink>
-                            <NavLink to="/products" className="mobile-menu-item" onClick={closeMenu}>Products</NavLink>
-                            <NavLink to="/articles" className="mobile-menu-item" onClick={closeMenu}>Articles</NavLink>
-                            <NavLink to="/blogs" className="mobile-menu-item" onClick={closeMenu}>Blogs</NavLink>
-                            <NavLink to="/videos" className="mobile-menu-item" onClick={closeMenu}>Videos</NavLink>
-                            <NavLink to="/shorts" className="mobile-menu-item" onClick={closeMenu}>Shorts</NavLink>
-                            <NavLink to="/about" className="mobile-menu-item" onClick={closeMenu}>About Us</NavLink>
-                            <NavLink to="/contact" className="mobile-menu-item" onClick={closeMenu}>Contact Us</NavLink>
+                            <NavLink
+                                to="/"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Home
+                            </NavLink>
+
+                            <NavLink
+                                to="/products"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Products
+                            </NavLink>
+
+                            <NavLink
+                                to="/articles"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Articles
+                            </NavLink>
+
+                            <NavLink
+                                to="/blogs"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Blogs
+                            </NavLink>
+
+                            <NavLink
+                                to="/videos"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Videos
+                            </NavLink>
+
+                            <NavLink
+                                to="/shorts"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Shorts
+                            </NavLink>
+
+                            <NavLink
+                                to="/about"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                About Us
+                            </NavLink>
+
+                            <NavLink
+                                to="/contact"
+                                className="mobile-menu-item"
+                                onClick={closeMenu}
+                            >
+                                Contact Us
+                            </NavLink>
 
                             <div className="mobile-menu-divider"></div>
 
@@ -302,15 +438,20 @@ function Header() {
                                             closeMenu();
                                         }}
                                     >
-                                        {isAdmin ? "Admin" : getShortName(user.name)}
+                                        {isAdmin
+                                            ? "Admin"
+                                            : getShortName(user.name)}
                                     </button>
                                 )}
                             </div>
                         </div>
 
+                        {/*
+                        TEMPORARILY DISABLED:
+                        Ye complete purana slider JSX hai.
+
                         {isHomePage && (
                             <div className="hero-slider-wrapper">
-
                                 <button
                                     className="slider-arrow slider-left"
                                     onClick={goPrev}
@@ -323,12 +464,21 @@ function Header() {
                                         className="hero-slider-track"
                                         style={{
                                             transform: `translateX(-${currentSlide * 100}%)`,
-                                            transition: isTransitioning ? 'transform 1.2s ease-in-out' : 'none'
+                                            transition: isTransitioning
+                                                ? 'transform 1.2s ease-in-out'
+                                                : 'none'
                                         }}
                                     >
                                         {extendedSlides.map((slide, index) => (
-                                            <div className="hero-slide" key={index}>
-                                                <img src={slide} className="hero-slide-image" />
+                                            <div
+                                                className="hero-slide"
+                                                key={index}
+                                            >
+                                                <img
+                                                    src={slide}
+                                                    alt={`Slide ${index + 1}`}
+                                                    className="hero-slide-image"
+                                                />
                                             </div>
                                         ))}
                                     </div>
@@ -340,7 +490,22 @@ function Header() {
                                 >
                                     <FiChevronRight />
                                 </button>
+                            </div>
+                        )}
+                        */}
 
+                        {/* TEMPORARY SINGLE IMAGE */}
+                        {isHomePage && (
+                            <div className="hero-slider-wrapper">
+                                <div className="hero-slider-frame">
+                                    <div className="hero-slide">
+                                        <img
+                                            src="/slide_4.jpeg"
+                                            alt="Hakeem Ismail"
+                                            className="hero-slide-image"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -362,8 +527,14 @@ function Header() {
             )}
 
             {mobileAccountOpen && user && (
-                <div className="mobile-account-overlay" onClick={() => setMobileAccountOpen(false)}>
-                    <div className="mobile-account-card" onClick={(e) => e.stopPropagation()}>
+                <div
+                    className="mobile-account-overlay"
+                    onClick={() => setMobileAccountOpen(false)}
+                >
+                    <div
+                        className="mobile-account-card"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <button
                             className="mobile-account-close"
                             onClick={() => setMobileAccountOpen(false)}
@@ -375,8 +546,15 @@ function Header() {
                             <FiUser />
                         </div>
 
-                        <h3>{isAdmin ? "Admin Panel" : user.name}</h3>
-                        <p>{isAdmin ? "Manage your website dashboard" : "Manage your account"}</p>
+                        <h3>
+                            {isAdmin ? "Admin Panel" : user.name}
+                        </h3>
+
+                        <p>
+                            {isAdmin
+                                ? "Manage your website dashboard"
+                                : "Manage your account"}
+                        </p>
 
                         {isAdmin && (
                             <button
@@ -386,7 +564,8 @@ function Header() {
                                     setMobileAccountOpen(false);
                                 }}
                             >
-                                <FiGrid /> Dashboard
+                                <FiGrid />
+                                Dashboard
                             </button>
                         )}
 
@@ -398,7 +577,8 @@ function Header() {
                                     setMobileAccountOpen(false);
                                 }}
                             >
-                                <FiSettings /> Reset Password
+                                <FiSettings />
+                                Reset Password
                             </button>
                         )}
 
@@ -410,7 +590,8 @@ function Header() {
                                 setMobileAccountOpen(false);
                             }}
                         >
-                            <FiLogOut /> Logout
+                            <FiLogOut />
+                            Logout
                         </button>
                     </div>
                 </div>
@@ -419,7 +600,6 @@ function Header() {
             {resetDialog && (
                 <div className="auth-modal-overlay">
                     <div className="auth-card">
-
                         <button
                             className="auth-back-btn"
                             onClick={() => setResetDialog(false)}
@@ -427,7 +607,9 @@ function Header() {
                             ✕
                         </button>
 
-                        <h3 className="forgot-title">Reset Password</h3>
+                        <h3 className="forgot-title">
+                            Reset Password
+                        </h3>
 
                         <p className="forgot-subtitle">
                             Enter new password to update your account
@@ -448,13 +630,14 @@ function Header() {
                         <button
                             className="auth-submit-btn"
                             onClick={() => {
-                                toast.success("Password reset UI ready (backend next)");
+                                toast.success(
+                                    "Password reset UI ready (backend next)"
+                                );
                                 setResetDialog(false);
                             }}
                         >
                             Update Password
                         </button>
-
                     </div>
                 </div>
             )}
