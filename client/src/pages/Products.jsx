@@ -74,6 +74,8 @@ function Products() {
   const handleBuy = (e, product) => {
     e.stopPropagation();
 
+    if (Number(product.price) <= 0) return;
+
     const message = `
 Assalam o Alaikum,
 
@@ -160,14 +162,32 @@ ${product.image}
 
                 <div className="all-products-content">
                   <h3 className="all-products-name">{product.name}</h3>
-                  <p className="all-products-price">Rs. {product.price}</p>
+                  {Number(product.price) > 0 ? (
+                    <p className="all-products-price">
+                      Rs. {product.price}
+                    </p>
+                  ) : (
+                    <div className="all-products-coming-soon">
+                      Coming Soon
+                    </div>
+                  )}
 
-                  <button
-                    className="all-products-buy-btn"
-                    onClick={(e) => handleBuy(e, product)}
-                  >
-                    Buy
-                  </button>
+                  {Number(product.price) > 0 ? (
+                    <button
+                      className="all-products-buy-btn"
+                      onClick={(e) => handleBuy(e, product)}
+                    >
+                      Buy
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="all-products-buy-btn all-products-buy-btn-disabled"
+                      disabled
+                    >
+                      Not Available Yet
+                    </button>
+                  )}
                 </div>
               </div>
             ))

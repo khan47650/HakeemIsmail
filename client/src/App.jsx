@@ -23,6 +23,7 @@ import AdminVideos from './pages/admin/AdminVideos';
 import AdminShorts from './pages/admin/AdminShorts';
 import AdminBlogs from './pages/admin/AdminBlogs';
 import AdminCategories from './pages/admin/AdminCategories';
+import SliderImages from './pages/admin/SliderImages';
 import Messages from './pages/admin/Messages';
 import ProductDetailPage from './components/ProductDetailPage';
 import BlogDetailPage from './components/BlogDetailPage';
@@ -101,6 +102,7 @@ function App() {
           <Route path="/admin/blogs/new" element={<AdminBlogForm />} />
           <Route path="/admin/blogs/edit/:id" element={<AdminBlogForm />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
+          <Route path="slider-images" element={<SliderImages />} />
 
         </Route>
       </Routes>

@@ -4,16 +4,7 @@ import {
     HiOutlineMenuAlt3,
     HiOutlineX,
 } from 'react-icons/hi';
-
-/*
-TEMPORARILY DISABLED:
-Slider arrows abhi use nahi ho rahe.
-
-import {
-    FiChevronLeft,
-    FiChevronRight
-} from 'react-icons/fi';
-*/
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 import {
     FiUser,
@@ -31,13 +22,9 @@ import { toast } from "react-toastify";
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
 
-    /*
-    TEMPORARILY DISABLED:
-    Slider ki state abhi use nahi hogi.
-
+    const [sliderImages, setSliderImages] = useState([]);
+    const [sliderLoading, setSliderLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(true);
-    */
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -58,56 +45,51 @@ function Header() {
         return name.slice(0, 6) + "...";
     };
 
-    /*
-    TEMPORARILY DISABLED:
-    Purani slider images safe rakhi hain.
+    useEffect(() => {
+        const fetchSliderImages = async () => {
+            try {
+                setSliderLoading(true);
 
-    const slides = [
-        '/slide-1.jpeg',
-        '/slide-2.jpeg',
-        '/slide-3.jpeg'
-    ];
+                const response = await api.get("/slider-images");
 
-    const extendedSlides = [...slides, slides[0]];
-    */
+                setSliderImages(
+                    Array.isArray(response.data)
+                        ? response.data
+                        : []
+                );
+            } catch (error) {
+                console.error("Slider images fetch error:", error);
+                setSliderImages([]);
+            } finally {
+                setSliderLoading(false);
+            }
+        };
 
-    /*
-    TEMPORARILY DISABLED:
-    Automatic slider interval.
+        fetchSliderImages();
+    }, []);
+
+    const displaySlides = sliderImages.length
+        ? sliderImages.map((image) => image.imageUrl)
+        : ["/slide_4.jpeg"];
 
     useEffect(() => {
-        if (!isHomePage) return;
+        setCurrentSlide((previous) =>
+            previous >= displaySlides.length ? 0 : previous
+        );
+
+        if (!isHomePage || displaySlides.length <= 1) {
+            setCurrentSlide(0);
+            return;
+        }
 
         const interval = setInterval(() => {
-            setCurrentSlide(prev => prev + 1);
+            setCurrentSlide((previous) =>
+                (previous + 1) % displaySlides.length
+            );
         }, 8000);
 
         return () => clearInterval(interval);
-    }, [isHomePage]);
-    */
-
-    /*
-    TEMPORARILY DISABLED:
-    Infinite slider transition handling.
-
-    useEffect(() => {
-        if (currentSlide === slides.length) {
-            const resetTimeout = setTimeout(() => {
-                setIsTransitioning(false);
-                setCurrentSlide(0);
-            }, 1200);
-
-            const transitionTimeout = setTimeout(() => {
-                setIsTransitioning(true);
-            }, 1300);
-
-            return () => {
-                clearTimeout(resetTimeout);
-                clearTimeout(transitionTimeout);
-            };
-        }
-    }, [currentSlide]);
-    */
+    }, [isHomePage, displaySlides.length]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -159,34 +141,23 @@ function Header() {
         }
     };
 
-    /*
-    TEMPORARILY DISABLED:
-    Slider next button function.
-
     const goNext = () => {
-        if (currentSlide < slides.length) {
-            setCurrentSlide(prev => prev + 1);
-        }
-    };
-    */
+        if (displaySlides.length <= 1) return;
 
-    /*
-    TEMPORARILY DISABLED:
-    Slider previous button function.
+        setCurrentSlide((previous) =>
+            (previous + 1) % displaySlides.length
+        );
+    };
 
     const goPrev = () => {
-        if (currentSlide === 0) {
-            setIsTransitioning(false);
-            setCurrentSlide(slides.length - 1);
+        if (displaySlides.length <= 1) return;
 
-            setTimeout(() => {
-                setIsTransitioning(true);
-            }, 50);
-        } else {
-            setCurrentSlide(prev => prev - 1);
-        }
+        setCurrentSlide((previous) =>
+            previous === 0
+                ? displaySlides.length - 1
+                : previous - 1
+        );
     };
-    */
 
     return (
         <header className={`main-header ${isHomePage ? 'home-header' : 'inner-header'}`}>
@@ -446,68 +417,76 @@ function Header() {
                             </div>
                         </div>
 
-                        {/*
-                        TEMPORARILY DISABLED:
-                        Ye complete purana slider JSX hai.
-
                         {isHomePage && (
                             <div className="hero-slider-wrapper">
-                                <button
-                                    className="slider-arrow slider-left"
-                                    onClick={goPrev}
-                                >
-                                    <FiChevronLeft />
-                                </button>
+                                {displaySlides.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className="slider-arrow slider-left"
+                                        onClick={goPrev}
+                                        aria-label="Previous slide"
+                                    >
+                                        <FiChevronLeft />
+                                    </button>
+                                )}
 
                                 <div className="hero-slider-frame">
-                                    <div
-                                        className="hero-slider-track"
-                                        style={{
-                                            transform: `translateX(-${currentSlide * 100}%)`,
-                                            transition: isTransitioning
-                                                ? 'transform 1.2s ease-in-out'
-                                                : 'none'
-                                        }}
+                                    {sliderLoading ? (
+                                        <div className="hero-slider-loading">
+                                            <span />
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className="hero-slider-track"
+                                            style={{
+                                                transform: `translateX(-${currentSlide * 100}%)`,
+                                            }}
+                                        >
+                                            {displaySlides.map((slide, index) => (
+                                                <div
+                                                    className="hero-slide"
+                                                    key={`${slide}-${index}`}
+                                                >
+                                                    <img
+                                                        src={slide}
+                                                        alt={`Homepage slider ${index + 1}`}
+                                                        className="hero-slide-image"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {displaySlides.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className="slider-arrow slider-right"
+                                        onClick={goNext}
+                                        aria-label="Next slide"
                                     >
-                                        {extendedSlides.map((slide, index) => (
-                                            <div
-                                                className="hero-slide"
+                                        <FiChevronRight />
+                                    </button>
+                                )}
+
+                                {displaySlides.length > 1 && (
+                                    <div className="hero-slider-dots">
+                                        {displaySlides.map((_, index) => (
+                                            <button
+                                                type="button"
                                                 key={index}
-                                            >
-                                                <img
-                                                    src={slide}
-                                                    alt={`Slide ${index + 1}`}
-                                                    className="hero-slide-image"
-                                                />
-                                            </div>
+                                                className={
+                                                    currentSlide === index ? "active" : ""
+                                                }
+                                                onClick={() => setCurrentSlide(index)}
+                                                aria-label={`Go to slide ${index + 1}`}
+                                            />
                                         ))}
                                     </div>
-                                </div>
-
-                                <button
-                                    className="slider-arrow slider-right"
-                                    onClick={goNext}
-                                >
-                                    <FiChevronRight />
-                                </button>
+                                )}
                             </div>
                         )}
-                        */}
 
-                        {/* TEMPORARY SINGLE IMAGE */}
-                        {isHomePage && (
-                            <div className="hero-slider-wrapper">
-                                <div className="hero-slider-frame">
-                                    <div className="hero-slide">
-                                        <img
-                                            src="/slide_4.jpeg"
-                                            alt="Hakeem Ismail"
-                                            className="hero-slide-image"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

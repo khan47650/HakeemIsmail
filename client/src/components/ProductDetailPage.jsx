@@ -41,6 +41,56 @@ function ProductDetailPage() {
         return [];
     };
 
+    const sanitizeProductDescription = (html = "") => {
+        if (!html) return "";
+
+        const parser = new DOMParser();
+        const parsedDocument = parser.parseFromString(
+            html,
+            "text/html"
+        );
+
+        parsedDocument.body
+            .querySelectorAll("*")
+            .forEach((element) => {
+                element.removeAttribute("dir");
+
+                element.classList.remove(
+                    "ql-direction-rtl",
+                    "ql-align-right",
+                    "ql-align-center",
+                    "ql-align-justify"
+                );
+
+                element.style.removeProperty("direction");
+                element.style.removeProperty("text-align");
+                element.style.removeProperty("unicode-bidi");
+
+                if (!element.getAttribute("style")) {
+                    element.removeAttribute("style");
+                }
+
+                if (!element.className) {
+                    element.removeAttribute("class");
+                }
+            });
+
+        const textWalker = parsedDocument.createTreeWalker(
+            parsedDocument.body,
+            4
+        );
+
+        while (textWalker.nextNode()) {
+            textWalker.currentNode.nodeValue =
+                textWalker.currentNode.nodeValue.replace(
+                    /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g,
+                    ""
+                );
+        }
+
+        return parsedDocument.body.innerHTML;
+    };
+
     const fetchProductData = async () => {
         try {
             setLoading(true);
@@ -128,7 +178,7 @@ function ProductDetailPage() {
     }, [product]);
 
     const handleBuy = () => {
-        if (!product) return;
+        if (!product || Number(product.price) <= 0) return;
 
         const message = `
 Assalam o Alaikum,
@@ -269,11 +319,20 @@ ${product.image}
                     </div>
 
                     {activeTab === "about" && (
-                        <div className="product-about-box page-reveal">
+                        <div
+                            className="pd-about-product-card page-reveal"
+                            dir="ltr"
+                        >
                             <h3>About This Product</h3>
+
                             <div
-                                className="quill-content"
-                                dangerouslySetInnerHTML={{ __html: product.description }}
+                                className="pd-about-product-content"
+                                dir="ltr"
+                                dangerouslySetInnerHTML={{
+                                    __html: sanitizeProductDescription(
+                                        product.description
+                                    ),
+                                }}
                             />
                         </div>
                     )}
@@ -345,7 +404,15 @@ ${product.image}
 
                     <h1>{product.name}</h1>
 
-                    <p className="product-detail-price-text">Rs. {product.price}</p>
+                    {Number(product.price) > 0 ? (
+                        <p className="product-detail-price-text">
+                            Rs. {product.price}
+                        </p>
+                    ) : (
+                        <div className="product-detail-coming-soon">
+                            Coming Soon
+                        </div>
+                    )}
 
                     <div className="product-tags-row">
                         {product.tags?.length > 0 ? (
@@ -410,9 +477,19 @@ ${product.image}
                         </div>
                     </div>
 
-                    <button className="product-detail-buy-now" onClick={handleBuy}>
+                    <button
+                        className={`product-detail-buy-now ${Number(product.price) <= 0
+                            ? "product-detail-buy-disabled"
+                            : ""
+                            }`}
+                        onClick={handleBuy}
+                        disabled={Number(product.price) <= 0}
+                    >
                         <FiShoppingBag />
-                        Buy Now
+
+                        {Number(product.price) > 0
+                            ? "Buy Now"
+                            : "Not Available Yet"}
                     </button>
                 </div>
             </section>
@@ -447,7 +524,9 @@ ${product.image}
                                     </span>
 
                                     <h3>{item.name}</h3>
-                                    <p>Rs. {item.price}</p>
+                                    {Number(item.price) > 0 && (
+                                        <p>Rs. {item.price}</p>
+                                    )}
 
                                     <button
                                         onClick={(e) => {

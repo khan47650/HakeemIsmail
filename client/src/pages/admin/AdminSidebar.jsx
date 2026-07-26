@@ -8,7 +8,8 @@ import {
     FiMessageSquare,
     FiPlayCircle,
     FiX,
-    FiTag
+    FiTag,
+    FiImage
 } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../css/AdminSidebar.css';
@@ -21,6 +22,7 @@ function AdminSidebar({ isOpen, setIsOpen }) {
         { name: 'Pending Orders', icon: <FiClock />, path: '/admin/pending-orders' },
         { name: 'Completed Orders', icon: <FiCheckCircle />, path: '/admin/completed-orders' },
         { name: 'Products', icon: <FiPackage />, path: '/admin/products' },
+        { name: "Slider Images", icon: <FiImage />, path: "/admin/slider-images", },
         { name: 'Articles', icon: <FiFileText />, path: '/admin/articles' },
         { name: 'Blogs', icon: <FiBook />, path: '/admin/blogs' },
         { name: 'Videos', icon: <FiVideo />, path: '/admin/videos' },

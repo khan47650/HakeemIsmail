@@ -140,6 +140,26 @@ function Home() {
   };
 
   const stripHtml = (html = "") => html.replace(/<[^>]+>/g, "").trim();
+  const handleHomeProductBuy = (event, product) => {
+    event.stopPropagation();
+
+    if (Number(product.price) <= 0) return;
+
+    const message = `
+Assalam o Alaikum,
+
+Mujhe ye product buy karna hai.
+
+Product: ${product.name}
+Price: Rs. ${product.price}
+
+Image:
+${product.image}
+`;
+
+    const url = `https://wa.me/923054800448?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
 
   const openVideoLink = (item) => {
     const url = item.youtubeUrl || item.facebookUrl;
@@ -309,54 +329,74 @@ function Home() {
               </div>
 
               <div className="home-products-grid">
-                {popularProducts.slice(0, 6).map((product) => (
-                  <div
+                {popularProducts.slice(0, 6).map((product, index) => (
+                  <article
                     key={product._id}
-                    className="home-product-card-wrapper"
+                    className={`home-product-card fade-up fade-up-delay-${(index % 6) + 1}`}
                     onClick={() => navigate(`/products/${product._id}`)}
                   >
-                    <div className="home-product-card">
-                      {product.category === "popular" && (
-                        <span className="all-products-popular-badge">Popular</span>
+                    {product.category === "popular" && (
+                      <span className="home-product-popular-badge">
+                        Popular
+                      </span>
+                    )}
+
+                    <div className="home-product-image-box">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="home-product-image"
+                        loading="lazy"
+                      />
+
+                      <button
+                        type="button"
+                        className="home-product-view-details"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          navigate(`/products/${product._id}`);
+                        }}
+                      >
+                        View Details <FiArrowRight />
+                      </button>
+                    </div>
+
+                    <div className="home-product-content">
+                      <h3 className="home-product-name">
+                        {product.name}
+                      </h3>
+
+                      {Number(product.price) > 0 ? (
+                        <p className="home-product-price">
+                          Rs. {product.price}
+                        </p>
+                      ) : (
+                        <div className="home-product-coming-soon">
+                          Coming Soon
+                        </div>
                       )}
 
-                      <div className="home-product-image-box">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="home-product-image"
-                          loading="lazy"
-                        />
-                      </div>
-
-                      <div className="home-product-content">
-                        <h3 className="home-product-name">{product.name}</h3>
-                        <p className="home-product-price">Rs. {product.price}</p>
-
+                      {Number(product.price) > 0 ? (
                         <button
+                          type="button"
                           className="home-product-buy-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const message = `
-                                                Assalam o Alaikum,
-
-                                                Mujhe ye product buy karna hai.
-
-                                                Product: ${product.name}
-                                                Price: Rs. ${product.price}
-
-                                                Image:
-                                                ${product.image}
-                                                `;
-                            const url = `https://wa.me/923054800448?text=${encodeURIComponent(message)}`;
-                            window.open(url, "_blank");
-                          }}
+                          onClick={(event) =>
+                            handleHomeProductBuy(event, product)
+                          }
                         >
                           Buy
                         </button>
-                      </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="home-product-buy-btn home-product-buy-disabled"
+                          disabled
+                        >
+                          Not Available Yet
+                        </button>
+                      )}
                     </div>
-                  </div>
+                  </article>
                 ))}
               </div>
             </div>
@@ -422,27 +462,43 @@ function Home() {
               </div>
 
               <div className="home-blogs-grid">
-                {blogs.slice(0, 4).map((blog) => (
-                  <div
-                    key={blog._id}
-                    className="blog-card"
-                    onClick={() => navigate(`/blogs/${blog._id}`)}
-                  >
-                    <div className="blog-card-image">
-                      <img src={blog.image} alt={blog.title} loading="lazy" />
-                    </div>
-                    <div className="blog-card-body">
-                      <h3 className="blog-card-title">{blog.title}</h3>
-                      <p className="blog-card-excerpt">
-                        {blog.excerpt
-                          ? blog.excerpt.slice(0, 110)
-                          : plainText(blog.content).slice(0, 110)}
-                        ...
-                      </p>
-                      <span className="blog-card-readmore">مزید پڑھیں</span>
-                    </div>
-                  </div>
-                ))}
+                {blogs.slice(0, 4).map((blog, index) => {
+                  const excerpt = stripHtml(blog.excerpt || blog.content);
+
+                  return (
+                    <article
+                      key={blog._id}
+                      className={`blog-card fade-up fade-up-delay-${(index % 4) + 1}`}
+                      onClick={() => navigate(`/blogs/${blog._id}`)}
+                    >
+                      <div className="blog-card-image">
+                        <img
+                          src={blog.image}
+                          alt={blog.title}
+                          loading="lazy"
+                        />
+                      </div>
+
+                      <div className="blog-card-body">
+                        <h3 className="blog-card-title">
+                          {blog.title}
+                        </h3>
+
+                        {excerpt && (
+                          <p className="blog-card-excerpt">
+                            {excerpt}
+                          </p>
+                        )}
+
+                        <div className="blog-card-footer home-blog-card-footer">
+                          <span className="blog-card-readmore">
+                            مزید پڑھیں
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </section>
           )}
