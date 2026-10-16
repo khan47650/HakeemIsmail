@@ -23,7 +23,7 @@ function SignInDialog({ onClose, onSwitchToSignUp }) {
         try {
             setLoading(true);
 
-            if (email === 'admin123@gmail.com' && password === 'Admin123@') {
+            if (email === 'HakeemAdmin@gmail.com' && password === 'Admin1234567@') {
                 const adminUser = {
                     id: "admin-id",
                     name: "Admin",

@@ -451,7 +451,7 @@ ${product.image}
             </section>
           )}
 
-          {!loading && blogs.slice(0, 4).length > 0 && (
+          {!loading && blogs.slice(0, 3).length > 0 && (
             <section className="home-preview-section">
               <div className="section-header">
                 <h2>Latest Blogs</h2>
@@ -462,7 +462,7 @@ ${product.image}
               </div>
 
               <div className="home-blogs-grid">
-                {blogs.slice(0, 4).map((blog, index) => {
+                {blogs.slice(0, 3).map((blog, index) => {
                   const excerpt = stripHtml(blog.excerpt || blog.content);
 
                   return (

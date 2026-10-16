@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     // ADMIN CHECK
-    const isAdmin = user?.email === "admin123@gmail.com";
+    const isAdmin = user?.email === "HakeemAdmin@gmail.com";
 
     return (
         <AuthContext.Provider
