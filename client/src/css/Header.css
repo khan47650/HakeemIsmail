@@ -491,9 +491,21 @@
   }
 
   .slider-arrow {
-    width: 35px;
-    height: 35px;
-    font-size: 18px;
+    width: 26px;
+    /* Pehle 35px tha, ab chota kar diya */
+    height: 26px;
+    /* Pehle 35px tha */
+    font-size: 14px;
+    /* Icon ka size bhi chota kar diya */
+  }
+
+  /* Arrows ko kinaron (edges) ke thora aur qareeb kar diya hai */
+  .slider-left {
+    left: 4px;
+  }
+
+  .slider-right {
+    right: 4px;
   }
 
   .nav-right {
