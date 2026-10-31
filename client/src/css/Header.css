@@ -491,21 +491,24 @@
   }
 
   .slider-arrow {
-    width: 24px;
-    /* Pehle 35px tha, ab chota kar diya */
-    height: 24px;
-    /* Pehle 35px tha */
-    font-size: 12px;
-    /* Icon ka size bhi chota kar diya */
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+
+    /* Center position khatam karke bottom par set kar diya */
+    top: auto;
+    bottom: 15px;
+    /* Bottom se thora upar rakhne ke liye */
+    transform: none;
+    /* Vertical center wale effect ko khatam kiya */
   }
 
-  /* Arrows ko kinaron (edges) ke thora aur qareeb kar diya hai */
   .slider-left {
-    left: 8px;
+    left: 15px;
   }
 
   .slider-right {
-    right: 8px;
+    right: 15px;
   }
 
   .nav-right {
