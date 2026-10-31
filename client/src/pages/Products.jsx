@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiSearch, FiArrowRight } from "react-icons/fi";
+import { FiArrowRight } from "react-icons/fi";
 import api from "../api/api";
 import SEO from "../components/SEO";
 import "../css/Products.css";
@@ -10,12 +10,10 @@ const PRODUCTS_PER_PAGE = 9;
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => { fetchProducts(); }, []);
-  useEffect(() => { setShowAll(false); }, [searchQuery]);
 
   const fetchProducts = async () => {
     try {
@@ -92,11 +90,8 @@ ${product.image}
     window.open(url, "_blank");
   };
 
-  const filtered = products
-    .filter((p) => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-  const visible = showAll ? filtered : filtered.slice(0, PRODUCTS_PER_PAGE);
-  const hasMore = !showAll && filtered.length > PRODUCTS_PER_PAGE;
+  const visible = showAll ? products : products.slice(0, PRODUCTS_PER_PAGE);
+  const hasMore = !showAll && products.length > PRODUCTS_PER_PAGE;
 
   return (
     <section className="all-products-page page-fade-up">
@@ -112,26 +107,12 @@ ${product.image}
           <div className="all-products-title-line"></div>
         </div>
 
-        {/* Search bar only */}
-        <div className="all-products-toolbar">
-          <div className="products-search-wrap">
-            <FiSearch className="products-search-icon" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="products-search-input"
-            />
-          </div>
-        </div>
-
         <div className="all-products-grid">
           {loading ? (
             [...Array(9)].map((_, index) => (
               <div className="all-products-skeleton" key={index}></div>
             ))
-          ) : filtered.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="admin-empty-state">No products found.</div>
           ) : (
             visible.map((product, index) => (

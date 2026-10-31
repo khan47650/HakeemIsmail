@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState, useRef } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { HiOutlineMenuAlt3, HiOutlineX } from 'react-icons/hi';
 import {
-    HiOutlineMenuAlt3,
-    HiOutlineX,
-} from 'react-icons/hi';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-
-import {
+    FiChevronLeft,
+    FiChevronRight,
     FiUser,
-    FiSettings,
     FiLogOut,
-    FiGrid
+    FiGrid,
+    FiSearch
 } from 'react-icons/fi';
-import '../css/Header.css'
+import '../css/Header.css';
 import SignInDialog from './SignInDialog';
 import SignUpDialog from './SignUpDialog';
 import { useAuth } from '../context/AuthContext';
@@ -21,6 +18,11 @@ import { toast } from "react-toastify";
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [allProducts, setAllProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+    const searchRef = useRef(null);
 
     const [sliderImages, setSliderImages] = useState([]);
     const [sliderLoading, setSliderLoading] = useState(true);
@@ -30,33 +32,38 @@ function Header() {
     const navigate = useNavigate();
     const [authDialog, setAuthDialog] = useState(null);
     const { user, logout, isAdmin } = useAuth();
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [resetDialog, setResetDialog] = useState(false);
-    const [hasPopularProducts, setHasPopularProducts] = useState(false);
-    const [mobileAccountOpen, setMobileAccountOpen] = useState(false);
 
     const isHomePage = location.pathname === '/';
 
     const closeMenu = () => setMenuOpen(false);
 
-    const getShortName = (name) => {
-        if (!name) return "User";
-        if (name.length <= 8) return name;
-        return name.slice(0, 6) + "...";
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        if (query.trim()) {
+            const matches = allProducts.filter(product =>
+                product.name.toLowerCase().includes(query.toLowerCase())
+            );
+            setFilteredProducts(matches);
+            setShowSearchDropdown(true);
+        } else {
+            setShowSearchDropdown(false);
+        }
+    };
+
+    const handleProductClick = (productId) => {
+        setShowSearchDropdown(false);
+        setSearchQuery('');
+        navigate(`/products/${productId}`);
     };
 
     useEffect(() => {
         const fetchSliderImages = async () => {
             try {
                 setSliderLoading(true);
-
                 const response = await api.get("/slider-images");
-
-                setSliderImages(
-                    Array.isArray(response.data)
-                        ? response.data
-                        : []
-                );
+                setSliderImages(Array.isArray(response.data) ? response.data : []);
             } catch (error) {
                 console.error("Slider images fetch error:", error);
                 setSliderImages([]);
@@ -64,564 +71,250 @@ function Header() {
                 setSliderLoading(false);
             }
         };
-
         fetchSliderImages();
     }, []);
 
-    const displaySlides = sliderImages.length
-        ? sliderImages.map((image) => image.imageUrl)
-        : ["/slide_4.jpeg"];
+    const displaySlides = sliderImages.length ? sliderImages.map((image) => image.imageUrl) : ["/slide_4.jpeg"];
 
     useEffect(() => {
-        setCurrentSlide((previous) =>
-            previous >= displaySlides.length ? 0 : previous
-        );
-
+        setCurrentSlide((previous) => previous >= displaySlides.length ? 0 : previous);
         if (!isHomePage || displaySlides.length <= 1) {
             setCurrentSlide(0);
             return;
         }
-
         const interval = setInterval(() => {
-            setCurrentSlide((previous) =>
-                (previous + 1) % displaySlides.length
-            );
+            setCurrentSlide((previous) => (previous + 1) % displaySlides.length);
         }, 8000);
-
         return () => clearInterval(interval);
     }, [isHomePage, displaySlides.length]);
 
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (!e.target.closest('.user-dropdown-wrapper')) {
-                setDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener('click', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, []);
-
-    useEffect(() => {
-        const fetchPopularCheck = async () => {
+        const fetchProducts = async () => {
             try {
                 const res = await api.get("/products");
+                setAllProducts(Array.isArray(res.data) ? res.data : []);
 
-                const popularExists = res.data.some(
-                    (product) => product.category === "popular"
-                );
-
+                const popularExists = Array.isArray(res.data) && res.data.some((product) => product.category === "popular");
                 setHasPopularProducts(popularExists);
             } catch (error) {
                 console.log(error);
             }
         };
-
-        fetchPopularCheck();
+        fetchProducts();
     }, []);
-
-    const scrollToPopular = () => {
-        setMenuOpen(false);
-
-        if (location.pathname !== "/") {
-            navigate("/");
-
-            setTimeout(() => {
-                document
-                    .getElementById("popular-products")
-                    ?.scrollIntoView({ behavior: "smooth" });
-            }, 500);
-        } else {
-            document
-                .getElementById("popular-products")
-                ?.scrollIntoView({ behavior: "smooth" });
-        }
-    };
 
     const goNext = () => {
         if (displaySlides.length <= 1) return;
-
-        setCurrentSlide((previous) =>
-            (previous + 1) % displaySlides.length
-        );
+        setCurrentSlide((previous) => (previous + 1) % displaySlides.length);
     };
 
     const goPrev = () => {
         if (displaySlides.length <= 1) return;
-
-        setCurrentSlide((previous) =>
-            previous === 0
-                ? displaySlides.length - 1
-                : previous - 1
-        );
+        setCurrentSlide((previous) => previous === 0 ? displaySlides.length - 1 : previous - 1);
     };
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(e.target)
+            ) {
+                setSearchQuery('');
+                setFilteredProducts([]);
+                setShowSearchDropdown(false);
+            }
+
+            if (!e.target.closest('.user-dropdown-wrapper')) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, []);
 
     return (
         <header className={`main-header ${isHomePage ? 'home-header' : 'inner-header'}`}>
-            <div className="header-hero-bg">
-                <div className="header-overlay">
-                    <div className="container">
 
-                        <div className="floating-navbar">
-                            <div className="nav-left">
-                                <img
-                                    src="/logo-store-2.png"
-                                    alt="Hakeem Ismail Logo"
-                                    className="nav-logo"
-                                />
+            <div className="header-top-bar">
+                <div className="container top-bar-inner">
+                    <div className="nav-left" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                        <img src="/logo-store-2.png" alt="Logo" className="nav-logo" />
+                        <span className="brand-name">Hakeem Ismail</span>
+                    </div>
 
-                                <span className="brand-name">
-                                    Hakeem Ismail
-                                </span>
-                            </div>
-
-                            <nav className="desktop-nav">
-                                <NavLink to="/" className="nav-link">
-                                    Home
-                                </NavLink>
-
-                                <NavLink to="/products" className="nav-link">
-                                    Products
-                                </NavLink>
-
-                                <NavLink to="/articles" className="nav-link">
-                                    Articles
-                                </NavLink>
-
-                                <NavLink to="/blogs" className="nav-link">
-                                    Blogs
-                                </NavLink>
-
-                                <NavLink to="/videos" className="nav-link">
-                                    Videos
-                                </NavLink>
-
-                                <NavLink to="/shorts" className="nav-link">
-                                    Shorts
-                                </NavLink>
-
-                                <NavLink to="/about" className="nav-link">
-                                    About Us
-                                </NavLink>
-
-                                <NavLink to="/contact" className="nav-link">
-                                    Contact Us
-                                </NavLink>
-                            </nav>
-
-                            <div className="nav-right">
-                                <div className="desktop-auth-area">
-                                    {!user ? (
-                                        <button
-                                            className="nav-signin-btn"
-                                            onClick={() => setAuthDialog('signin')}
-                                        >
-                                            Sign In
-                                        </button>
-                                    ) : (
-                                        <div className="user-dropdown-wrapper">
-                                            <button
-                                                className="nav-signin-btn"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setDropdownOpen(prev => !prev);
-                                                }}
-                                            >
-                                                {isAdmin ? (
-                                                    'Admin'
-                                                ) : (
-                                                    <span title={user.name}>
-                                                        {getShortName(user.name)}
-                                                    </span>
-                                                )}
-                                            </button>
-
-                                            {dropdownOpen && (
-                                                <div className="dropdown-menu">
-                                                    <div className="dropdown-header">
-                                                        <FiUser className="dropdown-icon" />
-
-                                                        <span>
-                                                            {isAdmin
-                                                                ? 'Admin Panel'
-                                                                : user.name}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="dropdown-divider"></div>
-
-                                                    {!isAdmin && (
-                                                        <button
-                                                            className="dropdown-item"
-                                                            onClick={() => {
-                                                                setResetDialog(true);
-                                                                setDropdownOpen(false);
-                                                            }}
-                                                        >
-                                                            <FiSettings />
-                                                            Reset Password
-                                                        </button>
-                                                    )}
-
-                                                    {isAdmin && (
-                                                        <button
-                                                            className="dropdown-item"
-                                                            onClick={() => {
-                                                                navigate('/admin');
-                                                                setDropdownOpen(false);
-                                                            }}
-                                                        >
-                                                            <FiGrid />
-                                                            Dashboard
-                                                        </button>
-                                                    )}
-
-                                                    <button
-                                                        className="dropdown-item logout"
-                                                        onClick={() => {
-                                                            logout();
-                                                            navigate('/');
-                                                            setDropdownOpen(false);
-                                                        }}
-                                                    >
-                                                        <FiLogOut />
-                                                        Logout
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {hasPopularProducts && (
-                                    <button
-                                        className="mobile-popular-btn"
-                                        onClick={scrollToPopular}
-                                    >
-                                        Popular
-                                    </button>
-                                )}
-
-                                <button
-                                    className="menu-toggle"
-                                    onClick={() => setMenuOpen(!menuOpen)}
-                                >
-                                    {menuOpen
-                                        ? <HiOutlineX />
-                                        : <HiOutlineMenuAlt3 />}
-                                </button>
-                            </div>
-                        </div>
-
-                        {menuOpen && (
-                            <div
-                                className="mobile-menu-overlay"
-                                onClick={() => setMenuOpen(false)}
+                    <div className="search-bar-container" ref={searchRef}>
+                        <div className="header-search-form">
+                            <input
+                                type="text"
+                                placeholder="Search for products..."
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                onFocus={() => {
+                                    if (searchQuery.trim()) {
+                                        setShowSearchDropdown(true);
+                                    }
+                                }}
                             />
-                        )}
 
-                        <div className={`mobile-menu-dropdown ${menuOpen ? 'active' : ''}`}>
-                            <NavLink
-                                to="/"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
+                            <button
+                                type="button"
+                                className="search-submit-btn"
+                                style={{ cursor: 'default', pointerEvents: 'none' }}
                             >
-                                Home
-                            </NavLink>
-
-                            <NavLink
-                                to="/products"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                Products
-                            </NavLink>
-
-                            <NavLink
-                                to="/articles"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                Articles
-                            </NavLink>
-
-                            <NavLink
-                                to="/blogs"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                Blogs
-                            </NavLink>
-
-                            <NavLink
-                                to="/videos"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                Videos
-                            </NavLink>
-
-                            <NavLink
-                                to="/shorts"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                Shorts
-                            </NavLink>
-
-                            <NavLink
-                                to="/about"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                About Us
-                            </NavLink>
-
-                            <NavLink
-                                to="/contact"
-                                className="mobile-menu-item"
-                                onClick={closeMenu}
-                            >
-                                Contact Us
-                            </NavLink>
-
-                            <div className="mobile-menu-divider"></div>
-
-                            <div className="mobile-menu-auth">
-                                {!user ? (
-                                    <button
-                                        className="mobile-menu-signin"
-                                        onClick={() => {
-                                            setAuthDialog("signin");
-                                            closeMenu();
-                                        }}
-                                    >
-                                        Sign In
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="mobile-menu-user"
-                                        onClick={() => {
-                                            setMobileAccountOpen(true);
-                                            closeMenu();
-                                        }}
-                                    >
-                                        {isAdmin
-                                            ? "Admin"
-                                            : getShortName(user.name)}
-                                    </button>
-                                )}
-                            </div>
+                                <FiSearch />
+                            </button>
                         </div>
 
-                        {isHomePage && (
-                            <div className="hero-slider-wrapper">
-                                {displaySlides.length > 1 && (
-                                    <button
-                                        type="button"
-                                        className="slider-arrow slider-left"
-                                        onClick={goPrev}
-                                        aria-label="Previous slide"
-                                    >
-                                        <FiChevronLeft />
-                                    </button>
-                                )}
-
-                                <div className="hero-slider-frame">
-                                    {sliderLoading ? (
-                                        <div className="hero-slider-loading">
-                                            <span />
-                                        </div>
-                                    ) : (
+                        {/* Live Search Dropdown UI */}
+                        {showSearchDropdown && (
+                            <div className="search-dropdown">
+                                {filteredProducts.length > 0 ? (
+                                    filteredProducts.map((product) => (
                                         <div
-                                            className="hero-slider-track"
-                                            style={{
-                                                transform: `translateX(-${currentSlide * 100}%)`,
-                                            }}
+                                            key={product._id}
+                                            className="search-dropdown-item"
+                                            onClick={() => handleProductClick(product._id)}
                                         >
-                                            {displaySlides.map((slide, index) => (
-                                                <div
-                                                    className="hero-slide"
-                                                    key={`${slide}-${index}`}
-                                                >
-                                                    <img
-                                                        src={slide}
-                                                        alt={`Homepage slider ${index + 1}`}
-                                                        className="hero-slide-image"
-                                                    />
-                                                </div>
-                                            ))}
+                                            {product.name}
                                         </div>
-                                    )}
-                                </div>
-
-                                {displaySlides.length > 1 && (
-                                    <button
-                                        type="button"
-                                        className="slider-arrow slider-right"
-                                        onClick={goNext}
-                                        aria-label="Next slide"
-                                    >
-                                        <FiChevronRight />
-                                    </button>
-                                )}
-
-                                {displaySlides.length > 1 && (
-                                    <div className="hero-slider-dots">
-                                        {displaySlides.map((_, index) => (
-                                            <button
-                                                type="button"
-                                                key={index}
-                                                className={
-                                                    currentSlide === index ? "active" : ""
-                                                }
-                                                onClick={() => setCurrentSlide(index)}
-                                                aria-label={`Go to slide ${index + 1}`}
-                                            />
-                                        ))}
-                                    </div>
+                                    ))
+                                ) : (
+                                    <div className="search-dropdown-no-result">No product found</div>
                                 )}
                             </div>
                         )}
+                    </div>
 
+                    <div className="nav-right">
+                        <div className="desktop-auth-area">
+                            {!user ? (
+                                <button className="nav-signin-btn" onClick={() => setAuthDialog('signin')}>
+                                    <FiUser style={{ marginRight: '6px' }} /> Sign In
+                                </button>
+                            ) : (
+                                <div className="auth-buttons-wrapper">
+                                    {isAdmin && (
+                                        <button className="nav-action-btn" onClick={() => navigate('/admin')}>
+                                            <FiGrid style={{ marginRight: '6px' }} /> Dashboard
+                                        </button>
+                                    )}
+                                    <button className="nav-action-btn logout-btn" onClick={() => { logout(); navigate('/'); }}>
+                                        <FiLogOut style={{ marginRight: '6px' }} /> Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+                            {menuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {authDialog === 'signin' && (
-                <SignInDialog
-                    onClose={() => setAuthDialog(null)}
-                    onSwitchToSignUp={() => setAuthDialog('signup')}
-                />
-            )}
+            <div className="header-nav-bar">
+                <div className="container">
+                    <nav className="desktop-nav">
+                        <NavLink to="/" className="nav-link">Home</NavLink>
+                        <NavLink to="/products" className="nav-link">Products</NavLink>
+                        <NavLink to="/articles" className="nav-link">Articles</NavLink>
+                        <NavLink to="/blogs" className="nav-link">Blogs</NavLink>
+                        <NavLink to="/videos" className="nav-link">Videos</NavLink>
+                        <NavLink to="/shorts" className="nav-link">Shorts</NavLink>
+                        <NavLink to="/about" className="nav-link">About Us</NavLink>
+                        <NavLink to="/contact" className="nav-link">Contact Us</NavLink>
+                    </nav>
+                </div>
+            </div>
 
-            {authDialog === 'signup' && (
-                <SignUpDialog
-                    onClose={() => setAuthDialog(null)}
-                    onSwitchToSignIn={() => setAuthDialog('signin')}
-                />
-            )}
-
-            {mobileAccountOpen && user && (
-                <div
-                    className="mobile-account-overlay"
-                    onClick={() => setMobileAccountOpen(false)}
-                >
-                    <div
-                        className="mobile-account-card"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            className="mobile-account-close"
-                            onClick={() => setMobileAccountOpen(false)}
-                        >
-                            ✕
-                        </button>
-
-                        <div className="mobile-account-avatar">
-                            <FiUser />
+            {menuOpen && <div className="mobile-menu-overlay" onClick={closeMenu} />}
+            <div className={`mobile-menu-dropdown ${menuOpen ? 'active' : ''}`}>
+                {/* --- Ye naya close button yahan add karein --- */}
+                <button className="mobile-menu-close-btn" onClick={closeMenu}>
+                    <HiOutlineX />
+                </button>
+                {/* ------------------------------------------- */}
+                <NavLink to="/" className="mobile-menu-item" onClick={closeMenu}>Home</NavLink>
+                <NavLink to="/products" className="mobile-menu-item" onClick={closeMenu}>Products</NavLink>
+                <NavLink to="/articles" className="mobile-menu-item" onClick={closeMenu}>Articles</NavLink>
+                <NavLink to="/blogs" className="mobile-menu-item" onClick={closeMenu}>Blogs</NavLink>
+                <NavLink to="/videos" className="mobile-menu-item" onClick={closeMenu}>Videos</NavLink>
+                <NavLink to="/shorts" className="mobile-menu-item" onClick={closeMenu}>Shorts</NavLink>
+                <NavLink to="/about" className="mobile-menu-item" onClick={closeMenu}>About Us</NavLink>
+                <NavLink to="/contact" className="mobile-menu-item" onClick={closeMenu}>Contact Us</NavLink>
+                <div className="mobile-menu-divider"></div>
+                <div className="mobile-menu-auth">
+                    {!user ? (
+                        <button className="mobile-menu-signin" onClick={() => { setAuthDialog("signin"); closeMenu(); }}>Sign In</button>
+                    ) : (
+                        <div className="mobile-auth-actions">
+                            {isAdmin && (
+                                <button className="mobile-menu-action" onClick={() => { navigate('/admin'); closeMenu(); }}>
+                                    <FiGrid /> Dashboard
+                                </button>
+                            )}
+                            <button className="mobile-menu-action logout" onClick={() => { logout(); navigate('/'); closeMenu(); }}>
+                                <FiLogOut /> Logout
+                            </button>
                         </div>
+                    )}
+                </div>
+            </div>
 
-                        <h3>
-                            {isAdmin ? "Admin Panel" : user.name}
-                        </h3>
-
-                        <p>
-                            {isAdmin
-                                ? "Manage your website dashboard"
-                                : "Manage your account"}
-                        </p>
-
-                        {isAdmin && (
-                            <button
-                                className="mobile-account-action"
-                                onClick={() => {
-                                    navigate("/admin");
-                                    setMobileAccountOpen(false);
-                                }}
-                            >
-                                <FiGrid />
-                                Dashboard
-                            </button>
-                        )}
-
-                        {!isAdmin && (
-                            <button
-                                className="mobile-account-action"
-                                onClick={() => {
-                                    setResetDialog(true);
-                                    setMobileAccountOpen(false);
-                                }}
-                            >
-                                <FiSettings />
-                                Reset Password
-                            </button>
-                        )}
-
-                        <button
-                            className="mobile-account-action logout"
-                            onClick={() => {
-                                logout();
-                                navigate("/");
-                                setMobileAccountOpen(false);
-                            }}
-                        >
-                            <FiLogOut />
-                            Logout
+            {isHomePage && (
+                <div className="hero-slider-wrapper">
+                    {displaySlides.length > 1 && (
+                        <button type="button" className="slider-arrow slider-left" onClick={goPrev} aria-label="Previous slide">
+                            <FiChevronLeft />
                         </button>
+                    )}
+
+                    <div className="hero-slider-frame">
+                        {sliderLoading ? (
+                            <div className="hero-slider-loading"><span /></div>
+                        ) : (
+                            <div className="hero-slider-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+                                {displaySlides.map((slide, index) => (
+                                    <div className="hero-slide" key={`${slide}-${index}`}>
+                                        <img src={slide} alt={`Homepage slider ${index + 1}`} className="hero-slide-image" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
+
+                    {displaySlides.length > 1 && (
+                        <button type="button" className="slider-arrow slider-right" onClick={goNext} aria-label="Next slide">
+                            <FiChevronRight />
+                        </button>
+                    )}
+
+                    {displaySlides.length > 1 && (
+                        <div className="hero-slider-dots">
+                            {displaySlides.map((_, index) => (
+                                <button
+                                    type="button"
+                                    key={index}
+                                    className={currentSlide === index ? "active" : ""}
+                                    onClick={() => setCurrentSlide(index)}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
-            {resetDialog && (
-                <div className="auth-modal-overlay">
-                    <div className="auth-card">
-                        <button
-                            className="auth-back-btn"
-                            onClick={() => setResetDialog(false)}
-                        >
-                            ✕
-                        </button>
-
-                        <h3 className="forgot-title">
-                            Reset Password
-                        </h3>
-
-                        <p className="forgot-subtitle">
-                            Enter new password to update your account
-                        </p>
-
-                        <input
-                            type="password"
-                            className="auth-input"
-                            placeholder="New Password"
-                        />
-
-                        <input
-                            type="password"
-                            className="auth-input"
-                            placeholder="Confirm Password"
-                        />
-
-                        <button
-                            className="auth-submit-btn"
-                            onClick={() => {
-                                toast.success(
-                                    "Password reset UI ready (backend next)"
-                                );
-                                setResetDialog(false);
-                            }}
-                        >
-                            Update Password
-                        </button>
-                    </div>
-                </div>
-            )}
+            {authDialog === 'signin' && <SignInDialog onClose={() => setAuthDialog(null)} onSwitchToSignUp={() => setAuthDialog('signup')} />}
+            {authDialog === 'signup' && <SignUpDialog onClose={() => setAuthDialog(null)} onSwitchToSignIn={() => setAuthDialog('signin')} />}
         </header>
-    )
+    );
 }
 
 export default Header;
