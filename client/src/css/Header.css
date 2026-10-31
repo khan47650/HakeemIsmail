@@ -183,9 +183,10 @@
 
 .hero-slide-image {
   width: 100%;
-  height: 550px;
-  object-fit: cover;
+  height: auto;
+  /* Fixed height (550px) ki jagah auto laga dein */
   display: block;
+  /* object-fit: contain; aur background-color yahan se hta dein */
 }
 
 .slider-arrow {
@@ -390,6 +391,41 @@
   text-align: center;
 }
 
+/* Slider Dots Styling */
+.hero-slider-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.hero-slider-dots button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  /* Halka white */
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-slider-dots button.active {
+  background-color: #D4AF37;
+  /* Premium Gold */
+  border-color: #C5A059;
+  transform: scale(1.3);
+  /* Active dot thora zyada bara hoga */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  /* Halke shadow se dot wazeh hoga */
+}
+
 @media (max-width: 1024px) {
   .desktop-nav {
     display: none;
@@ -404,7 +440,8 @@
   }
 
   .hero-slide-image {
-    height: 400px;
+    height: auto;
+    /* Yahan 400px ki jagah auto karein */
   }
 }
 
@@ -449,7 +486,8 @@
   }
 
   .hero-slide-image {
-    height: 250px;
+    height: auto;
+    /* Yahan 250px ki jagah auto karein */
   }
 
   .slider-arrow {
