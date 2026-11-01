@@ -486,9 +486,12 @@
   }
 
   .hero-slide-image {
-    height: 580px;
-    object-fit: cover;
-    object-position: center;
+    width: 100%;
+    height: auto;
+    /* Fixed 580px ki jagah auto kar diya */
+    object-fit: contain;
+    /* Cover ki jagah contain karein taa ke poori image bina kate nazar aye */
+    display: block;
   }
 
   .slider-arrow {
