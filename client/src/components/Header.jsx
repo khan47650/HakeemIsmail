@@ -27,6 +27,7 @@ function Header() {
     const [sliderImages, setSliderImages] = useState([]);
     const [sliderLoading, setSliderLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(true);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -36,6 +37,15 @@ function Header() {
     const isHomePage = location.pathname === '/';
 
     const closeMenu = () => setMenuOpen(false);
+
+    // Screen size track karne ke liye
+    const [isMobileScreen, setIsMobileScreen] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobileScreen(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleSearchChange = (e) => {
         const query = e.target.value;
@@ -74,19 +84,65 @@ function Header() {
         fetchSliderImages();
     }, []);
 
-    const displaySlides = sliderImages.length ? sliderImages.map((image) => image.imageUrl) : ["/slide_4.jpeg"];
+
+    const desktopImages = sliderImages.filter(img => !img.isMobile);
+    const mobileImages = sliderImages.filter(img => img.isMobile);
+    const maxSlides = Math.max(desktopImages.length, mobileImages.length);
+
+    const filteredImages = sliderImages.filter(img =>
+        isMobileScreen ? img.isMobile : !img.isMobile
+    );
+
+    const displaySlides = filteredImages.length
+        ? filteredImages.map(img => img.imageUrl)
+        : ["/slide_4.jpeg"];
+
+    const renderSlides = displaySlides.length > 1 ? [...displaySlides, displaySlides[0]] : displaySlides;
 
     useEffect(() => {
-        setCurrentSlide((previous) => previous >= displaySlides.length ? 0 : previous);
-        if (!isHomePage || displaySlides.length <= 1) {
-            setCurrentSlide(0);
-            return;
-        }
+        if (!isHomePage || displaySlides.length <= 1) return;
+
         const interval = setInterval(() => {
-            setCurrentSlide((previous) => (previous + 1) % displaySlides.length);
+            setIsTransitioning(true);
+            setCurrentSlide((prev) => prev + 1);
         }, 8000);
+
         return () => clearInterval(interval);
     }, [isHomePage, displaySlides.length]);
+
+    // NAYA CODE: Jab cloned image (aakhri) par pohnch jaye toh chupke se 1st par snap karein
+    useEffect(() => {
+        if (currentSlide === displaySlides.length) {
+            const timeout = setTimeout(() => {
+                setIsTransitioning(false); // Transition/Animation band ki
+                setCurrentSlide(0); // Foran pehli image par wapas le gaye (bina dikhaye)
+            }, 800); // 800ms ka time (CSS transition 0.8s ke barabar)
+
+            return () => clearTimeout(timeout);
+        }
+    }, [currentSlide, displaySlides.length]);
+
+    const goNext = () => {
+        if (displaySlides.length <= 1 || currentSlide >= displaySlides.length) return;
+        setIsTransitioning(true);
+        setCurrentSlide((prev) => prev + 1);
+    };
+
+    const goPrev = () => {
+        if (displaySlides.length <= 1) return;
+
+        if (currentSlide === 0) {
+            setIsTransitioning(false);
+            setCurrentSlide(displaySlides.length);
+            setTimeout(() => {
+                setIsTransitioning(true);
+                setCurrentSlide(displaySlides.length - 1);
+            }, 50);
+        } else {
+            setIsTransitioning(true);
+            setCurrentSlide((prev) => prev - 1);
+        }
+    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -102,17 +158,6 @@ function Header() {
         };
         fetchProducts();
     }, []);
-
-    const goNext = () => {
-        if (displaySlides.length <= 1) return;
-        setCurrentSlide((previous) => (previous + 1) % displaySlides.length);
-    };
-
-    const goPrev = () => {
-        if (displaySlides.length <= 1) return;
-        setCurrentSlide((previous) => previous === 0 ? displaySlides.length - 1 : previous - 1);
-    };
-
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (
@@ -279,9 +324,15 @@ function Header() {
                         {sliderLoading ? (
                             <div className="hero-slider-loading"><span /></div>
                         ) : (
-                            <div className="hero-slider-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-                                {displaySlides.map((slide, index) => (
-                                    <div className="hero-slide" key={`${slide}-${index}`}>
+                            <div
+                                className="hero-slider-track"
+                                style={{
+                                    transform: `translateX(-${currentSlide * 100}%)`,
+                                    transition: isTransitioning ? 'transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)' : 'none'
+                                }}
+                            >
+                                {renderSlides.map((slide, index) => (
+                                    <div className="hero-slide" key={index}>
                                         <img src={slide} alt={`Homepage slider ${index + 1}`} className="hero-slide-image" />
                                     </div>
                                 ))}

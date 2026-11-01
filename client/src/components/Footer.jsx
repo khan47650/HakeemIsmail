@@ -140,7 +140,7 @@ function Footer() {
                   <small>Email</small>
                   <p>
                     <a href="mailto:Hakeemismail266@Gmail.com">
-                      Hakeemismail266@Gmail.com
+                      hakeemismail266@gmail.com
                     </a>
                   </p>
                 </div>

@@ -486,8 +486,9 @@
   }
 
   .hero-slide-image {
-    height: auto;
-    /* Yahan 250px ki jagah auto karein */
+    height: 680px;
+    object-fit: cover;
+    object-position: center;
   }
 
   .slider-arrow {
@@ -495,12 +496,9 @@
     height: 28px;
     font-size: 14px;
 
-    /* Center position khatam karke bottom par set kar diya */
     top: auto;
     bottom: 15px;
-    /* Bottom se thora upar rakhne ke liye */
     transform: none;
-    /* Vertical center wale effect ko khatam kiya */
   }
 
   .slider-left {

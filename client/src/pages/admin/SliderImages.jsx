@@ -21,6 +21,7 @@ function SliderImages() {
     const [uploading, setUploading] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [deleteDialog, setDeleteDialog] = useState(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     const fetchSliderImages = async () => {
         try {
@@ -92,6 +93,7 @@ function SliderImages() {
 
         setSelectedFile(null);
         setPreviewUrl("");
+        setIsMobile(false);
 
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -114,7 +116,7 @@ function SliderImages() {
 
             const formData = new FormData();
             formData.append("image", selectedFile);
-
+            formData.append("isMobile", isMobile);
             const response = await api.post(
                 "/slider-images",
                 formData
@@ -266,6 +268,30 @@ function SliderImages() {
                     </div>
                 </div>
 
+                {/* YAHAN CHECKBOX ADD KIYA HAI TAAKE HAMESHA NAZAR AAYE */}
+                <div style={{
+                    marginBottom: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "12px 15px",
+                    background: "#f0f7ed",
+                    border: "1px solid #c3e6cb",
+                    borderRadius: "6px"
+                }}>
+                    <input
+                        type="checkbox"
+                        id="isMobileCheck"
+                        checked={isMobile}
+                        onChange={(e) => setIsMobile(e.target.checked)}
+                        disabled={uploading}
+                        style={{ width: "18px", height: "18px", cursor: "pointer", accentColor: "#236c39" }}
+                    />
+                    <label htmlFor="isMobileCheck" style={{ cursor: "pointer", fontSize: "15px", fontWeight: "600", color: "#1b4f14", userSelect: "none" }}>
+                        Upload as Mobile Image (Check this for Mobile Size Images)
+                    </label>
+                </div>
+
                 {!previewUrl ? (
                     <button
                         type="button"
@@ -329,6 +355,8 @@ function SliderImages() {
                                         : ""}
                                 </p>
                             </div>
+
+                            {/* Purana checkbox yahan se hta diya gaya hai */}
 
                             <div className="slider-preview-actions">
                                 <button
