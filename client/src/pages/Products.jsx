@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowRight } from "react-icons/fi";
@@ -11,16 +12,22 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
+  const [activeProductId, setActiveProductId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const res = await api.get("/products");
 
-      const published = (res.data || []).filter((p) => p.status === "published");
+      const published = (res.data || []).filter(
+        (p) => p.status === "published"
+      );
+
       setProducts(published);
     } catch (error) {
       console.log(error);
@@ -45,7 +52,9 @@ function Products() {
           image: p.image || undefined,
           description:
             p.metaDescription ||
-            (p.description ? p.description.replace(/<[^>]+>/g, "").slice(0, 160) : p.name),
+            (p.description
+              ? p.description.replace(/<[^>]+>/g, "").slice(0, 160)
+              : p.name),
           offers: {
             "@type": "Offer",
             priceCurrency: "PKR",
@@ -90,8 +99,12 @@ ${product.image}
     window.open(url, "_blank");
   };
 
-  const visible = showAll ? products : products.slice(0, PRODUCTS_PER_PAGE);
-  const hasMore = !showAll && products.length > PRODUCTS_PER_PAGE;
+  const visible = showAll
+    ? products
+    : products.slice(0, PRODUCTS_PER_PAGE);
+
+  const hasMore =
+    !showAll && products.length > PRODUCTS_PER_PAGE;
 
   return (
     <section className="all-products-page page-fade-up">
@@ -110,19 +123,31 @@ ${product.image}
         <div className="all-products-grid">
           {loading ? (
             [...Array(9)].map((_, index) => (
-              <div className="all-products-skeleton" key={index}></div>
+              <div
+                className="all-products-skeleton"
+                key={index}
+              />
             ))
           ) : products.length === 0 ? (
-            <div className="admin-empty-state">No products found.</div>
+            <div className="admin-empty-state">
+              No products found.
+            </div>
           ) : (
             visible.map((product, index) => (
               <div
-                className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1}`}
+                className={`all-products-card fade-up fade-up-delay-${(index % 6) + 1} ${activeProductId === product._id ? "is-actions-open" : ""
+                  }`}
                 key={product._id}
+                onClick={() => {
+                  setActiveProductId((prev) =>
+                    prev === product._id ? null : product._id
+                  );
+                }}
               >
-                {/* Popular Badge */}
                 {product.category === "popular" && (
-                  <span className="all-products-popular-badge">Popular</span>
+                  <span className="all-products-popular-badge">
+                    Popular
+                  </span>
                 )}
 
                 <div className="all-products-image-wrap">
@@ -133,41 +158,49 @@ ${product.image}
                     loading="lazy"
                   />
 
-                  <button
-                    className="all-products-view-details-btn"
-                    onClick={() => navigate(`/products/${product._id}`)}
-                  >
-                    View Details <FiArrowRight />
-                  </button>
+                  <div className="all-products-hover-actions">
+                    {Number(product.price) > 0 ? (
+                      <button
+                        className="all-products-hover-btn all-products-btn-buy"
+                        onClick={(e) => handleBuy(e, product)}
+                      >
+                        Buy
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="all-products-hover-btn all-products-btn-coming"
+                        disabled
+                      >
+                        Coming Soon
+                      </button>
+                    )}
+
+                    <button
+                      className="all-products-hover-btn all-products-btn-details"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/products/${product._id}`);
+                      }}
+                    >
+                      View Details <FiArrowRight />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="all-products-content">
-                  <h3 className="all-products-name">{product.name}</h3>
+                  <h3 className="all-products-name">
+                    {product.name}
+                  </h3>
+
                   {Number(product.price) > 0 ? (
                     <p className="all-products-price">
                       Rs. {product.price}
                     </p>
                   ) : (
-                    <div className="all-products-coming-soon">
+                    <p className="all-products-coming-soon">
                       Coming Soon
-                    </div>
-                  )}
-
-                  {Number(product.price) > 0 ? (
-                    <button
-                      className="all-products-buy-btn"
-                      onClick={(e) => handleBuy(e, product)}
-                    >
-                      Buy
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="all-products-buy-btn all-products-buy-btn-disabled"
-                      disabled
-                    >
-                      Not Available Yet
-                    </button>
+                    </p>
                   )}
                 </div>
               </div>
@@ -175,10 +208,12 @@ ${product.image}
           )}
         </div>
 
-        {/* Show More */}
         {hasMore && (
           <div className="all-products-more-wrap">
-            <button className="all-products-show-more" onClick={() => setShowAll(true)}>
+            <button
+              className="all-products-show-more"
+              onClick={() => setShowAll(true)}
+            >
               Show More
             </button>
           </div>

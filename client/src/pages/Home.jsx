@@ -6,11 +6,9 @@ import {
   FaTruck,
   FaUserMd,
   FaShieldAlt,
-  FaYoutube,
-  FaFacebook,
   FaChartLine,
   FaGlobeAsia,
-  FaWhatsapp,
+  FaPlayCircle,
 } from "react-icons/fa";
 import { FiArrowRight, FiArrowUp } from "react-icons/fi";
 
@@ -29,6 +27,7 @@ function Home() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [scrollVisible, setScrollVisible] = useState(false);
+  const [activeHomeProductId, setActiveHomeProductId] = useState(null);
 
 
   const fetchHomeData = async () => {
@@ -329,11 +328,16 @@ ${product.image}
               </div>
 
               <div className="home-products-grid">
-                {popularProducts.slice(0, 6).map((product, index) => (
+                {popularProducts.slice(0, 3).map((product, index) => (
                   <article
                     key={product._id}
-                    className={`home-product-card fade-up fade-up-delay-${(index % 6) + 1}`}
-                    onClick={() => navigate(`/products/${product._id}`)}
+                    className={`home-product-card fade-up fade-up-delay-${(index % 4) + 1} ${activeHomeProductId === product._id ? "is-actions-open" : ""
+                      }`}
+                    onClick={() => {
+                      setActiveHomeProductId((prev) =>
+                        prev === product._id ? null : product._id
+                      );
+                    }}
                   >
                     {product.category === "popular" && (
                       <span className="home-product-popular-badge">
@@ -349,16 +353,36 @@ ${product.image}
                         loading="lazy"
                       />
 
-                      <button
-                        type="button"
-                        className="home-product-view-details"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          navigate(`/products/${product._id}`);
-                        }}
-                      >
-                        View Details <FiArrowRight />
-                      </button>
+                      {/* Hover Actions Overlay */}
+                      <div className="home-product-hover-actions">
+                        {Number(product.price) > 0 ? (
+                          <button
+                            type="button"
+                            className="home-hover-btn btn-buy"
+                            onClick={(event) => handleHomeProductBuy(event, product)}
+                          >
+                            Buy
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="home-hover-btn btn-coming-soon"
+                            disabled
+                          >
+                            Coming Soon
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="home-hover-btn btn-details"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            navigate(`/products/${product._id}`);
+                          }}
+                        >
+                          View Details <FiArrowRight />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="home-product-content">
@@ -368,32 +392,12 @@ ${product.image}
 
                       {Number(product.price) > 0 ? (
                         <p className="home-product-price">
-                          Rs. {product.price}
+                          Rs.{product.price}
                         </p>
                       ) : (
-                        <div className="home-product-coming-soon">
+                        <p className="home-product-price-coming">
                           Coming Soon
-                        </div>
-                      )}
-
-                      {Number(product.price) > 0 ? (
-                        <button
-                          type="button"
-                          className="home-product-buy-btn"
-                          onClick={(event) =>
-                            handleHomeProductBuy(event, product)
-                          }
-                        >
-                          Buy
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="home-product-buy-btn home-product-buy-disabled"
-                          disabled
-                        >
-                          Not Available Yet
-                        </button>
+                        </p>
                       )}
                     </div>
                   </article>
@@ -516,22 +520,19 @@ ${product.image}
 
               <div className="home-videos-grid">
                 {featuredVideos.map((video) => (
-                  <div key={video._id} className="home-video-card">
+                  <div key={video._id} className="home-video-card" onClick={() => handleVideoClick(video)}>
                     <div className="home-video-thumb-wrap">
                       <img
                         src={video.thumbnail || "/video-1.jpeg"}
                         alt={video.title}
                         className="home-video-thumb"
                       />
+                      <div className="play-icon-overlay">
+                        <FaPlayCircle />
+                      </div>
                     </div>
                     <div className="home-video-content">
                       <h3 className="home-video-card-title">{video.title}</h3>
-                      <button
-                        className="home-watch-now-btn"
-                        onClick={() => handleVideoClick(video)}
-                      >
-                        Watch Now
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -552,22 +553,19 @@ ${product.image}
 
               <div className="home-shorts-grid">
                 {featuredShorts.map((short) => (
-                  <div key={short._id} className="home-short-card">
+                  <div key={short._id} className="home-short-card" onClick={() => handleVideoClick(short)}>
                     <div className="home-short-thumb-wrap">
                       <img
                         src={short.thumbnail || "/short-1.jpeg"}
                         alt={short.title}
                         className="home-short-thumb"
                       />
+                      <div className="play-icon-overlay">
+                        <FaPlayCircle />
+                      </div>
                     </div>
                     <div className="home-short-content">
                       <h3 className="home-short-card-title">{short.title}</h3>
-                      <button
-                        className="home-watch-now-btn"
-                        onClick={() => handleVideoClick(short)}
-                      >
-                        Watch Now
-                      </button>
                     </div>
                   </div>
                 ))}

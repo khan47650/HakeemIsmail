@@ -1,6 +1,6 @@
 // Shorts.jsx
 import { useEffect, useState, useRef } from "react";
-import { FaYoutube, FaFacebook } from "react-icons/fa";
+import { FaYoutube, FaFacebook, FaPlayCircle } from "react-icons/fa";
 import { FiExternalLink, FiSearch, FiX } from "react-icons/fi";
 import api from "../api/api";
 import SEO from "../components/SEO";
@@ -131,6 +131,7 @@ function Shorts() {
               <div
                 className={`shorts-card fade-up fade-up-delay-${(index % 4) + 1}`}
                 key={short._id}
+                onClick={() => handleShortClick(short)}
               >
                 <div className="shorts-thumb-wrap">
                   <img
@@ -139,16 +140,13 @@ function Shorts() {
                     className="shorts-thumb"
                     loading="lazy"
                   />
+                  <div className="play-icon-overlay">
+                    <FaPlayCircle />
+                  </div>
                 </div>
 
                 <div className="shorts-content">
                   <h3 className="shorts-card-title">{short.title}</h3>
-                  <button
-                    className="shorts-watch-now-btn"
-                    onClick={() => handleShortClick(short)}
-                  >
-                    Watch Now
-                  </button>
                 </div>
               </div>
             ))

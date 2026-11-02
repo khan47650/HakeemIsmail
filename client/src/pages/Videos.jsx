@@ -1,6 +1,6 @@
 
 import { useEffect, useState, useRef, useEffect as useClickOutside } from "react";
-import { FaYoutube, FaFacebook } from "react-icons/fa";
+import { FaYoutube, FaFacebook, FaPlayCircle } from "react-icons/fa";
 import { FiExternalLink, FiSearch, FiX } from "react-icons/fi";
 import api from "../api/api";
 import SEO from "../components/SEO";
@@ -132,6 +132,7 @@ function Videos() {
               <div
                 className={`lux-video-card fade-up fade-up-delay-${(index % 4) + 1}`}
                 key={video._id}
+                onClick={() => handleVideoClick(video)}
               >
                 <div className="lux-video-thumb-wrap">
                   <img
@@ -140,16 +141,13 @@ function Videos() {
                     className="lux-video-thumb"
                     loading="lazy"
                   />
+                  <div className="play-icon-overlay">
+                    <FaPlayCircle />
+                  </div>
                 </div>
 
                 <div className="lux-video-content">
                   <h3 className="lux-video-card-title">{video.title}</h3>
-                  <button
-                    className="lux-watch-now-btn"
-                    onClick={() => handleVideoClick(video)}
-                  >
-                    Watch Now
-                  </button>
                 </div>
               </div>
             ))
