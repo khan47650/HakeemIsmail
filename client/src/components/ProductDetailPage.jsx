@@ -21,22 +21,6 @@ function ProductDetailPage() {
         return [];
     };
 
-    const sanitizeProductDescription = (html = "") => {
-        if (!html) return "";
-        const parser = new DOMParser();
-        const parsedDocument = parser.parseFromString(html, "text/html");
-        parsedDocument.body.querySelectorAll("*").forEach((element) => {
-            element.removeAttribute("dir");
-            element.classList.remove("ql-direction-rtl", "ql-align-right", "ql-align-center", "ql-align-justify");
-            element.style.removeProperty("direction");
-            element.style.removeProperty("text-align");
-            element.style.removeProperty("unicode-bidi");
-            if (!element.getAttribute("style")) element.removeAttribute("style");
-            if (!element.className) element.removeAttribute("class");
-        });
-        return parsedDocument.body.innerHTML;
-    };
-
     const fetchProductData = async () => {
         try {
             setLoading(true);
@@ -94,6 +78,15 @@ function ProductDetailPage() {
         window.open(url, "_blank");
     };
 
+    // Title ko 4 words tak truncate (chota) karne ka function
+    const truncateTitle = (title) => {
+        const words = title.split(" ");
+        if (words.length > 4) {
+            return words.slice(0, 4).join(" ") + "...";
+        }
+        return title;
+    };
+
     if (loading) {
         return (
             <main className="product-detail-page">
@@ -116,6 +109,9 @@ function ProductDetailPage() {
         );
     }
 
+    // Backend se check karte hain ke English format hai ya Urdu
+    const isEnglish = product.isEnglishDescription || false;
+
     return (
         <main className="product-detail-page">
             <SEO
@@ -130,9 +126,8 @@ function ProductDetailPage() {
 
             <section className="product-detail-hero page-reveal">
 
-                {/* Top Row: 2 Columns (Image on Left, Info on Right) */}
+                {/* 1. Header Area: Center Aligned (Like Article Header) */}
                 <div className="product-detail-top-row">
-
                     <div className="product-detail-image-area">
                         <img
                             src={product.image}
@@ -168,21 +163,22 @@ function ProductDetailPage() {
                     </div>
                 </div>
 
-                {/* Bottom Row: Full Width About Section (No White Card) */}
-                <div className="pd-about-product-card page-reveal" dir="ltr">
-                    <h3>About This Product</h3>
-                    <div
-                        className="pd-about-product-content"
-                        dir="ltr"
-                        dangerouslySetInnerHTML={{
-                            __html: sanitizeProductDescription(product.description),
-                        }}
-                    />
-                </div>
+                <div className="adp-bottom-divider" />
 
+                {/* 2. Article Body (Centered, dynamically Urdu or English) */}
+                <div className="adp-wrapper">
+                    <article className="adp-article">
+                        <div
+                            className={isEnglish ? "pd-about-product-content english-format" : "pd-about-product-content urdu-format"}
+                            dangerouslySetInnerHTML={{
+                                __html: product.description,
+                            }}
+                        />
+                    </article>
+                </div>
             </section>
 
-            {/* Recommended Products */}
+            {/* Recommended Products (Image & Short Title Only) */}
             {recommendedProducts.length > 0 && (
                 <section className="recommended-section page-reveal">
                     <div className="recommended-header">
@@ -206,9 +202,7 @@ function ProductDetailPage() {
                                     <img src={item.image} alt={item.name} />
                                 </div>
                                 <div className="recommended-content">
-                                    <span>{item.category === "popular" ? "Popular Product" : "Herbal Product"}</span>
-                                    <h3>{item.name}</h3>
-                                    {Number(item.price) > 0 && <p>Rs. {item.price}</p>}
+                                    <h3>{truncateTitle(item.name)}</h3>
                                     <button onClick={(e) => { e.stopPropagation(); navigate(`/products/${item._id}`); }}>
                                         <FiArrowRight />
                                     </button>

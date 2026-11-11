@@ -6,6 +6,7 @@ import "react-quill-new/dist/quill.snow.css";
 import { toast } from "react-toastify";
 import api from "../../api/api";
 import "../../css/AdminVideoForm.css";
+import "../../css/AdminArticleForm.css";
 
 const slugify = (text = "") =>
     text
@@ -42,6 +43,7 @@ function AdminProductForm() {
         slug: "",
         price: "",
         description: "",
+        isEnglishDescription: false, // New field for English format toggle
         tags: [],
         category: "nonpopular",
         image: "",
@@ -65,6 +67,7 @@ function AdminProductForm() {
                 slug: p.slug || "",
                 price: p.price ?? "",
                 description: p.description || "",
+                isEnglishDescription: p.isEnglishDescription || false,
                 tags: p.tags || [],
                 category: p.category || "nonpopular",
                 image: "",
@@ -357,17 +360,33 @@ function AdminProductForm() {
                         </div>
                         <span className="field-hint">Tags improve the product's search visibility.</span>
 
-                        <label className="video-form-label">Description</label>
-                        <div className="video-quill-wrap">
+                        {/* ===== DESCRIPTION WITH FORMAT TOGGLE ===== */}
+                        <div className="video-form-label-row" style={{ marginBottom: "8px" }}>
+                            <label className="video-form-label" style={{ marginBottom: 0 }}>Description</label>
+
+                            <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: "600", color: "#1b4f14", cursor: "pointer" }}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.isEnglishDescription}
+                                    onChange={(e) => setFormData({ ...formData, isEnglishDescription: e.target.checked })}
+                                    style={{ width: "auto", margin: 0, padding: 0 }}
+                                />
+                                English Format
+                            </label>
+                        </div>
+
+                        {/* Updated Dynamic Class for Quill */}
+                        <div className={formData.isEnglishDescription ? "video-quill-wrap english-quill" : "video-quill-wrap article-quill"}>
                             <ReactQuill
                                 theme="snow"
                                 value={formData.description}
                                 onChange={(value) => setFormData({ ...formData, description: value })}
-                                placeholder="Write the product description..."
+                                placeholder={formData.isEnglishDescription ? "Write the product description..." : "یہاں پروڈکٹ کی تفصیل لکھیں..."}
                                 modules={QUILL_MODULES}
                             />
                         </div>
                         {errors.description && <span className="field-error">{errors.description}</span>}
+                        {/* ======================================== */}
                     </div>
 
                     <div className="video-form-card">

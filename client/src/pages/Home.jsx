@@ -20,7 +20,7 @@ function Home() {
   const [counterStarted, setCounterStarted] = useState(false);
   const [counterValue, setCounterValue] = useState(0);
 
-  const [popularProducts, setPopularProducts] = useState([]);
+  const [latestProducts, setLatestProducts] = useState([]);
   const [articles, setArticles] = useState([]);
   const [videos, setVideos] = useState([]);
   const [shorts, setShorts] = useState([]);
@@ -43,11 +43,15 @@ function Home() {
           api.get("/blogs"),
         ]);
 
-      const popular = (productsRes.data || []).filter(
-        (product) =>
-          product.category === "popular" && product.status === "published"
+      const publishedProducts = (productsRes.data || []).filter(
+        (product) => product.status === "published"
       );
-      setPopularProducts(popular);
+
+      const latest = publishedProducts
+        .sort((a, b) => b._id.localeCompare(a._id))
+        .slice(0, 3);
+
+      setLatestProducts(latest);
 
       const publishedArticles = (articlesRes.data || []).filter(
         (article) => article.status === "published"
@@ -228,38 +232,12 @@ ${product.image}
 
                   <h1 className="hakeem-name">Hakeem Muhammad Ismail</h1>
 
-                  <p className="hakeem-subtitle">
+                  {/* Margin bottom 0 kar diya taake neechay extra space na bache */}
+                  <p className="hakeem-subtitle" style={{ marginBottom: 0 }}>
                     Specialist in Unani Single-Organ Therapy
                   </p>
 
-                  <p className="hero-description">
-                    Pure herbal medicines, natural treatment guidance, and
-                    trusted Unani healthcare services across Pakistan.
-                  </p>
-
-                  <div className="hero-actions">
-                    <button
-                      className="primary-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        document
-                          .getElementById("popular-products")
-                          ?.scrollIntoView({ behavior: "smooth" });
-                      }}
-                    >
-                      View Products <FiArrowRight />
-                    </button>
-
-                    <button
-                      className="secondary-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate("/contact");
-                      }}
-                    >
-                      Contact Us
-                    </button>
-                  </div>
+                  {/* Yahan se description aur hero-actions (buttons) remove kar diye gaye hain */}
                 </div>
               </div>
             </div>
@@ -319,16 +297,16 @@ ${product.image}
             </section>
           )}
 
-          <section className="popular-products-section">
+          <section id="latest-products" className="popular-products-section">
             <div className="container">
               <div className="section-header">
-                <h2>Popular Products</h2>
-                <p>Explore our bestselling herbal products and wellness remedies</p>
+                <h2>Latest Products</h2>
+                <p>Explore our newest herbal products and wellness remedies</p>
                 <div className="products-title-line"></div>
               </div>
 
               <div className="home-products-grid">
-                {popularProducts.slice(0, 3).map((product, index) => (
+                {latestProducts.map((product, index) => (
                   <article
                     key={product._id}
                     className={`home-product-card fade-up fade-up-delay-${(index % 4) + 1} ${activeHomeProductId === product._id ? "is-actions-open" : ""
@@ -386,18 +364,12 @@ ${product.image}
                     </div>
 
                     <div className="home-product-content">
-                      <h3 className="home-product-name">
-                        {product.name}
-                      </h3>
+                      <h3 className="home-product-name">{product.name}</h3>
 
                       {Number(product.price) > 0 ? (
-                        <p className="home-product-price">
-                          Rs.{product.price}
-                        </p>
+                        <p className="home-product-price">Rs.{product.price}</p>
                       ) : (
-                        <p className="home-product-price-coming">
-                          Coming Soon
-                        </p>
+                        <p className="home-product-price-coming">Coming Soon</p>
                       )}
                     </div>
                   </article>
