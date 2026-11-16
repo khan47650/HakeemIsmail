@@ -1,6 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiCamera, FiX, FiSave } from "react-icons/fi";
+import {
+    FiArrowLeft,
+    FiCamera,
+    FiX,
+    FiSave,
+    FiTrash2,
+    FiChevronLeft,
+    FiChevronRight,
+    FiUpload,
+} from "react-icons/fi";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { toast } from "react-toastify";
@@ -30,6 +39,7 @@ function AdminProductForm() {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEdit = Boolean(id);
+    const reviewFileRef = useRef(null);
 
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(isEdit);
@@ -38,12 +48,21 @@ function AdminProductForm() {
     const [tagInput, setTagInput] = useState("");
     const [errors, setErrors] = useState({});
 
+    // ===== SEPARATE REVIEWS STATES (Only for Edit Mode) =====
+    const [reviews, setReviews] = useState([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [newReviewPreview, setNewReviewPreview] = useState("");
+    const [uploadingReview, setUploadingReview] = useState(false);
+    const [deletingReview, setDeletingReview] = useState(false);
+    const [deleteConfirm, setDeleteConfirm] = useState(null); // null | { type: "single", id } | { type: "all" }
+
     const [formData, setFormData] = useState({
         name: "",
         slug: "",
         price: "",
         description: "",
-        isEnglishDescription: false, // New field for English format toggle
+        isEnglishDescription: false,
         tags: [],
         category: "nonpopular",
         image: "",
@@ -53,7 +72,10 @@ function AdminProductForm() {
     });
 
     useEffect(() => {
-        if (isEdit) fetchProduct();
+        if (isEdit) {
+            fetchProduct();
+            fetchProductReviews();
+        }
     }, [id]);
 
     const fetchProduct = async () => {
@@ -86,6 +108,103 @@ function AdminProductForm() {
         }
     };
 
+    // ===== REVIEWS API HANDLERS =====
+    const fetchProductReviews = async () => {
+        try {
+            setReviewsLoading(true);
+            const res = await api.get(`/reviews/product/${id}`);
+            const list = Array.isArray(res.data) ? res.data : [];
+            setReviews(list);
+            setCurrentSlide(0);
+        } catch (error) {
+            console.error("Failed to load reviews:", error);
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
+
+    const handleReviewFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            setNewReviewPreview(reader.result);
+        };
+        e.target.value = "";
+    };
+
+    const clearNewReviewSelection = () => {
+        setNewReviewPreview("");
+        if (reviewFileRef.current) reviewFileRef.current.value = "";
+    };
+
+    const handleUploadReview = async () => {
+        if (!newReviewPreview) {
+            toast.error("Please select a review screenshot first");
+            return;
+        }
+
+        try {
+            setUploadingReview(true);
+            const res = await api.post("/reviews", {
+                productId: id,
+                image: newReviewPreview,
+            });
+
+            setReviews((prev) => [res.data, ...prev]);
+            setCurrentSlide(0);
+            clearNewReviewSelection();
+            toast.success("Review screenshot uploaded!");
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to upload review");
+        } finally {
+            setUploadingReview(false);
+        }
+    };
+
+    const handleConfirmDeleteReview = async () => {
+        if (!deleteConfirm) return;
+
+        try {
+            setDeletingReview(true);
+
+            if (deleteConfirm.type === "single") {
+                await api.delete(`/reviews/${deleteConfirm.id}`);
+                setReviews((prev) => {
+                    const updated = prev.filter((item) => item._id !== deleteConfirm.id);
+                    setCurrentSlide((curr) =>
+                        updated.length === 0 ? 0 : Math.min(curr, updated.length - 1)
+                    );
+                    return updated;
+                });
+                toast.success("Review deleted");
+            } else if (deleteConfirm.type === "all") {
+                await Promise.all(reviews.map((item) => api.delete(`/reviews/${item._id}`)));
+                setReviews([]);
+                setCurrentSlide(0);
+                toast.success("All reviews deleted");
+            }
+        } catch (error) {
+            toast.error("Failed to delete review");
+        } finally {
+            setDeletingReview(false);
+            setDeleteConfirm(null);
+        }
+    };
+
+    const handlePrevSlide = () => {
+        setDeleteConfirm(null);
+        setCurrentSlide((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
+    };
+
+    const handleNextSlide = () => {
+        setDeleteConfirm(null);
+        setCurrentSlide((prev) => (prev === reviews.length - 1 ? 0 : prev + 1));
+    };
+
+    // ===== PRODUCT FORM HANDLERS =====
     const handleImage = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -203,6 +322,8 @@ function AdminProductForm() {
         );
     }
 
+    const activeReview = reviews[currentSlide];
+
     return (
         <section className="video-form-page page-fade-up">
             <div className="video-form-top">
@@ -309,6 +430,159 @@ function AdminProductForm() {
                                 : "This product will be visible to everyone on the website."}
                         </p>
                     </div>
+
+                    {/* ===== INDEPENDENT PRODUCT REVIEWS SECTION (EDIT MODE ONLY) ===== */}
+                    {isEdit && (
+                        <div className="video-form-card">
+                            <div className="review-card-header">
+                                <h3 className="video-form-card-title" style={{ marginBottom: 0 }}>
+                                    Customer Reviews ({reviews.length})
+                                </h3>
+
+                                {reviews.length > 0 && (
+                                    <button
+                                        type="button"
+                                        className="review-delete-all-btn"
+                                        onClick={() => setDeleteConfirm({ type: "all" })}
+                                        disabled={deletingReview}
+                                        title="Delete all reviews"
+                                    >
+                                        <FiTrash2 /> Delete All
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Delete Confirmation Box */}
+                            {deleteConfirm && (
+                                <div className="review-confirm-box">
+                                    <p>
+                                        {deleteConfirm.type === "all"
+                                            ? `Delete all ${reviews.length} review screenshots permanently?`
+                                            : "Delete this review screenshot permanently?"}
+                                    </p>
+                                    <div className="review-confirm-actions">
+                                        <button
+                                            type="button"
+                                            className="review-confirm-cancel"
+                                            onClick={() => setDeleteConfirm(null)}
+                                            disabled={deletingReview}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="review-confirm-yes"
+                                            onClick={handleConfirmDeleteReview}
+                                            disabled={deletingReview}
+                                        >
+                                            {deletingReview ? "Deleting..." : "Yes, Delete"}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Existing Reviews Slider */}
+                            {reviewsLoading ? (
+                                <div className="review-empty-state">Loading reviews...</div>
+                            ) : reviews.length > 0 && activeReview ? (
+                                <div className="review-slider-box">
+                                    <span className="review-slide-badge">
+                                        {currentSlide + 1} / {reviews.length}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        className="review-slide-delete-btn"
+                                        onClick={() =>
+                                            setDeleteConfirm({ type: "single", id: activeReview._id })
+                                        }
+                                        disabled={deletingReview}
+                                        title="Delete this review"
+                                    >
+                                        <FiTrash2 />
+                                    </button>
+
+                                    <img
+                                        src={activeReview.image}
+                                        alt={`Review ${currentSlide + 1}`}
+                                        className="review-slider-img"
+                                    />
+
+                                    {reviews.length > 1 && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className="review-slide-nav prev"
+                                                onClick={handlePrevSlide}
+                                                aria-label="Previous review"
+                                            >
+                                                <FiChevronLeft />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="review-slide-nav next"
+                                                onClick={handleNextSlide}
+                                                aria-label="Next review"
+                                            >
+                                                <FiChevronRight />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="review-empty-state">
+                                    No review screenshots uploaded yet.
+                                </div>
+                            )}
+
+                            {/* Upload New Review Screenshot + Preview */}
+                            <div className="review-upload-area">
+                                <label className="video-form-label">Add WhatsApp Screenshot</label>
+
+                                {newReviewPreview ? (
+                                    <div className="review-new-preview-box">
+                                        <img
+                                            src={newReviewPreview}
+                                            alt="New review preview"
+                                            className="review-new-preview-img"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="review-clear-preview-btn"
+                                            onClick={clearNewReviewSelection}
+                                            disabled={uploadingReview}
+                                            title="Remove selected image"
+                                        >
+                                            <FiX />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="video-thumb-upload review-select-box">
+                                        <div className="video-thumb-placeholder">
+                                            <FiCamera />
+                                            <span>Select Screenshot</span>
+                                        </div>
+                                        <input
+                                            ref={reviewFileRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleReviewFileChange}
+                                        />
+                                    </div>
+                                )}
+
+                                <button
+                                    type="button"
+                                    className="review-upload-submit-btn"
+                                    onClick={handleUploadReview}
+                                    disabled={!newReviewPreview || uploadingReview}
+                                >
+                                    <FiUpload />
+                                    {uploadingReview ? "Uploading Review..." : "Upload Review"}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* RIGHT COLUMN */}
@@ -375,7 +649,6 @@ function AdminProductForm() {
                             </label>
                         </div>
 
-                        {/* Updated Dynamic Class for Quill */}
                         <div className={formData.isEnglishDescription ? "video-quill-wrap english-quill" : "video-quill-wrap article-quill"}>
                             <ReactQuill
                                 theme="snow"
@@ -386,7 +659,6 @@ function AdminProductForm() {
                             />
                         </div>
                         {errors.description && <span className="field-error">{errors.description}</span>}
-                        {/* ======================================== */}
                     </div>
 
                     <div className="video-form-card">

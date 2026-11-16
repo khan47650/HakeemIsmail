@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiShoppingBag, FiPackage, FiArrowRight } from "react-icons/fi";
+import {
+    FiArrowLeft,
+    FiShoppingBag,
+    FiPackage,
+    FiArrowRight,
+    FiChevronLeft,
+    FiChevronRight,
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 import api from "../api/api";
 import SEO from "../components/SEO";
@@ -14,6 +21,12 @@ function ProductDetailPage() {
     const [recommendedProducts, setRecommendedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Product Reviews Slider States
+    const [reviews, setReviews] = useState([]);
+    const [reviewIndex, setReviewIndex] = useState(0);
+    const [slidesToShow, setSlidesToShow] = useState(3);
+    const [isReviewHovered, setIsReviewHovered] = useState(false);
+
     const getArray = (data) => {
         if (Array.isArray(data)) return data;
         if (Array.isArray(data?.products)) return data.products;
@@ -24,14 +37,30 @@ function ProductDetailPage() {
     const fetchProductData = async () => {
         try {
             setLoading(true);
-            const res = await api.get("/products");
-            const products = getArray(res.data).filter((item) => item.status === "published");
+            const [productsRes, reviewsRes] = await Promise.all([
+                api.get("/products"),
+                api.get(`/reviews/product/${id}`).catch(() => ({ data: [] })),
+            ]);
+
+            const products = getArray(productsRes.data).filter(
+                (item) => item.status === "published"
+            );
             const selectedProduct = products.find((item) => item._id === id);
 
             setProduct(selectedProduct || null);
 
-            const recommended = products.filter((item) => item._id !== id).slice(-3).reverse();
+            const recommended = products
+                .filter((item) => item._id !== id)
+                .slice(-3)
+                .reverse();
             setRecommendedProducts(recommended);
+
+            // Sirf is product ke valid review screenshots set karein
+            const productReviews = (
+                Array.isArray(reviewsRes.data) ? reviewsRes.data : []
+            ).filter((item) => Boolean(item.image));
+            setReviews(productReviews);
+            setReviewIndex(0);
         } catch (error) {
             console.log(error);
             toast.error("Failed to load product");
@@ -45,6 +74,51 @@ function ProductDetailPage() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [id]);
 
+    // Responsive Slides Count
+    useEffect(() => {
+        const updateSlidesCount = () => {
+            if (window.innerWidth <= 640) {
+                setSlidesToShow(1);
+            } else if (window.innerWidth <= 992) {
+                setSlidesToShow(2);
+            } else {
+                setSlidesToShow(3);
+            }
+        };
+
+        updateSlidesCount();
+        window.addEventListener("resize", updateSlidesCount);
+        return () => window.removeEventListener("resize", updateSlidesCount);
+    }, []);
+
+    const effectiveSlides = Math.max(1, Math.min(slidesToShow, reviews.length));
+    const maxReviewIndex = Math.max(0, reviews.length - effectiveSlides);
+
+    useEffect(() => {
+        if (reviewIndex > maxReviewIndex) {
+            setReviewIndex(maxReviewIndex);
+        }
+    }, [maxReviewIndex, reviewIndex]);
+
+    // Smooth Auto-Slide (Hover par pause hoga)
+    useEffect(() => {
+        if (reviews.length <= effectiveSlides || isReviewHovered) return;
+
+        const autoSlideTimer = setInterval(() => {
+            setReviewIndex((prev) => (prev >= maxReviewIndex ? 0 : prev + 1));
+        }, 3500);
+
+        return () => clearInterval(autoSlideTimer);
+    }, [reviews.length, effectiveSlides, maxReviewIndex, isReviewHovered]);
+
+    const handlePrevReview = () => {
+        setReviewIndex((prev) => (prev <= 0 ? maxReviewIndex : prev - 1));
+    };
+
+    const handleNextReview = () => {
+        setReviewIndex((prev) => (prev >= maxReviewIndex ? 0 : prev + 1));
+    };
+
     useEffect(() => {
         if (!product) return;
         const data = {
@@ -52,7 +126,11 @@ function ProductDetailPage() {
             "@type": "Product",
             name: product.name,
             image: product.image || undefined,
-            description: product.metaDescription || (product.description ? product.description.replace(/<[^>]+>/g, "").slice(0, 160) : product.name),
+            description:
+                product.metaDescription ||
+                (product.description
+                    ? product.description.replace(/<[^>]+>/g, "").slice(0, 160)
+                    : product.name),
             offers: {
                 "@type": "Offer",
                 priceCurrency: "PKR",
@@ -67,7 +145,9 @@ function ProductDetailPage() {
         document.head.appendChild(script);
 
         return () => {
-            document.head.querySelectorAll('script[data-product-jsonld="true"]').forEach((el) => el.remove());
+            document.head
+                .querySelectorAll('script[data-product-jsonld="true"]')
+                .forEach((el) => el.remove());
         };
     }, [product]);
 
@@ -116,7 +196,12 @@ function ProductDetailPage() {
         <main className="product-detail-page">
             <SEO
                 title={product.metaTitle || `${product.name} | Hakeem Ismail`}
-                description={product.metaDescription || (product.description ? product.description.replace(/<[^>]+>/g, "").slice(0, 155) : "Explore this herbal product by Hakeem Ismail.")}
+                description={
+                    product.metaDescription ||
+                    (product.description
+                        ? product.description.replace(/<[^>]+>/g, "").slice(0, 155)
+                        : "Explore this herbal product by Hakeem Ismail.")
+                }
                 canonical={`/products/${product._id}`}
             />
 
@@ -125,7 +210,6 @@ function ProductDetailPage() {
             </button>
 
             <section className="product-detail-hero page-reveal">
-
                 {/* 1. Header Area: Center Aligned (Like Article Header) */}
                 <div className="product-detail-top-row">
                     <div className="product-detail-image-area">
@@ -140,25 +224,36 @@ function ProductDetailPage() {
                         <div className="product-badge-row">
                             <span className="product-detail-badge">
                                 <FiPackage />
-                                {product.category === "popular" ? "Popular Product" : "Herbal Product"}
+                                {product.category === "popular"
+                                    ? "Popular Product"
+                                    : "Herbal Product"}
                             </span>
                         </div>
 
                         <h1 className="normal-title">{product.name}</h1>
 
                         {Number(product.price) > 0 ? (
-                            <p className="product-detail-price-text">Rs. {product.price}</p>
+                            <p className="product-detail-price-text">
+                                Rs. {product.price}
+                            </p>
                         ) : (
-                            <div className="product-detail-coming-soon">Coming Soon</div>
+                            <div className="product-detail-coming-soon">
+                                Coming Soon
+                            </div>
                         )}
 
                         <button
-                            className={`product-detail-buy-now ${Number(product.price) <= 0 ? "product-detail-buy-disabled" : ""}`}
+                            className={`product-detail-buy-now ${Number(product.price) <= 0
+                                    ? "product-detail-buy-disabled"
+                                    : ""
+                                }`}
                             onClick={handleBuy}
                             disabled={Number(product.price) <= 0}
                         >
                             <FiShoppingBag />
-                            {Number(product.price) > 0 ? "Buy Now" : "Not Available Yet"}
+                            {Number(product.price) > 0
+                                ? "Buy Now"
+                                : "Not Available Yet"}
                         </button>
                     </div>
                 </div>
@@ -169,7 +264,11 @@ function ProductDetailPage() {
                 <div className="adp-wrapper">
                     <article className="adp-article">
                         <div
-                            className={isEnglish ? "pd-about-product-content english-format" : "pd-about-product-content urdu-format"}
+                            className={
+                                isEnglish
+                                    ? "pd-about-product-content english-format"
+                                    : "pd-about-product-content urdu-format"
+                            }
                             dangerouslySetInnerHTML={{
                                 __html: product.description,
                             }}
@@ -177,6 +276,70 @@ function ProductDetailPage() {
                     </article>
                 </div>
             </section>
+
+            {reviews.length > 0 && (
+                <section
+                    className="pd-reviews-section page-reveal"
+                    onMouseEnter={() => setIsReviewHovered(true)}
+                    onMouseLeave={() => setIsReviewHovered(false)}
+                >
+                    <div className="pd-reviews-header">
+                        <h2>Customers FeedBack</h2>
+                        <div className="pd-reviews-title-line"></div>
+                    </div>
+
+                    <div className="pd-reviews-fullbleed">
+                        {reviews.length > effectiveSlides && (
+                            <button
+                                type="button"
+                                className="pd-reviews-arrow prev"
+                                onClick={handlePrevReview}
+                                aria-label="Previous review"
+                            >
+                                <FiChevronLeft />
+                            </button>
+                        )}
+
+                        <div className="pd-reviews-viewport">
+                            <div
+                                className="pd-reviews-track"
+                                style={{
+                                    transform: `translateX(-${reviewIndex * (100 / effectiveSlides)
+                                        }%)`,
+                                }}
+                            >
+                                {reviews.map((rev, idx) => (
+                                    <div
+                                        key={rev._id || idx}
+                                        className="pd-review-tile"
+                                        style={{
+                                            flex: `0 0 ${100 / effectiveSlides}%`,
+                                        }}
+                                    >
+                                        <img
+                                            src={rev.image}
+                                            alt={`${product.name} Review ${idx + 1}`}
+                                            className="pd-review-img"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {reviews.length > effectiveSlides && (
+                            <button
+                                type="button"
+                                className="pd-reviews-arrow next"
+                                onClick={handleNextReview}
+                                aria-label="Next review"
+                            >
+                                <FiChevronRight />
+                            </button>
+                        )}
+                    </div>
+                </section>
+            )}
 
             {/* Recommended Products (Image & Short Title Only) */}
             {recommendedProducts.length > 0 && (
@@ -203,7 +366,12 @@ function ProductDetailPage() {
                                 </div>
                                 <div className="recommended-content">
                                     <h3>{truncateTitle(item.name)}</h3>
-                                    <button onClick={(e) => { e.stopPropagation(); navigate(`/products/${item._id}`); }}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/products/${item._id}`);
+                                        }}
+                                    >
                                         <FiArrowRight />
                                     </button>
                                 </div>

@@ -186,7 +186,7 @@
 .why-section,
 .popular-products-section,
 .home-preview-section,
-.home-about-preview,
+.home-reviews-section,
 .website-counter-section {
     margin-top: 75px;
 }
@@ -719,109 +719,138 @@ footer,
     overflow: hidden;
 }
 
-/* ===== ABOUT PREVIEW ===== */
-.home-about-preview {
-    background:
-        radial-gradient(circle at right top, rgba(109, 185, 27, 0.18), transparent 32%),
-        linear-gradient(135deg, #ffffff, #f1f8ed);
-    border-radius: 34px;
-    border: 1.5px solid rgba(47, 109, 31, 0.2);
-    padding: 45px;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-}
-
-.home-about-content {
-    max-width: 780px;
-}
-
-.home-about-content span {
-    color: #3f8e17;
-    font-size: 14px;
-    font-weight: 900;
-}
-
-.home-about-content h2 {
-    font-size: 38px;
-    color: #1b4f14;
-    font-weight: 900;
-    line-height: 1.35;
-    margin: 12px 0 14px;
-}
-
-.home-about-content p {
-    color: #5c5c5c;
-    line-height: 1.9;
-    font-size: 16px;
-}
-
-.home-about-content button {
-    border: none;
-    background: transparent;
-    color: #1b4f14;
-    font-weight: 800;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 0;
-    transition: all 0.3s ease;
-}
-
-.home-about-content button:hover {
-    transform: translateX(5px);
-}
-
-/* ===== COUNTER SECTION ===== */
-.website-counter-section {
+/* ===== PATIENT REVIEWS FULL-WIDTH EDGE-TO-EDGE STRIP ===== */
+.home-reviews-fullbleed {
     position: relative;
-    padding: 42px 20px !important;
-    border-radius: 30px !important;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background: #ece5dd;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    background:
-        radial-gradient(circle at top right, rgba(109, 185, 27, 0.35), transparent 30%),
-        radial-gradient(circle at bottom left, rgba(109, 185, 27, 0.25), transparent 28%),
-        linear-gradient(135deg, #031b0c 0%, #06431c 48%, #021107 100%);
-    box-shadow: 0 26px 65px rgba(0, 0, 0, 0.22);
 }
 
-.website-counter-section h2 {
-    color: #ffffff;
-    font-size: 34px !important;
-    font-weight: 900;
-    margin: 6px 0 10px !important;
+.home-reviews-viewport {
+    width: 100%;
+    overflow: hidden;
 }
 
-.counter-top-icon,
-.counter-bottom-icon {
-    color: #20e35c;
-    font-size: 26px !important;
+.home-reviews-track {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
 }
 
-.counter-title-line {
+.home-review-tile {
+    height: 600px;
+    box-sizing: border-box;
+    border-right: 2px solid rgba(0, 0, 0, 0.08);
+    background: #ece5dd;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 18px;
-    margin-bottom: 24px !important;
+    overflow: hidden;
 }
 
-.counter-title-line span {
-    width: 55px !important;
-    height: 2px;
-    background: #20e35c;
+.home-review-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+    will-change: transform;
 }
 
-.counter-title-line b {
-    width: 12px;
-    height: 12px;
-    background: #20e35c;
+.home-review-img:hover {
+    transform: scale(1.035);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+}
+
+.reviews-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    color: #1b4f14;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    transition: all 0.25s ease;
+    z-index: 6;
+}
+
+.reviews-arrow-btn:hover {
+    background: linear-gradient(135deg, #1b4f14, #3f8e17);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.reviews-arrow-btn.prev {
+    left: 16px;
+}
+
+.reviews-arrow-btn.next {
+    right: 16px;
+}
+
+/* ===== MINIMAL WEBSITE VIEWS COUNTER ===== */
+.website-counter-section {
+    max-width: 720px;
+    margin: 80px auto 65px !important;
+    padding: 36px 20px !important;
+    text-align: center;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-top: 1px solid rgba(27, 79, 20, 0.14);
+    border-bottom: 1px solid rgba(27, 79, 20, 0.14);
+    border-radius: 0 !important;
+}
+
+.views-eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #3f8e17;
+    margin-bottom: 8px;
+}
+
+.views-number-display {
+    font-size: 76px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #103b0d 0%, #2f7d18 50%, #6db91b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 4px 0 12px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.views-description {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #5c5c5c !important;
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 500;
 }
 
 .views-description {
@@ -863,6 +892,67 @@ footer,
 
 .counter-bottom-icon {
     margin-top: 24px !important;
+}
+
+.views-eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #3f8e17;
+    margin-bottom: 8px;
+}
+
+.views-number-display {
+    font-size: 76px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #103b0d 0%, #2f7d18 50%, #6db91b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 4px 0 12px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.website-counter-section.show .views-number-display {
+    opacity: 1;
+    transform: translateY(0);
+    animation: numberFloatWave 3s ease-in-out 0.7s infinite;
+}
+
+@keyframes numberFloatWave {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: translateY(-6px) rotate(-1.2deg) scale(1.03);
+    }
+
+    50% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+
+    75% {
+        transform: translateY(-5px) rotate(1.2deg) scale(1.03);
+    }
+}
+
+.views-description {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #5c5c5c !important;
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 500;
 }
 
 /* ===== SKELETON LOADING ===== */
@@ -1246,34 +1336,49 @@ footer,
     .why-section,
     .popular-products-section,
     .home-preview-section,
-    .home-about-preview,
+    .home-reviews-section,
     .website-counter-section {
         margin-top: 50px;
     }
 
-    .home-about-preview {
-        padding: 28px 18px;
-        border-radius: 24px;
+    .home-review-tile {
+        height: auto;
+        max-height: 78vh;
+        border-right: none;
     }
 
-    .home-about-content h2 {
-        font-size: 26px;
+    .home-review-img {
+        width: 100%;
+        height: auto;
+        max-height: 78vh;
+        object-fit: contain;
+    }
+
+    .reviews-arrow-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .reviews-arrow-btn.prev {
+        left: 10px;
+    }
+
+    .reviews-arrow-btn.next {
+        right: 10px;
     }
 
     .website-counter-section {
-        padding: 34px 12px !important;
-        border-radius: 24px !important;
+        margin: 55px auto 45px !important;
+        padding: 28px 16px !important;
     }
 
-    .website-counter-section h2 {
-        font-size: 26px !important;
+    .views-number-display {
+        font-size: 56px;
     }
 
-    .counter-box {
-        width: 62px !important;
-        height: 76px !important;
-        font-size: 38px !important;
-        border-radius: 15px !important;
+    .views-description {
+        font-size: 13.5px;
     }
 
     .reveal-on-scroll {
@@ -1396,16 +1501,6 @@ footer,
 
     .home-short-card-title {
         font-size: 13px;
-    }
-
-    .counter-boxes {
-        gap: 8px !important;
-    }
-
-    .counter-box {
-        width: 55px !important;
-        height: 70px !important;
-        font-size: 34px !important;
     }
 }
 

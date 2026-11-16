@@ -6,11 +6,11 @@ import {
   FaTruck,
   FaUserMd,
   FaShieldAlt,
-  FaChartLine,
-  FaGlobeAsia,
   FaPlayCircle,
 } from "react-icons/fa";
-import { FiArrowRight, FiArrowUp } from "react-icons/fi";
+import {
+  FiArrowRight, FiArrowUp, FiChevronLeft, FiChevronRight,
+} from "react-icons/fi";
 
 import api from "../api/api";
 import "../css/Home.css";
@@ -19,6 +19,9 @@ function Home() {
   const navigate = useNavigate();
   const [counterStarted, setCounterStarted] = useState(false);
   const [counterValue, setCounterValue] = useState(0);
+  const [targetViews] = useState(
+    () => Math.floor(Math.random() * (4850 - 1150 + 1)) + 1150
+  );
 
   const [latestProducts, setLatestProducts] = useState([]);
   const [articles, setArticles] = useState([]);
@@ -28,19 +31,24 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [scrollVisible, setScrollVisible] = useState(false);
   const [activeHomeProductId, setActiveHomeProductId] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewIndex, setReviewIndex] = useState(0);
+  const [slidesToShow, setSlidesToShow] = useState(3);
+  const [isReviewHovered, setIsReviewHovered] = useState(false);
 
 
   const fetchHomeData = async () => {
     try {
       setLoading(true);
 
-      const [productsRes, articlesRes, videosRes, shortsRes, blogsRes] =
+      const [productsRes, articlesRes, videosRes, shortsRes, blogsRes, reviewsRes] =
         await Promise.all([
           api.get("/products"),
           api.get("/articles"),
           api.get("/videos"),
           api.get("/shorts"),
           api.get("/blogs"),
+          api.get("/reviews").catch(() => ({ data: [] })),
         ]);
 
       const publishedProducts = (productsRes.data || []).filter(
@@ -71,6 +79,14 @@ function Home() {
         (blog) => blog.status === "published"
       );
       setBlogs(publishedBlogs);
+
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      const recentReviews = (reviewsRes.data || []).filter((item) => {
+        if (!item.image || !item.createdAt) return false;
+        return new Date(item.createdAt) >= threeMonthsAgo;
+      });
+      setReviews(recentReviews);
     } catch (error) {
       console.log(error);
     } finally {
@@ -82,6 +98,49 @@ function Home() {
     fetchHomeData();
   }, []);
 
+  // Desktop par 3, Tablet par 2, Mobile par 1 full-width review slide
+  useEffect(() => {
+    const updateSlidesCount = () => {
+      if (window.innerWidth <= 640) {
+        setSlidesToShow(1);
+      } else if (window.innerWidth <= 992) {
+        setSlidesToShow(2);
+      } else {
+        setSlidesToShow(3);
+      }
+    };
+
+    updateSlidesCount();
+    window.addEventListener("resize", updateSlidesCount);
+    return () => window.removeEventListener("resize", updateSlidesCount);
+  }, []);
+
+  const maxReviewIndex = Math.max(0, reviews.length - slidesToShow);
+
+  useEffect(() => {
+    if (reviewIndex > maxReviewIndex) {
+      setReviewIndex(maxReviewIndex);
+    }
+  }, [maxReviewIndex, reviewIndex]);
+
+  useEffect(() => {
+    if (reviews.length <= slidesToShow || isReviewHovered) return;
+
+    const autoSlideTimer = setInterval(() => {
+      setReviewIndex((prev) => (prev >= maxReviewIndex ? 0 : prev + 1));
+    }, 3500);
+
+    return () => clearInterval(autoSlideTimer);
+  }, [reviews.length, slidesToShow, maxReviewIndex, isReviewHovered]);
+
+  const handlePrevReview = () => {
+    setReviewIndex((prev) => (prev <= 0 ? maxReviewIndex : prev - 1));
+  };
+
+  const handleNextReview = () => {
+    setReviewIndex((prev) => (prev >= maxReviewIndex ? 0 : prev + 1));
+  };
+
   useEffect(() => {
     const handleScroll = () => setScrollVisible(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
@@ -91,20 +150,28 @@ function Home() {
   useEffect(() => {
     if (!counterStarted) return;
 
-    let start = 347;
-    setCounterValue(start);
+    let animationFrameId;
+    const duration = 1800;
+    const startTime = performance.now();
 
-    const timer = setInterval(() => {
-      const shouldIncrease = Math.random() > 0.3;
+    const animateCount = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 4);
 
-      if (shouldIncrease) {
-        start += Math.floor(Math.random() * 2) + 1;
-        setCounterValue(start);
+      setCounterValue(Math.floor(easeOut * targetViews));
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animateCount);
+      } else {
+        setCounterValue(targetViews);
       }
-    }, 1000);
+    };
 
-    return () => clearInterval(timer);
-  }, [counterStarted]);
+    animationFrameId = requestAnimationFrame(animateCount);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [counterStarted, targetViews]);
 
   useEffect(() => {
     const revealElements = document.querySelectorAll(".reveal-on-scroll");
@@ -545,56 +612,84 @@ ${product.image}
             </section>
           )}
 
-          <section className="home-about-preview reveal-on-scroll">
-            <div className="home-about-content">
-              <span>About Hakeem Ismail</span>
-              <h2>Natural Healing Through Trusted Unani Medicine</h2>
-              <p>
-                Hakeem Muhammad Ismail has years of experience in Unani
-                medicine, herbal remedies and natural treatment. His mission is
-                to provide pure herbal solutions and trusted healthcare guidance
-                to every home.
-              </p>
+          {!loading && reviews.length > 0 && (() => {
+            const effectiveSlides = Math.max(
+              1,
+              Math.min(slidesToShow, reviews.length)
+            );
 
-              <button onClick={() => navigate("/about")}>
-                Read Full Story <FiArrowRight />
-              </button>
-            </div>
-          </section>
+            return (
+              <section
+                className="home-reviews-section reveal-on-scroll"
+                onMouseEnter={() => setIsReviewHovered(true)}
+                onMouseLeave={() => setIsReviewHovered(false)}
+              >
+                <div className="section-header">
+                  <h2>What Our Customers Say</h2>
+                  <div className="products-title-line"></div>
+                </div>
+
+                <div className="home-reviews-fullbleed">
+                  {reviews.length > effectiveSlides && (
+                    <button
+                      type="button"
+                      className="reviews-arrow-btn prev"
+                      onClick={handlePrevReview}
+                      aria-label="Previous review"
+                    >
+                      <FiChevronLeft />
+                    </button>
+                  )}
+
+                  <div className="home-reviews-viewport">
+                    <div
+                      className="home-reviews-track"
+                      style={{
+                        transform: `translateX(-${reviewIndex * (100 / effectiveSlides)
+                          }%)`,
+                      }}
+                    >
+                      {reviews.map((rev, idx) => (
+                        <div
+                          key={rev._id || idx}
+                          className="home-review-tile"
+                          style={{ flex: `0 0 ${100 / effectiveSlides}%` }}
+                        >
+                          <img
+                            src={rev.image}
+                            alt={`Customer Review ${idx + 1}`}
+                            className="home-review-img"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {reviews.length > effectiveSlides && (
+                    <button
+                      type="button"
+                      className="reviews-arrow-btn next"
+                      onClick={handleNextReview}
+                      aria-label="Next review"
+                    >
+                      <FiChevronRight />
+                    </button>
+                  )}
+                </div>
+              </section>
+            );
+          })()}
+
 
           <section className="website-counter-section reveal-on-scroll">
-            <div className="counter-top-icon">
-              <FaChartLine />
+            <span className="views-eyebrow">Website Visitors</span>
+            <div className="views-number-display">
+              {counterValue.toLocaleString()}
             </div>
-
-            <h2>Website Views</h2>
-
-            <div className="counter-title-line">
-              <span></span>
-              <b></b>
-              <span></span>
-            </div>
-
             <p className="views-description">
-              Trusted by visitors exploring natural healing, herbal remedies,
-              wellness articles, videos and expert Unani guidance.
+              Trusted by visitors exploring natural healing, herbal remedies &amp; Unani guidance.
             </p>
-
-            <div className="counter-boxes">
-              {String(counterValue)
-                .padStart(4, "0")
-                .slice(-4)
-                .split("")
-                .map((digit, index) => (
-                  <div className="counter-box" key={index}>
-                    {digit}
-                  </div>
-                ))}
-            </div>
-
-            <div className="counter-bottom-icon">
-              <FaGlobeAsia />
-            </div>
           </section>
         </div>
       </section>

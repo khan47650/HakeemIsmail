@@ -278,13 +278,14 @@
   }
 
   .footer-top {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 16px;
     padding-bottom: 28px;
   }
 
-  .footer-brand {
-    grid-column: auto;
+  .footer-brand,
+  .footer-contact {
+    grid-column: 1 / -1;
   }
 
   .footer-logo {
@@ -308,6 +309,7 @@
 
   .footer-social {
     gap: 12px;
+    justify-content: center;
   }
 
   .social-icon {
@@ -349,6 +351,10 @@
     font-size: 15px;
   }
 
+  .footer-links-list li a {
+    gap: 7px;
+  }
+
   .footer-logo-area {
     gap: 10px;
   }
@@ -367,6 +373,7 @@
 
   .footer-social {
     gap: 10px;
+    justify-content: center;
   }
 }
 
