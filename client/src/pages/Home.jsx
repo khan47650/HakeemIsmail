@@ -14,6 +14,7 @@ import {
 
 import api from "../api/api";
 import "../css/Home.css";
+import { getItemSlug } from "../utils/slugify";
 
 function Home() {
   const navigate = useNavigate();
@@ -422,7 +423,7 @@ ${product.image}
                           className="home-hover-btn btn-details"
                           onClick={(event) => {
                             event.stopPropagation();
-                            navigate(`/products/${product._id}`);
+                            navigate(`/products/${getItemSlug(product)}`);
                           }}
                         >
                           View Details <FiArrowRight />
@@ -480,7 +481,7 @@ ${product.image}
                           <p className="article-story-text">{plainText}</p>
                           <button
                             className="article-story-link"
-                            onClick={() => navigate(`/articles/${article._id}`)}
+                            onClick={() => navigate(`/articles/${getItemSlug(article)}`)}
                           >
                             مزید پڑھیں
                           </button>
@@ -512,7 +513,7 @@ ${product.image}
                     <article
                       key={blog._id}
                       className={`blog-card fade-up fade-up-delay-${(index % 4) + 1}`}
-                      onClick={() => navigate(`/blogs/${blog._id}`)}
+                      onClick={() => navigate(`/blogs/${getItemSlug(blog)}`)}
                     >
                       <div className="blog-card-image">
                         <img

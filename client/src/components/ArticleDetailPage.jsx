@@ -1,13 +1,13 @@
-// ArticleDetailPage.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../components/SEO";
 import api from "../api/api";
+import { getItemSlug, matchesSlugOrId } from "../utils/slugify";
 import "../css/ArticleDetailPage.css";
-import { FiArrowLeft, FiCalendar, FiTag } from "react-icons/fi";
+import { FiArrowLeft, FiCalendar } from "react-icons/fi";
 
 function ArticleDetailPage() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
     const [article, setArticle] = useState(null);
     const [relatedArticles, setRelatedArticles] = useState([]);
@@ -16,19 +16,35 @@ function ArticleDetailPage() {
     useEffect(() => {
         window.scrollTo(0, 0);
         fetchArticle();
-    }, [id]);
+    }, [slug]);
 
     const fetchArticle = async () => {
         try {
             setLoading(true);
-            const res = await api.get(`/articles/${id}`);
-            setArticle(res.data);
-
             const allRes = await api.get("/articles");
-            const published = allRes.data.filter(
-                (a) => a.status === "published" && a._id !== id
-            );
-            setRelatedArticles(published.slice(0, 3));
+            const allArticles = Array.isArray(allRes.data) ? allRes.data : [];
+
+            const matched = allArticles.find((a) => matchesSlugOrId(a, slug));
+            setArticle(matched || null);
+
+            if (matched) {
+                const canonicalSlug = getItemSlug(matched);
+                let decodedParam = slug;
+                try {
+                    decodedParam = decodeURIComponent(slug);
+                } catch {
+                    decodedParam = slug;
+                }
+
+                if (canonicalSlug && decodedParam !== canonicalSlug) {
+                    navigate(`/articles/${canonicalSlug}`, { replace: true });
+                }
+
+                const published = allArticles.filter(
+                    (a) => a.status === "published" && a._id !== matched._id
+                );
+                setRelatedArticles(published.slice(0, 3));
+            }
         } catch (err) {
             console.log(err);
         } finally {
@@ -62,12 +78,14 @@ function ArticleDetailPage() {
         );
     }
 
+    const articleSlug = getItemSlug(article);
+
     return (
         <main className="adp-page">
             <SEO
                 title={article.title}
                 description={stripHtml(article.excerpt || article.content).slice(0, 160)}
-                canonical={`/articles/${article._id}`}
+                canonical={`/articles/${articleSlug}`}
             />
 
             <button className="adp-back-btn" onClick={() => navigate(-1)}>
@@ -118,7 +136,7 @@ function ArticleDetailPage() {
                                 <div
                                     key={ra._id}
                                     className="adp-related-card"
-                                    onClick={() => navigate(`/articles/${ra._id}`)}
+                                    onClick={() => navigate(`/articles/${getItemSlug(ra)}`)}
                                 >
                                     <div className="adp-related-card-top">
                                         <span className="adp-related-date">

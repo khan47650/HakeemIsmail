@@ -11,10 +11,11 @@ import {
 import { toast } from "react-toastify";
 import api from "../api/api";
 import SEO from "../components/SEO";
+import { getItemSlug, matchesSlugOrId } from "../utils/slugify";
 import "../css/ProductDetail.css";
 
 function ProductDetailPage() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
 
     const [product, setProduct] = useState(null);
@@ -37,30 +38,49 @@ function ProductDetailPage() {
     const fetchProductData = async () => {
         try {
             setLoading(true);
-            const [productsRes, reviewsRes] = await Promise.all([
-                api.get("/products"),
-                api.get(`/reviews/product/${id}`).catch(() => ({ data: [] })),
-            ]);
-
+            const productsRes = await api.get("/products");
             const products = getArray(productsRes.data).filter(
                 (item) => item.status === "published"
             );
-            const selectedProduct = products.find((item) => item._id === id);
 
+            const selectedProduct = products.find((item) =>
+                matchesSlugOrId(item, slug)
+            );
             setProduct(selectedProduct || null);
 
-            const recommended = products
-                .filter((item) => item._id !== id)
-                .slice(-3)
-                .reverse();
-            setRecommendedProducts(recommended);
+            if (selectedProduct) {
+                const canonicalSlug = getItemSlug(selectedProduct);
+                let decodedParam = slug;
+                try {
+                    decodedParam = decodeURIComponent(slug);
+                } catch {
+                    decodedParam = slug;
+                }
 
-            // Sirf is product ke valid review screenshots set karein
-            const productReviews = (
-                Array.isArray(reviewsRes.data) ? reviewsRes.data : []
-            ).filter((item) => Boolean(item.image));
-            setReviews(productReviews);
-            setReviewIndex(0);
+                if (canonicalSlug && decodedParam !== canonicalSlug) {
+                    navigate(`/products/${canonicalSlug}`, { replace: true });
+                }
+
+                const recommended = products
+                    .filter((item) => item._id !== selectedProduct._id)
+                    .slice(-3)
+                    .reverse();
+                setRecommendedProducts(recommended);
+
+                // Product ke actual _id se reviews fetch karein
+                const reviewsRes = await api
+                    .get(`/reviews/product/${selectedProduct._id}`)
+                    .catch(() => ({ data: [] }));
+
+                const productReviews = (
+                    Array.isArray(reviewsRes.data) ? reviewsRes.data : []
+                ).filter((item) => Boolean(item.image));
+                setReviews(productReviews);
+                setReviewIndex(0);
+            } else {
+                setRecommendedProducts([]);
+                setReviews([]);
+            }
         } catch (error) {
             console.log(error);
             toast.error("Failed to load product");
@@ -72,7 +92,7 @@ function ProductDetailPage() {
     useEffect(() => {
         fetchProductData();
         window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [id]);
+    }, [slug]);
 
     // Responsive Slides Count
     useEffect(() => {
@@ -158,7 +178,6 @@ function ProductDetailPage() {
         window.open(url, "_blank");
     };
 
-    // Title ko 4 words tak truncate (chota) karne ka function
     const truncateTitle = (title) => {
         const words = title.split(" ");
         if (words.length > 4) {
@@ -189,8 +208,8 @@ function ProductDetailPage() {
         );
     }
 
-    // Backend se check karte hain ke English format hai ya Urdu
     const isEnglish = product.isEnglishDescription || false;
+    const productSlug = getItemSlug(product);
 
     return (
         <main className="product-detail-page">
@@ -202,7 +221,7 @@ function ProductDetailPage() {
                         ? product.description.replace(/<[^>]+>/g, "").slice(0, 155)
                         : "Explore this herbal product by Hakeem Ismail.")
                 }
-                canonical={`/products/${product._id}`}
+                canonical={`/products/${productSlug}`}
             />
 
             <button className="product-back-btn" onClick={() => navigate(-1)}>
@@ -210,7 +229,6 @@ function ProductDetailPage() {
             </button>
 
             <section className="product-detail-hero page-reveal">
-                {/* 1. Header Area: Center Aligned (Like Article Header) */}
                 <div className="product-detail-top-row">
                     <div className="product-detail-image-area">
                         <img
@@ -260,7 +278,6 @@ function ProductDetailPage() {
 
                 <div className="adp-bottom-divider" />
 
-                {/* 2. Article Body (Centered, dynamically Urdu or English) */}
                 <div className="adp-wrapper">
                     <article className="adp-article">
                         <div
@@ -341,7 +358,7 @@ function ProductDetailPage() {
                 </section>
             )}
 
-            {/* Recommended Products (Image & Short Title Only) */}
+            {/* Recommended Products */}
             {recommendedProducts.length > 0 && (
                 <section className="recommended-section page-reveal">
                     <div className="recommended-header">
@@ -355,28 +372,31 @@ function ProductDetailPage() {
                     </div>
 
                     <div className="recommended-grid">
-                        {recommendedProducts.map((item) => (
-                            <div
-                                className="recommended-card"
-                                key={item._id}
-                                onClick={() => navigate(`/products/${item._id}`)}
-                            >
-                                <div className="recommended-image-box">
-                                    <img src={item.image} alt={item.name} />
+                        {recommendedProducts.map((item) => {
+                            const itemSlug = getItemSlug(item);
+                            return (
+                                <div
+                                    className="recommended-card"
+                                    key={item._id}
+                                    onClick={() => navigate(`/products/${itemSlug}`)}
+                                >
+                                    <div className="recommended-image-box">
+                                        <img src={item.image} alt={item.name} />
+                                    </div>
+                                    <div className="recommended-content">
+                                        <h3>{truncateTitle(item.name)}</h3>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/products/${itemSlug}`);
+                                            }}
+                                        >
+                                            <FiArrowRight />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="recommended-content">
-                                    <h3>{truncateTitle(item.name)}</h3>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            navigate(`/products/${item._id}`);
-                                        }}
-                                    >
-                                        <FiArrowRight />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
             )}

@@ -65,13 +65,12 @@ function App() {
         <Route path="/videos" element={<Videos />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/products/:id" element={<ProductDetailPage />} />
-        <Route path="/articles/:id" element={<ArticleDetailPage />} />
+        <Route path="/products/:slug" element={<ProductDetailPage />} />
+        <Route path="/articles/:slug" element={<ArticleDetailPage />} />
         <Route path="/clinic" element={<RegisteredClinic />} />
         <Route path="/delivery" element={<DeliveryInfo />} />
         <Route path="/blogs" element={<Blogs />} />
-        <Route path="/blogs/:id" element={<BlogDetailPage />} />
-
+        <Route path="/blogs/:slug" element={<BlogDetailPage />} />
 
         {/* PROTECTED ADMIN ROUTE */}
         <Route
@@ -103,7 +102,6 @@ function App() {
           <Route path="/admin/blogs/edit/:id" element={<AdminBlogForm />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="slider-images" element={<SliderImages />} />
-
         </Route>
       </Routes>
 

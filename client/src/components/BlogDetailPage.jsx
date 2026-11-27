@@ -1,8 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEO from "../components/SEO";
 import api from "../api/api";
+import { getItemSlug, matchesSlugOrId } from "../utils/slugify";
 import "../css/BlogDetailPage.css";
 import { FiArrowLeft, FiCalendar, FiTag } from "react-icons/fi";
 
@@ -38,8 +38,9 @@ const injectImages = (html = "", midImages = [], endImages = []) => {
 
     return result;
 };
+
 function BlogDetailPage() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
     const [blog, setBlog] = useState(null);
     const [relatedBlogs, setRelatedBlogs] = useState([]);
@@ -48,21 +49,37 @@ function BlogDetailPage() {
     useEffect(() => {
         window.scrollTo(0, 0);
         fetchBlog();
-    }, [id]);
+    }, [slug]);
 
     const fetchBlog = async () => {
         try {
             setLoading(true);
-            const res = await api.get(`/blogs/${id}`);
-            setBlog(res.data);
-
             const allRes = await api.get("/blogs");
-            const published = allRes.data.filter(
-                (b) => b.status === "published" && b._id !== id
-            );
-            const sameCategory = published.filter((b) => b.category === res.data.category);
-            const others = published.filter((b) => b.category !== res.data.category);
-            setRelatedBlogs([...sameCategory, ...others].slice(0, 3));
+            const allBlogs = Array.isArray(allRes.data) ? allRes.data : [];
+
+            const matched = allBlogs.find((b) => matchesSlugOrId(b, slug));
+            setBlog(matched || null);
+
+            if (matched) {
+                const canonicalSlug = getItemSlug(matched);
+                let decodedParam = slug;
+                try {
+                    decodedParam = decodeURIComponent(slug);
+                } catch {
+                    decodedParam = slug;
+                }
+
+                if (canonicalSlug && decodedParam !== canonicalSlug) {
+                    navigate(`/blogs/${canonicalSlug}`, { replace: true });
+                }
+
+                const published = allBlogs.filter(
+                    (b) => b.status === "published" && b._id !== matched._id
+                );
+                const sameCategory = published.filter((b) => b.category === matched.category);
+                const others = published.filter((b) => b.category !== matched.category);
+                setRelatedBlogs([...sameCategory, ...others].slice(0, 3));
+            }
         } catch (err) {
             console.log(err);
         } finally {
@@ -94,12 +111,14 @@ function BlogDetailPage() {
         );
     }
 
+    const blogSlug = getItemSlug(blog);
+
     return (
         <main className="bdp-page">
             <SEO
                 title={blog.metaTitle || blog.title}
                 description={blog.metaDescription || blog.excerpt}
-                canonical={`/blogs/${blog._id}`}
+                canonical={`/blogs/${blogSlug}`}
             />
 
             {/* Fixed back button */}
@@ -175,7 +194,7 @@ function BlogDetailPage() {
                                 <div
                                     key={rb._id}
                                     className="bdp-related-card"
-                                    onClick={() => navigate(`/blogs/${rb._id}`)}
+                                    onClick={() => navigate(`/blogs/${getItemSlug(rb)}`)}
                                 >
                                     <div className="bdp-related-img-wrap">
                                         <img src={rb.image} alt={rb.title} loading="lazy" />
